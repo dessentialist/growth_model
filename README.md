@@ -1,16 +1,17 @@
-# Growth System v2
+# Product Growth System
 
-A hybrid System Dynamics + Agent-Based Modeling (SD+ABM) simulation system for analyzing growth patterns across multiple industries. The system models anchor client behavior, direct client dynamics, and product supply-demand interactions across multiple sectors.
+A hybrid System Dynamics + Agent-Based Modeling (SD+ABM) simulation system for analyzing growth patterns across any industry or sector. The system models anchor client behavior, direct client dynamics, and product supply-demand interactions with fully customizable sectors and products.
 
 ## 🚀 Features
 
 - **Hybrid Modeling**: Combines System Dynamics (SD) for aggregate flows with Agent-Based Modeling (ABM) for individual client behavior
-- **Multi-Sector Support**: Models Defense, Nuclear, Semiconductors, Aviation, and other sectors
-- **Multi-Product Support**: Handles Silicon Carbide, Boron Fiber, UHT, and other advanced products
+- **Industry Agnostic**: Models any sectors and products you define - Defense, Nuclear, Semiconductors, Aviation, or any custom industry
+- **Multi-Product Support**: Handles any product types with configurable parameters and market dynamics
 - **Flexible Scenarios**: YAML-based scenario configuration with runtime overrides
 - **Interactive UI**: Streamlit-based scenario editor and runner
 - **Comprehensive KPIs**: Revenue, capacity utilization, lead generation, and client metrics
 - **Visualization**: Built-in plotting and analysis tools
+- **Generalized Architecture**: No hard-coded industry assumptions - everything is configurable
 
 ## 📋 Prerequisites
 
@@ -114,12 +115,41 @@ Growth-Model/
 
 ### Model Parameters
 
-The system uses `inputs.json` for default parameters:
+The system uses `inputs.json` for default parameters. You can customize:
 
+- **Sectors**: Define any industry sectors (e.g., Defense, Nuclear, Semiconductors, Aviation, or custom sectors)
+- **Products**: Define any product types with their specific characteristics
 - **Anchor Parameters**: Sector-specific client behavior (activation delays, lead generation, requirement phases)
 - **Product Parameters**: Direct client behavior and market dynamics
 - **Capacity & Pricing**: Time-series data for production capacity and product pricing
 - **Primary Product Map**: Sector-to-product assignments with start years
+
+### Customizing Sectors and Products
+
+Edit `inputs.json` to define your own sectors and products:
+
+```json
+{
+  "lists": [
+    {
+      "Sector": [
+        "Your_Sector_1",
+        "Your_Sector_2",
+        "Custom_Industry"
+      ]
+    },
+    {
+      "Product": [
+        "Your_Product_1",
+        "Your_Product_2",
+        "Custom_Product"
+      ]
+    }
+  ]
+}
+```
+
+The system will automatically adapt to use your custom sectors and products throughout the simulation.
 
 ### Scenario Overrides
 
@@ -133,18 +163,18 @@ runspecs:
 
 overrides:
   constants:
-    anchor_lead_generation_rate_Defense: 50.0
-    requirement_to_order_lag_Defense: 2.0
+    anchor_lead_generation_rate_Your_Sector: 50.0
+    requirement_to_order_lag_Your_Sector: 2.0
   
   points:
-    price_Silicon_Carbide_Fiber: [[2025, 100], [2030, 120]]
-    max_capacity_Silicon_Carbide_Fiber: [[2025, 1000], [2030, 1500]]
+    price_Your_Product: [[2025, 100], [2030, 120]]
+    max_capacity_Your_Product: [[2025, 1000], [2030, 1500]]
 
 seeds:
   active_anchor_clients:
-    Defense: 5
+    Your_Sector: 5
   direct_clients:
-    Silicon_Carbide_Fiber: 10
+    Your_Product: 10
 ```
 
 ## 📊 Understanding the Model
@@ -186,14 +216,14 @@ python -m pytest --cov=src tests/
 
 ```bash
 # Build UI container
-docker build -f Dockerfile.ui -t growth-ui .
+docker build -f Dockerfile.ui -t product-growth-ui .
 
 # Run with volume mounts
 docker run --rm -p 8501:8501 \
   -v "$PWD/scenarios:/app/scenarios" \
   -v "$PWD/logs:/app/logs" \
   -v "$PWD/output:/app/output" \
-  growth-ui
+  product-growth-ui
 ```
 
 ## 📚 Documentation
@@ -234,12 +264,13 @@ For questions or issues:
 
 ## 🎯 Roadmap
 
-- [ ] Additional product types
+- [ ] Additional product types and market dynamics
 - [ ] Enhanced visualization options
 - [ ] Performance optimization
 - [ ] Cloud deployment support
 - [ ] API endpoints for external integration
+- [ ] Multi-market support (EU, Asia, etc.)
 
 ---
 
-**Note**: This is a research and analysis tool. Results should be validated against real-world data and used as part of a comprehensive analysis framework.
+**Note**: This is a research and analysis tool designed to be industry-agnostic. You can model any sector or product by configuring the inputs. Results should be validated against real-world data and used as part of a comprehensive analysis framework.
