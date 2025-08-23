@@ -1,11 +1,11 @@
 # Optional Docker image for the Streamlit UI layer only (Phase 12 packaging)
 # Usage:
-#   docker build -f Dockerfile.ui -t fff-ui .
+#   docker build -f Dockerfile.ui -t growth-ui .
 #   docker run --rm -p 8501:8501 \
 #     -v $(pwd)/scenarios:/app/scenarios \
 #     -v $(pwd)/logs:/app/logs \
 #     -v $(pwd)/output:/app/output \
-#     fff-ui
+#     growth-ui
 
 FROM python:3.11-slim
 
@@ -23,7 +23,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY ui ./ui
 COPY src ./src
 COPY viz ./viz
-COPY simulate_fff_growth.py ./simulate_fff_growth.py
+COPY simulate_growth.py ./simulate_growth.py
 COPY inputs.json ./inputs.json
 COPY Inputs ./Inputs
 

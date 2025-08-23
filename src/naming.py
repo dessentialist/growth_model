@@ -157,8 +157,15 @@ def anchor_constant(param: str, sector: str, *, registry: Optional[NameRegistry]
     return create_element_name(param, sector, None, registry=registry)
 
 
-def other_constant(param: str, material: str, *, registry: Optional[NameRegistry] = None) -> str:
-    return create_element_name(param, None, material, registry=registry)
+def product_constant(param: str, product: str, *, registry: Optional[NameRegistry] = None) -> str:
+    """Canonical name for a product-level constant.
+
+    This is the preferred API.
+    """
+
+    return create_element_name(param, None, product, registry=registry)
+
+
 
 
 def anchor_constant_sm(param: str, sector: str, material: str, *, registry: Optional[NameRegistry] = None) -> str:
@@ -170,21 +177,29 @@ def anchor_constant_sm(param: str, sector: str, material: str, *, registry: Opti
 
 
 # Lookup table names (raw lookup identifiers)
-def price_lookup_name(material: str, *, registry: Optional[NameRegistry] = None) -> str:
-    return create_element_name("price", None, material, registry=registry)
+def price_lookup_name_product(product: str, *, registry: Optional[NameRegistry] = None) -> str:
+    """Canonical name for a product price lookup."""
+
+    return create_element_name("price", None, product, registry=registry)
 
 
-def max_capacity_lookup_name(material: str, *, registry: Optional[NameRegistry] = None) -> str:
-    return create_element_name("max_capacity", None, material, registry=registry)
+def max_capacity_lookup_name_product(product: str, *, registry: Optional[NameRegistry] = None) -> str:
+    """Canonical name for a product max capacity lookup."""
+
+    return create_element_name("max_capacity", None, product, registry=registry)
 
 
 # Converter names for lookups at time t
-def price_converter(material: str, *, registry: Optional[NameRegistry] = None) -> str:
-    return create_element_name("Price", None, material, registry=registry)
+def price_converter_product(product: str, *, registry: Optional[NameRegistry] = None) -> str:
+    """Canonical converter name for product price at time t."""
+
+    return create_element_name("Price", None, product, registry=registry)
 
 
-def max_capacity_converter(material: str, *, registry: Optional[NameRegistry] = None) -> str:
-    return create_element_name("max_capacity_lookup", None, material, registry=registry)
+def max_capacity_converter_product(product: str, *, registry: Optional[NameRegistry] = None) -> str:
+    """Canonical converter name for product capacity at time t."""
+
+    return create_element_name("max_capacity_lookup", None, product, registry=registry)
 
 
 # Sector-level SD elements
@@ -295,24 +310,36 @@ def delayed_agent_demand(sector: str, material: str, *, registry: Optional[NameR
     return create_element_name("Delayed_Agent_Demand", sector, material, registry=registry)
 
 
-def anchor_delivery_flow_sector_material(sector: str, material: str, *, registry: Optional[NameRegistry] = None) -> str:
-    return create_element_name("Anchor_Delivery_Flow", sector, material, registry=registry)
+def anchor_delivery_flow_sector_product(
+    sector: str, product: str, *, registry: Optional[NameRegistry] = None
+) -> str:
+    """Canonical name for sector→product anchor delivery flow."""
+
+    return create_element_name("Anchor_Delivery_Flow", sector, product, registry=registry)
 
 
-def anchor_delivery_flow_material(material: str, *, registry: Optional[NameRegistry] = None) -> str:
-    return create_element_name("Anchor_Delivery_Flow", None, material, registry=registry)
+def anchor_delivery_flow_product(product: str, *, registry: Optional[NameRegistry] = None) -> str:
+    """Canonical name for product-level aggregate anchor delivery flow."""
+
+    return create_element_name("Anchor_Delivery_Flow", None, product, registry=registry)
 
 
-def anchor_revenue_sector_material(sector: str, material: str, *, registry: Optional[NameRegistry] = None) -> str:
-    return create_element_name("Anchor_Revenue", sector, material, registry=registry)
+def anchor_revenue_sector_product(
+    sector: str, product: str, *, registry: Optional[NameRegistry] = None
+) -> str:
+    """Canonical name for sector→product anchor revenue."""
+
+    return create_element_name("Anchor_Revenue", sector, product, registry=registry)
 
 
 def anchor_revenue_sector(sector: str, *, registry: Optional[NameRegistry] = None) -> str:
     return create_element_name("Anchor_Revenue", sector, None, registry=registry)
 
 
-def anchor_revenue_material(material: str, *, registry: Optional[NameRegistry] = None) -> str:
-    return create_element_name("Anchor_Revenue", None, material, registry=registry)
+def anchor_revenue_product(product: str, *, registry: Optional[NameRegistry] = None) -> str:
+    """Canonical name for product-level anchor revenue."""
+
+    return create_element_name("Anchor_Revenue", None, product, registry=registry)
 
 
 def total_revenue(*, registry: Optional[NameRegistry] = None) -> str:
@@ -375,12 +402,12 @@ __all__ = [
     # Constants helpers
     "anchor_constant",
     "anchor_constant_sm",
-    "other_constant",
+    "product_constant",
     # Lookup helpers
-    "price_lookup_name",
-    "max_capacity_lookup_name",
-    "price_converter",
-    "max_capacity_converter",
+    "price_lookup_name_product",
+    "max_capacity_lookup_name_product",
+    "price_converter_product",
+    "max_capacity_converter_product",
     # Sector helpers
     "anchor_lead_generation",
     "cpc_stock",
@@ -392,7 +419,7 @@ __all__ = [
     "cumulative_agents_created",
     "cumulative_inflow",
     "agent_creation_trigger",
-    # Material helpers
+    # Product helpers
     "inbound_leads",
     "outbound_leads",
     "total_new_leads",
@@ -410,11 +437,11 @@ __all__ = [
     "agent_aggregated_demand",
     "total_demand",
     "delayed_agent_demand",
-    "anchor_delivery_flow_sector_material",
-    "anchor_delivery_flow_material",
-    "anchor_revenue_sector_material",
+    "anchor_delivery_flow_sector_product",
+    "anchor_delivery_flow_product",
+    "anchor_revenue_sector_product",
     "anchor_revenue_sector",
-    "anchor_revenue_material",
+    "anchor_revenue_product",
     "total_revenue",
     # SM-mode creation helpers
     "anchor_lead_generation_sm",

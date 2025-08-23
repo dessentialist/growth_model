@@ -25,12 +25,12 @@ from typing import Dict, Iterable, List, Mapping, Optional
 
 from .naming import (
     agent_demand_sector_input,
-    anchor_delivery_flow_material,
-    anchor_delivery_flow_sector_material,
+    anchor_delivery_flow_product,
+    anchor_delivery_flow_sector_product,
     agents_to_create_converter,
     agents_to_create_converter_sm,
     fulfillment_ratio,
-    price_converter,
+    price_converter_product,
 )
 from .scenario_loader import Scenario
 
@@ -116,21 +116,21 @@ def validate_agents_to_create_signals(
 def validate_agents_to_create_sm_signals(
     *, model, pairs: Iterable[tuple[str, str]], t: float, log: Optional[logging.Logger] = None
 ) -> None:
-    """Ensure `Agents_To_Create_<sector>_<material>` are non-negative integers at time t.
+    """Ensure `Agents_To_Create_<sector>_<product>` are non-negative integers at time t.
 
     Parameters
     ----------
     model : BPTK_Py Model-like
         The compiled SD model instance with converters
     pairs : Iterable[tuple[str, str]]
-        Iterable of (sector, material) pairs to validate
+        Iterable of (sector, product) pairs to validate
     t : float
         Current absolute time in years
     log : Optional[logging.Logger]
         Logger for emitting error messages prior to raising
     """
-    for sector, material in pairs:
-        name = agents_to_create_converter_sm(sector, material)
+    for sector, product in pairs:
+        name = agents_to_create_converter_sm(sector, product)
         val = float(model.evaluate_equation(name, t))
         if val < -1e-9:
             msg = f"Validation failed at t={t:.2f}: {name} negative ({val})"
@@ -145,14 +145,14 @@ def validate_agents_to_create_sm_signals(
 
 
 def validate_fulfillment_ratio_bounds(
-    *, model, materials: Iterable[str], t: float, log: Optional[logging.Logger] = None
+    *, model, products: Iterable[str], t: float, log: Optional[logging.Logger] = None
 ) -> None:
-    """Ensure `Fulfillment_Ratio_<m>` ∈ [0, 1] for all materials at time t.
+    """Ensure `Fulfillment_Ratio_<p>` ∈ [0, 1] for all products at time t.
 
     This protects against mis-wiring in equations where capacity or total demand
     could produce a ratio outside the expected bounds.
     """
-    for m in materials:
+    for m in products:
         name = fulfillment_ratio(m)
         val = float(model.evaluate_equation(name, t))
         if not (0.0 - 1e-12 <= val <= 1.0 + 1e-12):
@@ -163,27 +163,27 @@ def validate_fulfillment_ratio_bounds(
 
 
 def validate_revenue_identity(
-    *, model, materials: Iterable[str], material_to_sectors: Mapping[str, List[str]], t: float
+    *, model, products: Iterable[str], product_to_sectors: Mapping[str, List[str]], t: float
 ) -> None:
     """Validate per-step revenue identity:
 
-    Sum over materials of (sum_s Anchor_Delivery_Flow_{s,m} * Price_m) + (Client_Delivery_Flow_m * Price_m)
-    equals sum over materials of ((Anchor_Delivery_Flow_m + Client_Delivery_Flow_m) * Price_m)
+    Sum over products of (sum_s Anchor_Delivery_Flow_{s,p} * Price_p) + (Client_Delivery_Flow_p * Price_p)
+    equals sum over products of ((Anchor_Delivery_Flow_p + Client_Delivery_Flow_p) * Price_p)
     within a tight floating-point tolerance.
     """
     anchor_total = 0.0
     client_total = 0.0
     combined_total = 0.0
-    for m in materials:
-        price = float(model.evaluate_equation(price_converter(m), t))
-        adf_m = float(model.evaluate_equation(anchor_delivery_flow_material(m), t))
+    for m in products:
+        price = float(model.evaluate_equation(price_converter_product(m), t))
+        adf_m = float(model.evaluate_equation(anchor_delivery_flow_product(m), t))
         # Client side is named in caller; avoid import cycle by evaluating by name
         cdf = float(model.evaluate_equation(f"Client_Delivery_Flow_{m.replace(' ', '_')}", t))
 
         # Anchor by sector for accumulation
-        sectors = material_to_sectors.get(m, [])
+        sectors = product_to_sectors.get(m, [])
         for s in sectors:
-            adf_sm = float(model.evaluate_equation(anchor_delivery_flow_sector_material(s, m), t))
+            adf_sm = float(model.evaluate_equation(anchor_delivery_flow_sector_product(s, m), t))
             anchor_total += adf_sm * price
 
         client_total += cdf * price
@@ -202,27 +202,27 @@ def validate_revenue_identity(
 def sample_gateways(
     *,
     model,
-    sector_to_materials: Mapping[str, List[str]],
+    sector_to_products: Mapping[str, List[str]],
     t: float,
     log: logging.Logger,
-    sample_materials: Optional[List[str]] = None,
+    sample_products: Optional[List[str]] = None,
 ) -> None:
-    """DEBUG sampling: log sector–material gateway inputs and per-material sums.
+    """DEBUG sampling: log sector–product gateway inputs and per-product sums.
 
-    - If `sample_materials` is None, uses the first material seen in the mapping.
-    - Logs per-sector values and the aggregated total for each sampled material.
+    - If `sample_products` is None, uses the first product seen in the mapping.
+    - Logs per-sector values and the aggregated total for each sampled product.
     """
-    # Build material → sectors index from the provided mapping
-    mat_to_secs: Dict[str, List[str]] = {}
-    for sector, mats in sector_to_materials.items():
-        for m in mats:
-            mat_to_secs.setdefault(m, []).append(sector)
+    # Build product → sectors index from the provided mapping
+    prod_to_secs: Dict[str, List[str]] = {}
+    for sector, prods in sector_to_products.items():
+        for p in prods:
+            prod_to_secs.setdefault(p, []).append(sector)
 
-    if not sample_materials:
-        sample_materials = list(mat_to_secs.keys())[:1]
+    if not sample_products:
+        sample_products = list(prod_to_secs.keys())[:1]
 
-    for m in sample_materials:
-        sectors = mat_to_secs.get(m, [])
+    for m in sample_products:
+        sectors = prod_to_secs.get(m, [])
         parts: List[str] = []
         total = 0.0
         for s in sectors:

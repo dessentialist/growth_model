@@ -1,7 +1,7 @@
-## FFF Growth System – Scenario Input GUI (UX) Implementation Plan
+## Growth System – Scenario Input GUI (UX) Implementation Plan
 
 ### 1) Objective
-Create a simple, robust GUI that lets non-technical users compose scenario files (YAML) for the existing FFF Growth System without changing the core model or runner. The GUI focuses on: selecting a time horizon, editing parameter overrides (constants, time-series), primary map replacements, and seeding, with built-in validation and the ability to run and preview results.
+Create a simple, robust GUI that lets non-technical users compose scenario files (YAML) for the existing Growth System without changing the core model or runner. The GUI focuses on: selecting a time horizon, editing parameter overrides (constants, time-series), primary map replacements, and seeding, with built-in validation and the ability to run and preview results.
 
 ### 2) Scope and Non‑Goals
 - In-scope:
@@ -36,9 +36,9 @@ flowchart TD
   E --> F[validate_scenario_dict]
   F -->|ok| G[Write YAML to scenarios/]
   F -->|errors| D
-  G --> H[simulate_fff_growth.py --scenario]
+  G --> H[simulate_growth.py --scenario]
   H --> I[logs/run.log]
-  H --> J[output/FFF_Growth_System_Complete_Results_*.csv]
+  H --> J[output/Growth_System_Complete_Results_*.csv]
   J --> D
 ```
 
@@ -62,7 +62,7 @@ Note: These helpers do not change behavior; they surface existing logic to the U
   - `state.py`: typed dataclasses for UI state (runspecs, constants, points, primary_map, seeds) and (de)serialization helpers.
   - `services/builder.py`: assemble scenario dict from UI state; YAML read/write; import/export.
   - `services/validation_client.py`: calls `validate_scenario_dict` and formats error messages for UI.
-  - `services/runner.py`: runs `simulate_fff_growth.py` in a subprocess; streams `logs/run.log`; returns output CSV path.
+  - `services/runner.py`: runs `simulate_growth.py` in a subprocess; streams `logs/run.log`; returns output CSV path.
   - `components/` (UI widgets):
     - `runspecs_form.py`
     - `constants_editor.py` (sector, material, SM tabs)
@@ -95,9 +95,9 @@ Note: These helpers do not change behavior; they surface existing logic to the U
 - On Validate, call `validate_scenario_dict`; show all errors together with clear anchors to fields.
 
 ### 8) Runner Integration
-- Command: `python simulate_fff_growth.py --scenario <path> [--kpi-sm-revenue-rows] [--kpi-sm-client-rows] [--debug]`
+- Command: `python simulate_growth.py --scenario <path> [--kpi-sm-revenue-rows] [--kpi-sm-client-rows] [--debug]`
 - Stream logs from `logs/run.log` into a collapsible console area; tail while process is running.
-- On completion, detect the latest `output/FFF_Growth_System_Complete_Results_*.csv`, preview as table and allow download.
+- On completion, detect the latest `output/Growth_System_Complete_Results_*.csv`, preview as table and allow download.
 
 ### 9) Dependencies and Environment
 - Add `streamlit>=1.32` to root `requirements.txt` (or create `ui/requirements.txt` if you prefer isolation).
@@ -157,7 +157,7 @@ Each phase has clear goals, tasks, deliverables, and exit criteria. Phases are o
 
 - Phase 0 — Baseline Verification and Env Setup (0.25d)
   - Tasks:
-    - Confirm `python simulate_fff_growth.py --preset baseline` runs and produces CSV.
+    - Confirm `python simulate_growth.py --preset baseline` runs and produces CSV.
     - Ensure logs and outputs are written to expected folders.
     - Create/activate venv; pin dependencies; verify `streamlit` availability decision.
   - Deliverables: Run log, output CSV, verified environment.
@@ -226,7 +226,7 @@ Each phase has clear goals, tasks, deliverables, and exit criteria. Phases are o
 
 - Phase 9 — Runner Integration + Log Streaming + KPI Preview (0.5d)
   - Tasks:
-    - Spawn `simulate_fff_growth.py --scenario <path>` via subprocess.
+    - Spawn `simulate_growth.py --scenario <path>` via subprocess.
     - Tail `logs/run.log` into a console panel; show progress and completion status.
     - On success, detect output CSV and render preview; allow download.
   - Deliverables: Run/Cancel controls; live logs; KPI table preview.

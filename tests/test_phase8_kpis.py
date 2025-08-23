@@ -4,7 +4,7 @@ import pandas as pd
 
 from src.phase1_data import load_phase1_inputs
 from src.scenario_loader import load_and_validate_scenario
-from src.fff_growth_model import build_phase4_model, apply_scenario_overrides
+from src.growth_model import build_phase4_model, apply_scenario_overrides
 from src.kpi_extractor import RunGrid, extract_and_write_kpis
 
 
@@ -21,7 +21,7 @@ class TestPhase8KPIExtraction(unittest.TestCase):
 
         # Minimal agents dict (no agents created) is valid
         agents_by_sector = {s: [] for s in self.bundle.lists.sectors}
-        sector_to_materials = self.bundle.primary_map.sector_to_materials
+        sector_to_products = self.bundle.primary_map.sector_to_materials
 
         start = float(self.scenario.runspecs.starttime)
         dt = float(self.scenario.runspecs.dt)
@@ -47,7 +47,7 @@ class TestPhase8KPIExtraction(unittest.TestCase):
             bundle=self.bundle,
             run_grid=run_grid,
             agents_by_sector=agents_by_sector,
-            sector_to_materials=sector_to_materials,
+            sector_to_products=sector_to_products,
             agent_metrics_by_step=agent_metrics_by_step,
             # Provide empty per-step KPI snapshots to exercise strict path
             kpi_values_by_step=[{} for _ in range(steps_to_emit)],

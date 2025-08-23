@@ -16,7 +16,7 @@ import pytest
 
 from src.phase1_data import load_phase1_inputs, Phase1Bundle
 from src.scenario_loader import load_and_validate_scenario, RunSpecs
-from src.fff_growth_model import build_phase4_model
+from src.growth_model import build_phase4_model
 from src.naming import (
     anchor_lead_generation_sm,
     cpc_stock_sm,

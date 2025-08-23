@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 """
-Stepwise runner (Phase 7) for the FFF Growth System.
+Stepwise runner (Phase 7) for the Growth System.
 
 Responsibilities:
 - Configure logging to both console and `logs/run.log`
@@ -11,18 +11,18 @@ Responsibilities:
 - Apply scenario overrides (constants and lookup points)
 - Phase 9: Echo applied overrides to `logs/` and enforce per-step validations:
   * `Agents_To_Create_<sector>` are non-negative integers
-  * `Fulfillment_Ratio_<material>` remains within [0, 1]
+  * `Fulfillment_Ratio_<product>` remains within [0, 1]
   * Revenue identity holds each step (anchor + client equals combined)
 - Execute a stepwise loop that:
   * reads `Agents_To_Create_<sector>` at current time
   * instantiates agents deterministically via sector factories
-  * calls `act(...)` on all agents to produce per-material requirements
-  * updates `Agent_Demand_Sector_Input_<sector>_<material>` numeric equations
+  * calls `act(...)` on all agents to produce per-product requirements
+  * updates `Agent_Demand_Sector_Input_<sector>_<product>` numeric equations
   * advances the SD model one step via `run_step(step_index)`
   * logs optional DEBUG snapshots (gateways, fulfillment ratio, total demand)
 
 Outputs:
-- Phase 8 CSV (`output/FFF_Growth_System_Complete_Results.csv`) is generated at the end of a run.
+- Phase 8 CSV (`output/Growth_System_Complete_Results.csv`) is generated at the end of a run.
 """
 
 import argparse
@@ -35,7 +35,7 @@ from src.io_paths import LOGS_DIR, SCENARIOS_DIR
 from src.utils_logging import configure_logging
 from src.phase1_data import load_phase1_inputs, apply_primary_map_overrides
 from src.scenario_loader import load_and_validate_scenario, validate_overrides_against_model
-from src.fff_growth_model import build_phase4_model, apply_scenario_overrides
+from src.growth_model import build_phase4_model, apply_scenario_overrides
 from src.abm_anchor import (
     build_all_anchor_agent_factories,
     build_sm_anchor_agent_factory,
@@ -45,9 +45,9 @@ from src.naming import (
     agent_demand_sector_input,
     total_demand,
     client_delivery_flow,
-    anchor_delivery_flow_sector_material,
-    anchor_delivery_flow_material,
-    price_converter,
+    anchor_delivery_flow_sector_product,
+    anchor_delivery_flow_product,
+    price_converter_product,
     c_stock,
     total_new_leads,
     anchor_lead_generation,
@@ -56,7 +56,7 @@ from src.naming import (
     anchor_constant,
     client_creation_flow,
     potential_clients_stock,
-    other_constant,
+    product_constant,
 )
 from BPTK_Py.modeling.simultaneousScheduler import SimultaneousScheduler
 from src.kpi_extractor import RunGrid, extract_and_write_kpis, _safe_eval
@@ -77,7 +77,7 @@ def _capture_step_kpis(
     t: float,
     step_idx: int,
     agent_metrics_by_step: list[dict],
-    sector_to_materials: dict[str, list[str]],
+    sector_to_products: dict[str, list[str]],
     dt_years: float,
     include_sm_revenue_rows: bool = False,
     include_sm_client_rows: bool = False,
@@ -90,27 +90,27 @@ def _capture_step_kpis(
     and BEFORE advancing the scheduler. This ensures gateway-dependent values
     reflect the correct step state (avoids post-run corruption).
 
-    Phase 17.6: When flags are enabled, also compute optional per-(sector, material)
-    diagnostic rows for `Revenue <sector> <material>` and `Anchor Clients <sector> <material>`.
+    Phase 17.6: When flags are enabled, also compute optional per-(sector, product)
+    diagnostic rows for `Revenue <sector> <product>` and `Anchor Clients <sector> <product>`.
     Defaults keep these rows absent.
     """
 
     out: dict[str, float] = {}
     sectors: list[str] = list(bundle.lists.sectors)
-    materials: list[str] = list(bundle.lists.materials)
+    products: list[str] = list(bundle.lists.products)
 
-    # ----- Material-level base series -----
-    for m in materials:
+    # ----- Product-level base series -----
+    for m in products:
         td = _safe_eval(model, total_demand(m), t)
         cdf = _safe_eval(model, client_delivery_flow(m), t)
-        adf_m = _safe_eval(model, anchor_delivery_flow_material(m), t)
-        price = _safe_eval(model, price_converter(m), t)
+        adf_m = _safe_eval(model, anchor_delivery_flow_product(m), t)
+        price = _safe_eval(model, price_converter_product(m), t)
 
         out[f"Order Basket {m}"] = td
         out[f"Order Delivery {m}"] = adf_m + cdf
         out[f"Revenue {m}"] = (adf_m + cdf) * price
 
-        # Other Clients stock (cumulative clients by material)
+        # Other Clients stock (cumulative clients by product)
         out[f"Other Clients {m}"] = _safe_eval(model, c_stock(m), t)
 
     # ----- Sector-level series -----
@@ -123,7 +123,7 @@ def _capture_step_kpis(
         except Exception:
             # Sum per-(s,m) Anchor_Lead_Generation_<s>_<m> if sector-level missing
             sm_sum = 0.0
-            for m in sector_to_materials.get(s, []):
+            for m in sector_to_products.get(s, []):
                 try:
                     name_sm = f"Anchor_Lead_Generation_{s.replace(' ', '_')}_{m.replace(' ', '_')}"
                     sm_sum += float(model.evaluate_equation(name_sm, t)) * float(dt_years)
@@ -132,19 +132,19 @@ def _capture_step_kpis(
             val = sm_sum
         out[f"Anchor Leads {s}"] = val
 
-        # Anchor revenue per sector = sum_m Anchor_Delivery_Flow_<s>_<m> * Price_<m>
+        # Anchor revenue per sector = sum_p Anchor_Delivery_Flow_<s>_<p> * Price_<p>
         sector_rev = 0.0
-        for m in sector_to_materials.get(s, []):
-            adf_sm = _safe_eval(model, anchor_delivery_flow_sector_material(s, m), t)
-            price = _safe_eval(model, price_converter(m), t)
+        for m in sector_to_products.get(s, []):
+            adf_sm = _safe_eval(model, anchor_delivery_flow_sector_product(s, m), t)
+            price = _safe_eval(model, price_converter_product(m), t)
             sector_rev += adf_sm * price
         out[f"Revenue {s}"] = sector_rev
 
-        # Optional per-(sector, material) revenue diagnostics
+        # Optional per-(sector, product) revenue diagnostics
         if include_sm_revenue_rows:
-            for m in sector_to_materials.get(s, []):
-                adf_sm_val = _safe_eval(model, anchor_delivery_flow_sector_material(s, m), t)
-                price_val = _safe_eval(model, price_converter(m), t)
+            for m in sector_to_products.get(s, []):
+                adf_sm_val = _safe_eval(model, anchor_delivery_flow_sector_product(s, m), t)
+                price_val = _safe_eval(model, price_converter_product(m), t)
                 out[f"Revenue {s} {m}"] = adf_sm_val * price_val
 
         # Anchor Clients and Active Projects per sector from runner-provided per-step metrics
@@ -159,26 +159,26 @@ def _capture_step_kpis(
             out[f"Active Projects {s}"] = 0.0
 
     # ----- Totals across dimensions -----
-    # Revenue total = sum material-level revenue
-    out["Revenue"] = sum(out.get(f"Revenue {m}", 0.0) for m in materials)
+    # Revenue total = sum product-level revenue
+    out["Revenue"] = sum(out.get(f"Revenue {m}", 0.0) for m in products)
 
     # Anchor Leads total = sum sector-level per-quarter leads
     out["Anchor Leads"] = sum(out.get(f"Anchor Leads {s}", 0.0) for s in sectors)
 
-    # Other Clients total = sum material-level C_<m> stocks
-    out["Other Clients"] = sum(out.get(f"Other Clients {m}", 0.0) for m in materials)
+    # Other Clients total = sum product-level C_<p> stocks
+    out["Other Clients"] = sum(out.get(f"Other Clients {m}", 0.0) for m in products)
 
     # Other Leads total only (do not attribute to sectors to avoid duplication)
     # Report as per-step units by multiplying the per-year total leads by dt_years
     other_leads_total = 0.0
-    for m in materials:
+    for m in products:
         other_leads_total += _safe_eval(model, total_new_leads(m), t) * float(dt_years)
     out["Other Leads"] = other_leads_total
 
     # Order Basket total
-    out["Order Basket"] = sum(out.get(f"Order Basket {m}", 0.0) for m in materials)
+    out["Order Basket"] = sum(out.get(f"Order Basket {m}", 0.0) for m in products)
     # Order Delivery total
-    out["Order Delivery"] = sum(out.get(f"Order Delivery {m}", 0.0) for m in materials)
+    out["Order Delivery"] = sum(out.get(f"Order Delivery {m}", 0.0) for m in products)
 
     # Anchor Clients total and Active Projects total from per-step metrics
     if step_idx < len(agent_metrics_by_step):
@@ -189,10 +189,10 @@ def _capture_step_kpis(
         out["Anchor Clients"] = 0.0
         out["Active Projects"] = 0.0
 
-    # Optional per-(sector, material) anchor client diagnostics (primarily meaningful in SM-mode)
+    # Optional per-(sector, product) anchor client diagnostics (primarily meaningful in SM-mode)
     if include_sm_client_rows:
         for s in sectors:
-            for m in sector_to_materials.get(s, []):
+            for m in sector_to_products.get(s, []):
                 key = f"Anchor Clients {s} {m}"
                 val = 0.0
                 # Only compute non-zero values when SM agents exist per pair
@@ -216,7 +216,7 @@ def parse_args() -> argparse.Namespace:
     Exactly one of `--scenario` or `--preset` may be provided.
     The default resolves to the baseline scenario file.
     """
-    p = argparse.ArgumentParser(description="FFF Growth System – Runner (Phase 12: optional visualization)")
+    p = argparse.ArgumentParser(description="Growth System – Runner (Phase 12: optional visualization)")
     group = p.add_mutually_exclusive_group()
     group.add_argument("--scenario", type=str, help="Path to a scenario YAML/JSON file")
     group.add_argument(
@@ -229,12 +229,12 @@ def parse_args() -> argparse.Namespace:
     p.add_argument(
         "--kpi-sm-revenue-rows",
         action="store_true",
-        help="Include optional per-(sector, material) Revenue rows in the KPI CSV",
+        help="Include optional per-(sector, product) Revenue rows in the KPI CSV",
     )
     p.add_argument(
         "--kpi-sm-client-rows",
         action="store_true",
-        help="Include optional per-(sector, material) Anchor Clients rows in the KPI CSV (mainly in SM-mode)",
+        help="Include optional per-(sector, product) Anchor Clients rows in the KPI CSV (mainly in SM-mode)",
     )
     p.add_argument(
         "--visualize",
@@ -312,7 +312,7 @@ def run_stepwise(
     sm_factories_by_pair: dict[tuple[str, str], callable] = {}
     sm_agents_by_pair: dict[tuple[str, str], list] = {}
     if anchor_mode == "sm":
-        # Build per-(sector, material) factories for the explicit SM universe
+        # Build per-(sector, product) factories for the explicit SM universe
         sm_df = getattr(bundle, "lists_sm", None)
         if sm_df is None or sm_df.empty:
             raise RuntimeError("SM-mode requested but lists_sm is empty or missing in inputs")
@@ -324,13 +324,13 @@ def run_stepwise(
             sm_factories_by_pair[(s, m)] = build_sm_anchor_agent_factory(bundle, s, m)
             sm_agents_by_pair[(s, m)] = []
 
-    # 4) Precompute sector→materials mapping for gateway updates and
-    #    material→sectors for revenue identity validation
-    sector_to_materials = bundle.primary_map.sector_to_materials
-    material_to_sectors: dict[str, list[str]] = {}
-    for sector, mats in sector_to_materials.items():
+    # 4) Precompute sector→products mapping for gateway updates and
+    #    product→sectors for revenue identity validation
+    sector_to_products = bundle.primary_map.sector_to_materials
+    product_to_sectors: dict[str, list[str]] = {}
+    for sector, mats in sector_to_products.items():
         for m in mats:
-            material_to_sectors.setdefault(m, []).append(sector)
+            product_to_sectors.setdefault(m, []).append(sector)
 
     # 4a) Phase 14/17.4: Scenario seeding — instantiate ACTIVE agents at t0, adjust stock initials for gating/monitoring
     # Seeds are in addition to SD outflow. We also set CPC and Cumulative_Agents_Created
@@ -562,14 +562,14 @@ def run_stepwise(
             if additional_active_by_pair:
                 log.info("Phase 17.x: Derived ACTIVE SM anchors from completed-project seeds: %s", additional_active_by_pair)
 
-    # Seed direct clients per material by initializing C_<m> stock and potential clients accumulator
-    seeded_direct_by_material: dict[str, int] = {}
+    # Seed direct clients per product by initializing C_<p> stock and potential clients accumulator
+    seeded_direct_by_product: dict[str, int] = {}
     if seeds_direct:
         for material, kdc in seeds_direct.items():
             if kdc <= 0:
                 continue
-            seeded_direct_by_material[material] = int(kdc)
-            # Initialize C_<m> and Potential_Clients_<m> so discrete conversion logic is consistent
+            seeded_direct_by_product[material] = int(kdc)
+            # Initialize C_<p> and Potential_Clients_<p> so discrete conversion logic is consistent
             try:
                 c_elem = build.elements.get(c_stock(material))
                 pc_elem = build.elements.get(potential_clients_stock(material))
@@ -581,8 +581,8 @@ def run_stepwise(
                     setattr(pc_elem, "initial_value", 0.0)
             except Exception as e:
                 log.debug("Phase 14: Direct client seeding init failed for %s: %s", material, e)
-        if seeded_direct_by_material:
-            log.info("Phase 14: Seeded direct clients at t0: %s", seeded_direct_by_material)
+        if seeded_direct_by_product:
+            log.info("Phase 14: Seeded direct clients at t0: %s", seeded_direct_by_product)
 
     # 5) Determine step grid
     stop = float(scenario.runspecs.stoptime)
@@ -672,12 +672,12 @@ def run_stepwise(
                     continue
                 for agent in agents:
                     reqs = agent.act(t, round_no=0, step_no=step_idx, dt_years=dt)
-                    for material, value in reqs.items():
+                    for product, value in reqs.items():
                         if value <= 0:
                             continue
-                        if material not in sector_to_materials.get(sector, []):
+                        if product not in sector_to_products.get(sector, []):
                             continue
-                        agg_sm[(sector, material)] = agg_sm.get((sector, material), 0.0) + float(value)
+                        agg_sm[(sector, product)] = agg_sm.get((sector, product), 0.0) + float(value)
 
         # --- ABM KPI capture point: after agent.act(...) and before SD run_step ---
         active_by_sector: dict[str, int] = {}
@@ -689,8 +689,8 @@ def run_stepwise(
             for sector in bundle.lists.sectors:
                 active_count = 0
                 inprog_count = 0
-                # Sum across materials for this sector
-                for material in sector_to_materials.get(sector, []):
+                # Sum across products for this sector
+                for material in sector_to_products.get(sector, []):
                     agents = sm_agents_by_pair.get((sector, material), [])
                     for agent in agents:
                         state_name = getattr(agent, "state", None)
@@ -739,9 +739,9 @@ def run_stepwise(
             inprogress_by_sector,
         )
 
-        # 6c) Update gateway converters for all known sector–material pairs
+        # 6c) Update gateway converters for all known sector–product pairs
         # Set to 0.0 when absent to keep values deterministic across steps
-        for sector, materials in sector_to_materials.items():
+        for sector, materials in sector_to_products.items():
             for material in materials:
                 name_sm = agent_demand_sector_input(sector, material)
                 value = float(agg_sm.get((sector, material), 0.0))
@@ -758,7 +758,7 @@ def run_stepwise(
             t=t,
             step_idx=step_idx,
             agent_metrics_by_step=agent_metrics_by_step,
-            sector_to_materials=sector_to_materials,
+            sector_to_products=sector_to_products,
             dt_years=dt,
             include_sm_revenue_rows=include_sm_revenue_rows,
             include_sm_client_rows=include_sm_client_rows,
@@ -773,8 +773,8 @@ def run_stepwise(
         # Revenue identity
         validate_revenue_identity(
             model=model,
-            materials=bundle.lists.materials,
-            material_to_sectors=material_to_sectors,
+            products=bundle.lists.products,
+            product_to_sectors=product_to_sectors,
             t=t,
         )
 
@@ -783,10 +783,10 @@ def run_stepwise(
             # Sample gateways for the first material
             sample_gateways(
                 model=model,
-                sector_to_materials=sector_to_materials,
+                sector_to_products=sector_to_products,
                 t=t,
                 log=log,
-                sample_materials=bundle.lists.materials[:1],
+                sample_products=bundle.lists.products[:1],
             )
             # CPC vs ATAM per sector
             for s in bundle.lists.sectors:
@@ -796,13 +796,13 @@ def run_stepwise(
                     log.debug("t=%.2f CPC_%s=%.6f ATAM_%s=%.6f", t, s, cpc_val, s, atam_val)
                 except Exception:
                     pass
-            # CL vs TAM per material and Potential/C with Client_Creation
-            for m in bundle.lists.materials[:2]:
+            # CL vs TAM per product and Potential/C with Client_Creation
+            for m in bundle.lists.products[:2]:
                 try:
                     cl_name = f"CL_{str(m).replace(' ', '_')}"
                     cl_val = float(model.evaluate_equation(cl_name, t))
-                    # TAM is a material-level constant created as other_constant("TAM", m)
-                    tam_val = float(model.evaluate_equation(other_constant("TAM", m), t))
+                    # TAM is a product-level constant
+                    tam_val = float(model.evaluate_equation(product_constant("TAM", m), t))
                 except Exception:
                     cl_val = 0.0
                     tam_val = 0.0
@@ -829,7 +829,7 @@ def run_stepwise(
                     cc_val,
                 )
         # Always validate FR bounds every step
-        validate_fulfillment_ratio_bounds(model=model, materials=bundle.lists.materials, t=t, log=log)
+        validate_fulfillment_ratio_bounds(model=model, products=bundle.lists.products, t=t, log=log)
 
         # Phase 15: Lookup extrapolation warnings (hold-last-value policy).
         # Detect when t is outside provided points for any lookup used this step.
@@ -876,7 +876,7 @@ def run_stepwise(
         bundle=bundle,
         run_grid=run_grid,
         agents_by_sector=agents_by_sector,
-        sector_to_materials=sector_to_materials,
+        sector_to_products=sector_to_products,
         agent_metrics_by_step=agent_metrics_by_step,
         kpi_values_by_step=kpi_values_by_step,
         include_sm_revenue_rows=include_sm_revenue_rows,
@@ -948,19 +948,19 @@ def main() -> int:
 
     # bundle already loaded above for scenario validation
     log.info(
-        "Inputs loaded: %d sectors, %d materials",
+        "Inputs loaded: %d sectors, %d products",
         len(bundle.lists.sectors),
-        len(bundle.lists.materials),
+        len(bundle.lists.products),
     )
     log.info("Anchor params shape: %s", bundle.anchor.by_sector.shape)
-    log.info("Other params shape: %s", bundle.other.by_material.shape)
+    log.info("Other params shape: %s", bundle.other.by_product.shape)
     log.info(
         "Production rows: %d, Pricing rows: %d",
         len(bundle.production.long),
         len(bundle.pricing.long),
     )
     log.info(
-        "Primary materials mapping: %d sectors with assignments",
+        "Primary products mapping: %d sectors with assignments",
         len(bundle.primary_map.sector_to_materials),
     )
 

@@ -14,9 +14,9 @@ def test_phase12_generate_plots_smoke(tmp_path: Path):
     """
     project_root = Path(__file__).resolve().parents[1]
     output_dir = project_root / "output"
-    csv_path = output_dir / "FFF_Growth_System_Complete_Results.csv"
+    csv_path = output_dir / "Growth_System_Complete_Results.csv"
     if not csv_path.exists():
-        pytest.skip("Results CSV not found; run simulate_fff_growth.py first")
+        pytest.skip("Results CSV not found; run simulate_growth.py first")
 
     from viz.plots import generate_all_plots_from_csv
 

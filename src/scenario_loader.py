@@ -17,7 +17,7 @@ Responsibilities
 Design notes
 - We avoid coupling to the SD model. Instead, we compute the permissible set of
   override keys from Phase 1 inputs: anchor parameter names × sectors, other
-  parameter names × materials, and lookup names per material.
+  parameter names × products, and lookup names per product.
 - This module is pure and stateless; it accepts a Phase 1 bundle and a file
   path and returns a validated, normalized `Scenario` object.
 """
@@ -27,18 +27,21 @@ import difflib
 import json
 from pathlib import Path
 from typing import Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
+import warnings
+import pandas as pd
 
 import yaml
 
 from .naming import (
     anchor_constant,
     anchor_constant_sm,
-    max_capacity_lookup_name,
-    other_constant,
-    price_lookup_name,
+    max_capacity_lookup_name_product,
+    product_constant,
+    price_lookup_name_product,
+    price_converter_product as _price_conv_name,
+    max_capacity_converter_product as _cap_conv_name,
 )
 from .phase1_data import Phase1Bundle
-from .naming import price_converter as _price_conv_name, max_capacity_converter as _cap_conv_name
 
 
 @dataclass(frozen=True)
@@ -161,10 +164,10 @@ def _collect_permissible_override_keys(
         for param in bundle.anchor.by_sector.index.astype(str):
             for sector in bundle.anchor.by_sector.columns.astype(str):
                 constants.add(anchor_constant(param, sector))
-    # Other parameters: DataFrame index; columns are material names
-    for param in bundle.other.by_material.index.astype(str):
-        for material in bundle.other.by_material.columns.astype(str):
-            constants.add(other_constant(param, material))
+    # Other parameters: DataFrame index; columns are product names
+    for param in bundle.other.by_product.index.astype(str):
+        for product in bundle.other.by_product.columns.astype(str):
+            constants.add(product_constant(param, product))
 
     # Per-(sector, material) anchor params (Phase 16/17):
     # - In sector-mode: allow targeted params to be overridden per (s,m)
@@ -201,8 +204,6 @@ def _collect_permissible_override_keys(
             "steady_req_growth",
         }
     # SM universe from lists_sm if available, else derive from primary_map; include extra pairs from scenario overrides
-    import pandas as pd
-
     sm_df_universe = getattr(bundle, "lists_sm", None)
     if sm_df_universe is None or sm_df_universe.empty:
         sm_df_universe = bundle.primary_map.long[["Sector", "Material"]].drop_duplicates()
@@ -215,11 +216,11 @@ def _collect_permissible_override_keys(
         for p in sm_params:
             constants.add(anchor_constant_sm(p, s, m))
 
-    # Lookups for price and capacity are per material
+    # Lookups for price and capacity are per product
     points: set = set()
-    for material in bundle.lists.materials:
-        points.add(price_lookup_name(material))
-        points.add(max_capacity_lookup_name(material))
+    for product in bundle.lists.products:
+        points.add(price_lookup_name_product(product))
+        points.add(max_capacity_lookup_name_product(product))
     return constants, points
 
 
@@ -513,13 +514,13 @@ def _validate_direct_seeds(raw_seeds: Optional[Mapping[str, object]], *, bundle:
     if dc is None:
         return {}
     if not isinstance(dc, Mapping):
-        raise ValueError("'seeds.direct_clients' must be a mapping of material -> non-negative integer")
-    mats_set = set(map(str, bundle.lists.materials))
+        raise ValueError("'seeds.direct_clients' must be a mapping of product -> non-negative integer")
+    products_set = set(map(str, bundle.lists.products))
     out: Dict[str, int] = {}
-    for material, raw_val in dc.items():
-        m = str(material)
-        if m not in mats_set:
-            raise ValueError(f"seeds.direct_clients contains unknown material '{m}'")
+    for product, raw_val in dc.items():
+        m = str(product)
+        if m not in products_set:
+            raise ValueError(f"seeds.direct_clients contains unknown product '{m}'")
         v_float = _coerce_numeric(raw_val, f"seeds.direct_clients['{m}']")
         if v_float < 0 or int(v_float) != v_float:
             raise ValueError(f"seeds.direct_clients['{m}'] must be a non-negative integer")
@@ -532,55 +533,66 @@ def _validate_primary_map_override(raw_pm: object, *, bundle: Phase1Bundle) -> D
 
     Schema:
       overrides.primary_map:
-        <sector>: [ { material: <str>, start_year: <float> }, ... ]
+        <sector>: [ { product: <str>, start_year: <float> }, ... ]
 
     Rules:
     - Sector must exist in `bundle.lists.sectors`
-    - Material must exist in `bundle.lists.materials`
+    - Product must exist in `bundle.lists.products`
     - start_year must be numeric
-    - Material must also appear in other tables (other params, production, pricing)
-    - Deduplicate (sector, material); last occurrence wins
+    - Product must also appear in other tables (other params, production, pricing)
+    - Deduplicate (sector, product); last occurrence wins
     """
     if raw_pm is None:
         return {}
     if not isinstance(raw_pm, dict):
-        raise ValueError("overrides.primary_map must be a mapping of sector -> list[ {material, start_year} ]")
+        raise ValueError(
+            "overrides.primary_map must be a mapping of sector -> list[ {product, start_year} ]"
+        )
 
     sectors_set = set(bundle.lists.sectors)
-    mats_set = set(bundle.lists.materials)
-    other_cols = set(bundle.other.by_material.columns.astype(str))
-    prod_mats = set(bundle.production.long["Material"].unique())
-    price_mats = set(bundle.pricing.long["Material"].unique())
+    products_set = set(bundle.lists.products)
+    other_cols = set(bundle.other.by_product.columns.astype(str))
+    prod_products = set(bundle.production.long["Material"].unique())
+    price_products = set(bundle.pricing.long["Material"].unique())
 
     out: Dict[str, List[Tuple[str, float]]] = {}
     for sector, entries in raw_pm.items():
         if sector not in sectors_set:
             raise ValueError(f"overrides.primary_map has unknown sector '{sector}'")
         if not isinstance(entries, (list, tuple)):
-            raise ValueError(f"overrides.primary_map['{sector}'] must be a list of entries")
+            raise ValueError(
+                f"overrides.primary_map['{sector}'] must be a list of {{product, start_year}} mappings"
+            )
         normalized: Dict[str, float] = {}
         for idx, e in enumerate(entries):
             if not isinstance(e, dict):
                 raise ValueError(
-                    f"overrides.primary_map['{sector}'][{idx}] must be a mapping with 'material' and 'start_year'"
+                    f"overrides.primary_map['{sector}'][{idx}] must be a mapping with 'product' and 'start_year'"
                 )
-            mat = str(e.get("material", "")).strip()
-            if not mat:
-                raise ValueError(f"overrides.primary_map['{sector}'][{idx}] missing 'material'")
-            if mat not in mats_set:
-                raise ValueError(f"overrides.primary_map['{sector}'][{idx}] material '{mat}' is not in inputs lists.materials")
-            try:
-                sy = _coerce_numeric(e.get("start_year"), f"overrides.primary_map['{sector}'][{idx}].start_year")
-            except Exception:
-                raise
+            prod = str(e.get("product") or "").strip()
+            if not prod:
+                raise ValueError(f"overrides.primary_map['{sector}'][{idx}] missing 'product'")
+            if prod not in products_set:
+                raise ValueError(
+                    f"overrides.primary_map['{sector}'][{idx}] product '{prod}' is not in inputs lists.products"
+                )
+            sy = _coerce_numeric(
+                e.get("start_year"), f"overrides.primary_map['{sector}'][{idx}].start_year"
+            )
             # Cross-table presence checks
-            if mat not in other_cols:
-                raise ValueError(f"overrides.primary_map['{sector}'][{idx}] material '{mat}' not present in other_params")
-            if mat not in prod_mats:
-                raise ValueError(f"overrides.primary_map['{sector}'][{idx}] material '{mat}' not present in production table")
-            if mat not in price_mats:
-                raise ValueError(f"overrides.primary_map['{sector}'][{idx}] material '{mat}' not present in pricing table")
-            normalized[mat] = float(sy)
+            if prod not in other_cols:
+                raise ValueError(
+                    f"overrides.primary_map['{sector}'][{idx}] product '{prod}' not present in other_params"
+                )
+            if prod not in prod_products:
+                raise ValueError(
+                    f"overrides.primary_map['{sector}'][{idx}] product '{prod}' not present in production table"
+                )
+            if prod not in price_products:
+                raise ValueError(
+                    f"overrides.primary_map['{sector}'][{idx}] product '{prod}' not present in pricing table"
+                )
+            normalized[prod] = float(sy)
         if normalized:
             out[sector] = [(m, normalized[m]) for m in sorted(normalized.keys())]
     return out
@@ -703,11 +715,11 @@ def load_and_validate_scenario(path: Path, *, bundle: Phase1Bundle) -> Scenario:
     if "primary_map" in overrides_block:
         pm_overrides = _validate_primary_map_override(overrides_block.get("primary_map"), bundle=bundle)
 
-    # Build extra (sector, material) pairs from primary_map overrides to expand permissible constants surface
+    # Build extra (sector, product) pairs from primary_map overrides to expand permissible constants surface
     extra_pairs: List[Tuple[str, str]] = []
     for sector, entries in (pm_overrides or {}).items():
-        for mat, _sy in entries:
-            extra_pairs.append((sector, mat))
+        for prod, _sy in entries:
+            extra_pairs.append((sector, prod))
 
     # 3a) Optional scenario-level lists_sm (SM universe). Validate against lists and store as tuples.
     scenario_lists_sm_pairs: List[Tuple[str, str]] = []
@@ -716,7 +728,7 @@ def load_and_validate_scenario(path: Path, *, bundle: Phase1Bundle) -> Scenario:
         if not isinstance(raw_lists_sm, (list, tuple)):
             raise ValueError("lists_sm must be a list of mappings with keys 'Sector' and 'Material'")
         sectors_set = set(map(str, bundle.lists.sectors))
-        mats_set = set(map(str, bundle.lists.materials))
+        products_set = set(map(str, bundle.lists.products))
         seen: set[Tuple[str, str]] = set()
         for idx, entry in enumerate(raw_lists_sm):
             if not isinstance(entry, Mapping):
@@ -727,8 +739,8 @@ def load_and_validate_scenario(path: Path, *, bundle: Phase1Bundle) -> Scenario:
                 raise ValueError(f"lists_sm[{idx}] missing Sector or Material")
             if s not in sectors_set:
                 raise ValueError(f"lists_sm[{idx}] references unknown sector '{s}'")
-            if m not in mats_set:
-                raise ValueError(f"lists_sm[{idx}] references unknown material '{m}'")
+            if m not in products_set:
+                raise ValueError(f"lists_sm[{idx}] references unknown product '{m}'")
             pair = (s, m)
             if pair not in seen:
                 seen.add(pair)
@@ -871,11 +883,11 @@ def validate_scenario_dict(bundle: Phase1Bundle, scenario_dict: Mapping[str, obj
     if isinstance(overrides_block, Mapping) and "primary_map" in overrides_block:
         pm_overrides = _validate_primary_map_override(overrides_block.get("primary_map"), bundle=bundle)
 
-    # Extra (sector, material) pairs from primary_map to expand constants surface
+    # Extra (sector, product) pairs from primary_map to expand constants surface
     extra_pairs: List[Tuple[str, str]] = []
     for sector, entries in (pm_overrides or {}).items():
-        for mat, _sy in entries:
-            extra_pairs.append((sector, mat))
+        for prod, _sy in entries:
+            extra_pairs.append((sector, prod))
 
     # Optional scenario-level lists_sm
     scenario_lists_sm_pairs: List[Tuple[str, str]] = []
@@ -884,7 +896,7 @@ def validate_scenario_dict(bundle: Phase1Bundle, scenario_dict: Mapping[str, obj
         if not isinstance(raw_lists_sm, (list, tuple)):
             raise ValueError("lists_sm must be a list of mappings with keys 'Sector' and 'Material'")
         sectors_set = set(map(str, bundle.lists.sectors))
-        mats_set = set(map(str, bundle.lists.materials))
+        products_set = set(map(str, bundle.lists.products))
         seen: set[Tuple[str, str]] = set()
         for idx, entry in enumerate(raw_lists_sm):
             if not isinstance(entry, Mapping):
@@ -895,8 +907,8 @@ def validate_scenario_dict(bundle: Phase1Bundle, scenario_dict: Mapping[str, obj
                 raise ValueError(f"lists_sm[{idx}] missing Sector or Material")
             if s not in sectors_set:
                 raise ValueError(f"lists_sm[{idx}] references unknown sector '{s}'")
-            if m not in mats_set:
-                raise ValueError(f"lists_sm[{idx}] references unknown material '{m}'")
+            if m not in products_set:
+                raise ValueError(f"lists_sm[{idx}] references unknown product '{m}'")
             pair = (s, m)
             if pair not in seen:
                 seen.add(pair)
@@ -998,8 +1010,8 @@ def summarize_lists(bundle: Phase1Bundle) -> dict:
     Keys:
       - markets: list[str]
       - sectors: list[str]
-      - materials: list[str]
-      - sector_to_materials: dict[str, list[str]]
+      - products: list[str]
+      - sector_to_products: dict[str, list[str]]
     """
     markets = (
         bundle.lists.markets_sectors_materials.get("Market", []).dropna().astype(str).unique().tolist()
@@ -1009,8 +1021,8 @@ def summarize_lists(bundle: Phase1Bundle) -> dict:
     return {
         "markets": markets,
         "sectors": list(bundle.lists.sectors),
-        "materials": list(bundle.lists.materials),
-        "sector_to_materials": dict(bundle.primary_map.sector_to_materials),
+        "products": list(bundle.lists.products),
+        "sector_to_products": dict(bundle.primary_map.sector_to_materials),
     }
 
 

@@ -5,12 +5,12 @@ from BPTK_Py.modeling.simultaneousScheduler import SimultaneousScheduler
 
 from src.phase1_data import load_phase1_inputs
 from src.scenario_loader import load_and_validate_scenario
-from src.fff_growth_model import build_phase4_model, apply_scenario_overrides
+from src.growth_model import build_phase4_model, apply_scenario_overrides
 from src.naming import (
     agent_demand_sector_input,
     agent_aggregated_demand,
     fulfillment_ratio,
-    anchor_delivery_flow_material,
+    anchor_delivery_flow_product,
 )
 
 
@@ -29,10 +29,10 @@ class TestPhase7SchedulerIntegration(unittest.TestCase):
         # Attach scheduler as used by the runner
         model.scheduler = SimultaneousScheduler()
 
-        # Pick first material present in lists and mapped to at least one sector
+        # Pick first product present in lists and mapped to at least one sector
         material = None
         sectors_using_material = []
-        for m in self.bundle.lists.materials:
+        for m in self.bundle.lists.products:
             sectors_using_material = (
                 self.bundle.primary_map.long[self.bundle.primary_map.long["Material"] == m]["Sector"]
                 .astype(str)
@@ -90,7 +90,7 @@ class TestPhase7SchedulerIntegration(unittest.TestCase):
         self.assertLessEqual(fr1, 1.0)
 
         # Anchor delivery flow is non-negative (we don't assert magnitude due to delays)
-        name_adf_m = anchor_delivery_flow_material(material)
+        name_adf_m = anchor_delivery_flow_product(material)
         adf1 = float(model.evaluate_equation(name_adf_m, t1))
         self.assertGreaterEqual(adf1, 0.0)
 

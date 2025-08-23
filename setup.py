@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Setup script for FFF Growth System v2
+Setup script for the generalized Growth System v2
 """
 
 from setuptools import setup, find_packages
@@ -12,14 +12,14 @@ with open("requirements.txt", "r", encoding="utf-8") as fh:
     requirements = [line.strip() for line in fh if line.strip() and not line.startswith("#")]
 
 setup(
-    name="fff-growth-system",
+    name="growth-system",
     version="2.0.0",
     author="Your Name",
     author_email="your.email@example.com",
-    description="A hybrid System Dynamics + Agent-Based Modeling simulation system for FFF industry growth analysis",
+    description="A hybrid System Dynamics + Agent-Based Modeling simulation system for industry growth analysis",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/fff-growth-system",
+    url="https://github.com/yourusername/growth-system",
     packages=find_packages(),
     classifiers=[
         "Development Status :: 4 - Beta",
@@ -49,7 +49,7 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            "fff-simulate=simulate_fff_growth:main",
+            "simulate-growth=simulate_growth:main",
         ],
     },
     include_package_data=True,

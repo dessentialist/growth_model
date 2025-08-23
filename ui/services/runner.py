@@ -4,7 +4,7 @@ from __future__ import annotations
 Runner integration helpers for the Streamlit UI layer.
 
 This module contains only the functions required to execute the
-`simulate_fff_growth.py` runner and to surface logs/results back to the UI.
+`simulate_growth.py` runner and to surface logs/results back to the UI.
 
 Design goals:
 - Keep responsibilities focused on process execution and artifact discovery
@@ -57,7 +57,7 @@ def build_runner_command(
     Exactly one of `scenario_path` or `preset` may be provided. If neither is
     provided, default to the baseline preset via `--preset baseline`.
     """
-    args: list[str] = [python_executable, str(PROJECT_ROOT / "simulate_fff_growth.py")]
+    args: list[str] = [python_executable, str(PROJECT_ROOT / "simulate_growth.py")]
     if scenario_path is not None and preset is not None:
         raise ValueError("Provide only one of scenario_path or preset")
     if scenario_path is not None:
@@ -145,12 +145,12 @@ def read_log_tail(max_lines: int = 500) -> list[str]:
 def find_latest_results_csv() -> Optional[Path]:
     """Return the most recent KPI CSV path under `output/`, if any.
 
-    Considers both the default `FFF_Growth_System_Complete_Results.csv` and
-    suffixed copies `FFF_Growth_System_Complete_Results_<scenario>.csv`.
+    Considers both the default `Growth_System_Complete_Results.csv` and
+    suffixed copies `Growth_System_Complete_Results_<scenario>.csv`.
     """
     if not OUTPUT_DIR.exists():
         return None
-    candidates: list[Path] = list(OUTPUT_DIR.glob("FFF_Growth_System_Complete_Results*.csv"))
+    candidates: list[Path] = list(OUTPUT_DIR.glob("Growth_System_Complete_Results*.csv"))
     if not candidates:
         return None
     return max(candidates, key=lambda p: p.stat().st_mtime)

@@ -10,7 +10,7 @@ are not hardcoded to 28 periods, so they work with variable horizons.
 
 Usage:
     from viz.plots import generate_all_plots_from_csv
-    generate_all_plots_from_csv(Path('output/FFF_Growth_System_Complete_Results.csv'))
+    generate_all_plots_from_csv(Path('output/Growth_System_Complete_Results.csv'))
 """
 
 from pathlib import Path

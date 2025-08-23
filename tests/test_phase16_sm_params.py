@@ -4,13 +4,13 @@ import pytest
 
 from src.phase1_data import load_phase1_inputs
 from src.scenario_loader import load_and_validate_scenario, RunSpecs
-from src.fff_growth_model import build_phase4_model
+from src.growth_model import build_phase4_model
 from src.naming import anchor_constant_sm
 
 
 def test_phase16_model_creates_sm_requirement_to_order_lag_constant(tmp_path: Path):
     bundle = load_phase1_inputs()
-    # Pick a known (sector, material) from primary_map
+    # Pick a known (sector, product) from primary_map
     assert not bundle.primary_map.long.empty, "Expected primary_map to be non-empty for this test"
     row = bundle.primary_map.long.iloc[0]
     sector = str(row["Sector"])
@@ -28,7 +28,7 @@ def test_phase16_model_creates_sm_requirement_to_order_lag_constant(tmp_path: Pa
 
 def test_phase16_scenario_loader_accepts_sm_constant_override(tmp_path: Path):
     bundle = load_phase1_inputs()
-    # Choose a sector, material from the SM universe (lists_sm if present, else primary_map)
+    # Choose a sector, product from the SM universe (lists_sm if present, else primary_map)
     sm_df = getattr(bundle, "lists_sm", None)
     if sm_df is None or sm_df.empty:
         sm_df = bundle.primary_map.long[["Sector", "Material"]].drop_duplicates()

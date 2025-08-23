@@ -4,7 +4,7 @@ from __future__ import annotations
 Phase 8/15 — KPI Extraction & CSV Writer (variable horizon)
 
 This module computes per-step KPI series from the hybrid SD+ABM model and
-writes them to a deterministic CSV file `output/FFF_Growth_System_Complete_Results.csv`.
+writes them to a deterministic CSV file `output/Growth_System_Complete_Results.csv`.
 
 Design goals
 - Keep extraction independent of internal model storage by using
@@ -25,7 +25,7 @@ Inputs
 
 Outputs
 - A mapping from row label to `num_steps` floats
-- A CSV written to `output/FFF_Growth_System_Complete_Results.csv`
+- A CSV written to `output/Growth_System_Complete_Results.csv`
 """
 
 from dataclasses import dataclass
@@ -38,12 +38,12 @@ from .io_paths import OUTPUT_DIR
 from .naming import (
     # sector-level
     anchor_lead_generation,
-    anchor_delivery_flow_sector_material,
-    # material-level
+    anchor_delivery_flow_sector_product,
+    # product-level
     total_demand,
     client_delivery_flow,
-    anchor_delivery_flow_material,
-    price_converter,
+    anchor_delivery_flow_product,
+    price_converter_product,
     c_stock,
     total_new_leads,
 )
@@ -111,7 +111,7 @@ def collect_kpis_for_step(
     bundle,
     t: float,
     agents_by_sector: Mapping[str, List[object]],
-    sector_to_materials: Mapping[str, List[str]],
+    sector_to_products: Mapping[str, List[str]],
     step_idx: int,
     agent_metrics_by_step: List[Mapping[str, object]],
 ) -> Dict[str, float]:
@@ -122,7 +122,7 @@ def collect_kpis_for_step(
     out: Dict[str, float] = {}
 
     sectors: List[str] = list(bundle.lists.sectors)
-    materials: List[str] = list(bundle.lists.materials)
+    products: List[str] = list(bundle.lists.products)
 
     # Validate availability of per-step ABM metrics for this step
     if (agent_metrics_by_step is None or not isinstance(step_idx, int) or 
@@ -132,18 +132,18 @@ def collect_kpis_for_step(
             "covering all emitted steps, and a valid step_idx."
         )
 
-    # ----- Material-level base series -----
-    for m in materials:
+    # ----- Product-level base series -----
+    for m in products:
         td = _safe_eval(model, total_demand(m), t)
         cdf = _safe_eval(model, client_delivery_flow(m), t)
-        adf_m = _safe_eval(model, anchor_delivery_flow_material(m), t)
-        price = _safe_eval(model, price_converter(m), t)
+        adf_m = _safe_eval(model, anchor_delivery_flow_product(m), t)
+        price = _safe_eval(model, price_converter_product(m), t)
 
         out[f"Order Basket {m}"] = td
         out[f"Order Delivery {m}"] = adf_m + cdf
         out[f"Revenue {m}"] = (adf_m + cdf) * price
 
-        # Other Clients stock (cumulative clients by material)
+        # Other Clients stock (cumulative clients by product)
         out[f"Other Clients {m}"] = _safe_eval(model, c_stock(m), t)
 
     # ----- Sector-level series -----
@@ -157,11 +157,11 @@ def collect_kpis_for_step(
         # The runner's live capture will compute this correctly.
         out[f"Anchor Leads {s}"] = _safe_eval(model, anchor_lead_generation(s), t)
 
-        # Anchor revenue per sector = sum_m Anchor_Delivery_Flow_<s>_<m> * Price_<m>
+        # Anchor revenue per sector = sum_p Anchor_Delivery_Flow_<s>_<p> * Price_<p>
         sector_rev = 0.0
-        for m in sector_to_materials.get(s, []):
-            adf_sm = _safe_eval(model, anchor_delivery_flow_sector_material(s, m), t)
-            price = _safe_eval(model, price_converter(m), t)
+        for m in sector_to_products.get(s, []):
+            adf_sm = _safe_eval(model, anchor_delivery_flow_sector_product(s, m), t)
+            price = _safe_eval(model, price_converter_product(m), t)
             sector_rev += adf_sm * price
         out[f"Revenue {s}"] = sector_rev
 
@@ -173,14 +173,14 @@ def collect_kpis_for_step(
         out[f"Active Projects {s}"] = inprog_value
 
     # ----- Totals across dimensions -----
-    # Revenue total = sum material-level revenue
-    out["Revenue"] = sum(out.get(f"Revenue {m}", 0.0) for m in materials)
+    # Revenue total = sum product-level revenue
+    out["Revenue"] = sum(out.get(f"Revenue {m}", 0.0) for m in products)
 
     # Anchor Leads total = sum sector-level per-quarter leads
     out["Anchor Leads"] = sum(out.get(f"Anchor Leads {s}", 0.0) for s in sectors)
 
-    # Other Clients total = sum material-level C_<m> stocks
-    out["Other Clients"] = sum(out.get(f"Other Clients {m}", 0.0) for m in materials)
+    # Other Clients total = sum product-level C_<p> stocks
+    out["Other Clients"] = sum(out.get(f"Other Clients {m}", 0.0) for m in products)
 
     # Other Leads total only (do not map to sectors to avoid duplication).
     # Other clients are material-driven and not attributed to sectors. Revenue
@@ -189,14 +189,14 @@ def collect_kpis_for_step(
     # The underlying SD converters for inbound/outbound leads are scaled to per-year.
     # Per-quarter presentation should be handled by the caller using dt.
     other_leads_total = 0.0
-    for m in materials:
+    for m in products:
         other_leads_total += _safe_eval(model, total_new_leads(m), t)
     out["Other Leads"] = other_leads_total
 
     # Order Basket total
-    out["Order Basket"] = sum(out.get(f"Order Basket {m}", 0.0) for m in materials)
+    out["Order Basket"] = sum(out.get(f"Order Basket {m}", 0.0) for m in products)
     # Order Delivery total
-    out["Order Delivery"] = sum(out.get(f"Order Delivery {m}", 0.0) for m in materials)
+    out["Order Delivery"] = sum(out.get(f"Order Delivery {m}", 0.0) for m in products)
     # Anchor Clients total and Active Projects total from per-step metrics
     step_metrics = agent_metrics_by_step[step_idx]
     out["Anchor Clients"] = float(step_metrics.get("active_total", 0.0))
@@ -208,10 +208,10 @@ def collect_kpis_for_step(
 def build_row_order(
     *,
     sectors: List[str],
-    materials: List[str],
+    products: List[str],
     include_sm_revenue_rows: bool = False,
     include_sm_client_rows: bool = False,
-    sector_to_materials: Mapping[str, List[str]] | None = None,
+    sector_to_products: Mapping[str, List[str]] | None = None,
 ) -> List[str]:
     """Return a deterministic row order matching the architecture template.
 
@@ -222,11 +222,11 @@ def build_row_order(
     # Revenue
     rows.append("Revenue")
     rows.extend([f"Revenue {s}" for s in sectors])
-    rows.extend([f"Revenue {m}" for m in materials])
-    # Optional: granular per-(s,m) revenue rows
-    if include_sm_revenue_rows and sector_to_materials is not None:
+    rows.extend([f"Revenue {m}" for m in products])
+    # Optional: granular per-(s,p) revenue rows
+    if include_sm_revenue_rows and sector_to_products is not None:
         for s in sectors:
-            for m in sector_to_materials.get(s, []):
+            for m in sector_to_products.get(s, []):
                 rows.append(f"Revenue {s} {m}")
     # Anchor Leads
     rows.append("Anchor Leads")
@@ -238,21 +238,21 @@ def build_row_order(
     rows.append("Anchor Clients")
     rows.extend([f"Anchor Clients {s}" for s in sectors])
     # Optional: granular per-(s,m) anchor clients (primarily meaningful in SM-mode)
-    if include_sm_client_rows and sector_to_materials is not None:
+    if include_sm_client_rows and sector_to_products is not None:
         for s in sectors:
-            for m in sector_to_materials.get(s, []):
+            for m in sector_to_products.get(s, []):
                 rows.append(f"Anchor Clients {s} {m}")
     # Other Leads (total only; per-sector rows removed as Other Leads are material-mapped)
     rows.append("Other Leads")
     # Other Clients
     rows.append("Other Clients")
-    rows.extend([f"Other Clients {m}" for m in materials])
+    rows.extend([f"Other Clients {m}" for m in products])
     # Order Basket
     rows.append("Order Basket")
-    rows.extend([f"Order Basket {m}" for m in materials])
+    rows.extend([f"Order Basket {m}" for m in products])
     # Order Delivery
     rows.append("Order Delivery")
-    rows.extend([f"Order Delivery {m}" for m in materials])
+    rows.extend([f"Order Delivery {m}" for m in products])
     return rows
 
 
@@ -269,7 +269,7 @@ def write_kpis_csv(
     """
     out_dir = output_dir or OUTPUT_DIR
     out_dir.mkdir(parents=True, exist_ok=True)
-    out_path = out_dir / "FFF_Growth_System_Complete_Results.csv"
+    out_path = out_dir / "Growth_System_Complete_Results.csv"
 
     # Build DataFrame in the provided order
     df = pd.DataFrame(
@@ -288,7 +288,7 @@ def extract_and_write_kpis(
     bundle,
     run_grid: RunGrid,
     agents_by_sector: Mapping[str, List[object]],
-    sector_to_materials: Mapping[str, List[str]],
+    sector_to_products: Mapping[str, List[str]],
     output_dir: Path | None = None,
     agent_metrics_by_step: List[Mapping[str, object]] | None = None,
     kpi_values_by_step: List[Dict[str, float]] | None = None,
@@ -308,13 +308,13 @@ def extract_and_write_kpis(
     steps_to_emit = run_grid.num_steps
 
     sectors: List[str] = list(bundle.lists.sectors)
-    materials: List[str] = list(bundle.lists.materials)
+    products: List[str] = list(bundle.lists.products)
     ordered_rows: List[str] = build_row_order(
         sectors=sectors,
-        materials=materials,
+        products=products,
         include_sm_revenue_rows=include_sm_revenue_rows,
         include_sm_client_rows=include_sm_client_rows,
-        sector_to_materials=sector_to_materials,
+        sector_to_products=sector_to_products,
     )
     series = _init_series(ordered_rows)
 

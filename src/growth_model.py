@@ -47,9 +47,9 @@ from BPTK_Py.sddsl import functions as F
 
 from .naming import (
     # constants & lookups
-    price_converter,
-    max_capacity_converter,
-    other_constant,
+    price_converter_product,
+    max_capacity_converter_product,
+    product_constant,
     # material-level SD elements
     inbound_leads,
     outbound_leads,
@@ -69,8 +69,8 @@ from .naming import (
     total_demand,
     # Phase 6 anchor delivery names
     delayed_agent_demand as delayed_agent_demand_name,
-    anchor_delivery_flow_sector_material,
-    anchor_delivery_flow_material,
+    anchor_delivery_flow_sector_product,
+    anchor_delivery_flow_product,
     # anchor constants
     anchor_constant,
     anchor_lead_generation,
@@ -400,7 +400,7 @@ def _build_sm_agent_creation_block(
     elements[cum_name] = cum
 
 
-def _build_material_block(
+def _build_product_block(
     model: Model,
     bundle: Phase1Bundle,
     material: str,
@@ -408,7 +408,7 @@ def _build_material_block(
     *,
     anchor_mode: str = "sector",
 ) -> None:
-    """Create all SD elements for a single material and its sector couplings.
+    """Create all SD elements for a single product and its sector couplings.
 
     Parameters
     ----------
@@ -420,7 +420,7 @@ def _build_material_block(
         - sm (strict): require per-(s,m) values for all targeted parameters and
           lags; sector-level fallbacks are disabled (Phase 17.5 enforcement).
     """
-    """Create all Phase 4 SD elements for a single material.
+    """Create all Phase 4 SD elements for a single product.
 
     Element names exactly match helpers from `src.naming`.
     """
@@ -429,22 +429,22 @@ def _build_material_block(
     # Note: The inputs file uses a row label 'TAM' (not 'TAM_material').
     # We strictly honor the CSV schema discovered in Phase 1.
     const_names = {
-        "lead_start_year": other_constant("lead_start_year", material),
-        "inbound_lead_generation_rate": other_constant("inbound_lead_generation_rate", material),
-        "outbound_lead_generation_rate": other_constant("outbound_lead_generation_rate", material),
-        "lead_to_c_conversion_rate": other_constant("lead_to_c_conversion_rate", material),
-        "lead_to_requirement_delay": other_constant("lead_to_requirement_delay", material),
-        "requirement_to_fulfilment_delay": other_constant("requirement_to_fulfilment_delay", material),
-        "avg_order_quantity_initial": other_constant("avg_order_quantity_initial", material),
-        "client_requirement_growth": other_constant("client_requirement_growth", material),
+        "lead_start_year": product_constant("lead_start_year", material),
+        "inbound_lead_generation_rate": product_constant("inbound_lead_generation_rate", material),
+        "outbound_lead_generation_rate": product_constant("outbound_lead_generation_rate", material),
+        "lead_to_c_conversion_rate": product_constant("lead_to_c_conversion_rate", material),
+        "lead_to_requirement_delay": product_constant("lead_to_requirement_delay", material),
+        "requirement_to_fulfilment_delay": product_constant("requirement_to_fulfilment_delay", material),
+        "avg_order_quantity_initial": product_constant("avg_order_quantity_initial", material),
+        "client_requirement_growth": product_constant("client_requirement_growth", material),
         # CSV row name is 'TAM' in provided inputs (not 'TAM_material')
-        "TAM": other_constant("TAM", material),
+        "TAM": product_constant("TAM", material),
     }
     for key, const_name in const_names.items():
         c = model.constant(const_name)
         # Fill with numeric from Phase 1 OtherParams
         try:
-            value = bundle.other.by_material.loc[key, material]
+            value = bundle.other.by_product.loc[key, material]
         except KeyError as exc:  # strict policy: must exist
             raise ValueError(f"Missing other client parameter '{key}' for material '{material}'") from exc
         c.equation = _as_float(value)
@@ -540,8 +540,8 @@ def _build_material_block(
 
     # ---- Lookups: capacity and price ----
     # max_capacity_lookup_<m> = lookup(time, max_capacity_<m>)
-    cap_conv_name = max_capacity_converter(material)
-    price_conv_name = price_converter(material)
+    cap_conv_name = max_capacity_converter_product(material)
+    price_conv_name = price_converter_product(material)
 
     cap_conv = model.converter(cap_conv_name)
     price_conv = model.converter(price_conv_name)
@@ -735,14 +735,14 @@ def _build_material_block(
         delayed_sector_converters.append(delayed_conv)
 
         # Anchor_Delivery_Flow_<s>_<m> = delay(model, Delayed_Agent_Demand_<s>_<m>, requirement_to_order_lag_<s>)
-        adf_sm_name = anchor_delivery_flow_sector_material(sector, material)
+        adf_sm_name = anchor_delivery_flow_sector_product(sector, material)
         adf_sm = model.converter(adf_sm_name)
         adf_sm.equation = F.delay(model, delayed_conv, model.constants[rtol_element_name_to_use])
         elements[adf_sm_name] = adf_sm
         sector_delivery_converters.append(adf_sm)
 
     # Anchor_Delivery_Flow_<m> = sum_s Anchor_Delivery_Flow_<s>_<m>
-    adf_m_name = anchor_delivery_flow_material(material)
+    adf_m_name = anchor_delivery_flow_product(material)
     adf_m = model.converter(adf_m_name)
     if not sector_delivery_converters:
         adf_m.equation = 0.0
@@ -796,8 +796,8 @@ def build_phase4_model(bundle: Phase1Bundle, runspecs: RunSpecs) -> Phase4BuildR
     elements: Dict[str, object] = {}
 
     # Create per-material structures
-    for material in bundle.lists.materials:
-        _build_material_block(model, bundle, material, elements, anchor_mode=getattr(runspecs, "anchor_mode", "sector"))
+    for material in bundle.lists.products:
+        _build_product_block(model, bundle, material, elements, anchor_mode=getattr(runspecs, "anchor_mode", "sector"))
 
     # Create agent creation signals depending on anchor mode
     if getattr(runspecs, "anchor_mode", "sector") == "sm":
@@ -828,11 +828,11 @@ def apply_scenario_overrides(model: Model, scenario: Scenario) -> None:
         # Determine corresponding converter name
         if lookup_name.startswith("price_"):
             material = lookup_name[len("price_"):].replace("_", " ")
-            conv_name = price_converter(material)
+            conv_name = price_converter_product(material)
             scale = 1.0
         elif lookup_name.startswith("max_capacity_"):
             material = lookup_name[len("max_capacity_"):].replace("_", " ")
-            conv_name = max_capacity_converter(material)
+            conv_name = max_capacity_converter_product(material)
             # Capacity points are specified per year; model uses per-quarter. Preserve the build-time /4 scaling.
             scale = 0.25
         else:

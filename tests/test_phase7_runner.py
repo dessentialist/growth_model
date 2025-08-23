@@ -3,7 +3,7 @@ from pathlib import Path
 
 from src.phase1_data import load_phase1_inputs
 from src.scenario_loader import load_and_validate_scenario
-from src.fff_growth_model import build_phase4_model, apply_scenario_overrides
+from src.growth_model import build_phase4_model, apply_scenario_overrides
 from src.naming import agents_to_create_converter, agent_demand_sector_input
 
 
@@ -19,7 +19,7 @@ class TestPhase7RunnerScaffolding(unittest.TestCase):
         model = res.model
         apply_scenario_overrides(model, self.scenario)
 
-        # Pick any sector-material pair from mapping
+        # Pick any sector-product pair from mapping
         row = self.bundle.primary_map.long.iloc[0]
         sector = str(row.Sector)
         material = str(row.Material)
@@ -29,7 +29,7 @@ class TestPhase7RunnerScaffolding(unittest.TestCase):
         k0 = int(model.evaluate_equation(name_to_create, self.scenario.runspecs.starttime))
         self.assertGreaterEqual(k0, 0)
 
-        # Update sector-material gateway numeric value and evaluate at next time
+        # Update sector-product gateway numeric value and evaluate at next time
         name_sm = agent_demand_sector_input(sector, material)
         if name_sm in getattr(model, "converters", {}):
             model.converters[name_sm].equation = 1.23

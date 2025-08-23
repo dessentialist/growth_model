@@ -3,10 +3,10 @@ from __future__ import annotations
 """
 Primary Map editor component for Streamlit.
 
-This component lets the user propose replacements to the primary sector→materials
-mapping with per-(sector, material) start years. It presents a sector selector,
+This component lets the user propose replacements to the primary sector→products
+mapping with per-(sector, product) start years. It presents a sector selector,
 shows current mapping for context, and allows building a proposed list for that
-sector with a simple material multi-select and start-year inputs per material.
+sector with a simple product multi-select and start-year inputs per product.
 
 The state persists in `PrimaryMapState` and is used during Phase 8 validation and
 YAML writing as `overrides.primary_map`.
@@ -20,7 +20,7 @@ from ui.state import PrimaryMapEntry, PrimaryMapState
 
 
 def _get_current_mapping_for_sector(bundle: Phase1Bundle, sector: str) -> List[Tuple[str, float]]:
-    """Return sorted list of (material, start_year) pairs currently mapped for a sector."""
+    """Return sorted list of (product, start_year) pairs currently mapped for a sector."""
     pm = bundle.primary_map.long
     rows = pm[pm["Sector"].astype(str) == sector]
     entries: List[Tuple[str, float]] = []
@@ -40,60 +40,60 @@ def render_primary_map_editor(state: PrimaryMapState, bundle: Phase1Bundle) -> P
     UX flow:
       - Select sector
       - View current mapping (read-only)
-      - Choose proposed materials and set start years
+      - Choose proposed products and set start years
       - Apply to state for that sector
     """
     st.subheader("Primary Map Overrides")
-    st.caption("Replace a sector's mapped materials with a new set and start years.")
+    st.caption("Replace a sector's mapped products with a new set and start years.")
 
     sectors = list(map(str, bundle.lists.sectors))
-    materials = list(map(str, bundle.lists.materials))
+    products_list = list(map(str, bundle.lists.products))
     sector = st.selectbox("Select sector", options=sectors)
 
     # Current mapping preview
     current = _get_current_mapping_for_sector(bundle, sector)
     st.markdown("Current mapping:")
     if current:
-        st.table({"Material": [m for m, _ in current], "StartYear": [sy for _, sy in current]})
+        st.table({"Product": [m for m, _ in current], "StartYear": [sy for _, sy in current]})
     else:
-        st.info("This sector has no mapped materials in inputs.json.")
+        st.info("This sector has no mapped products in inputs.json.")
 
     # Proposed mapping editor
     st.markdown("Proposed mapping:")
     # Compute a clear default selection: if we have state for this sector, use it;
     # otherwise default to the current mapping from inputs.json.
     if sector in state.by_sector:
-        default_selected = [e.material for e in state.by_sector[sector]]
+        default_selected = [e.product for e in state.by_sector[sector]]
     else:
         default_selected = [m for m, _ in current]
-    selected_materials = st.multiselect("Materials", options=materials, default=default_selected)
+    selected_products = st.multiselect("Products", options=products_list, default=default_selected)
 
     # Prepare rows with start years, prefilled from either state or current mapping
     proposed_entries: Dict[str, float] = {}
     # Prefill from state if present
     if sector in state.by_sector:
         for e in state.by_sector[sector]:
-            proposed_entries[e.material] = float(e.start_year)
+            proposed_entries[e.product] = float(e.start_year)
     else:
         for m, sy in current:
             proposed_entries[m] = float(sy)
 
-    # Render start year inputs for each selected material
+    # Render start year inputs for each selected product
     updated_entries: List[PrimaryMapEntry] = []
-    for m in selected_materials:
+    for m in selected_products:
         default_sy = proposed_entries.get(m, 2025.0)
         sy = st.number_input(
             f"StartYear for {m}", value=float(default_sy), step=0.25, format="%.2f", key=f"pm_sy_{sector}_{m}"
         )
-        updated_entries.append(PrimaryMapEntry(material=m, start_year=float(sy)))
+        updated_entries.append(PrimaryMapEntry(product=m, start_year=float(sy)))
 
     # Apply/clear controls
     col_apply, col_clear = st.columns([1, 1])
     with col_apply:
         if st.button("Apply Mapping for Sector", type="primary"):
-            # Save only if user selected materials; empty selection clears override for this sector
+            # Save only if user selected products; empty selection clears override for this sector
             if updated_entries:
-                state.by_sector[sector] = sorted(updated_entries, key=lambda e: e.material)
+                state.by_sector[sector] = sorted(updated_entries, key=lambda e: e.product)
             else:
                 state.by_sector.pop(sector, None)
     with col_clear:
@@ -106,7 +106,7 @@ def render_primary_map_editor(state: PrimaryMapState, bundle: Phase1Bundle) -> P
         summary_rows = []
         for s, entries in sorted(state.by_sector.items()):
             for e in entries:
-                summary_rows.append((s, e.material, e.start_year))
+                summary_rows.append((s, e.product, e.start_year))
         st.dataframe(
             {
                 "Sector": [r[0] for r in summary_rows],

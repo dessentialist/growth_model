@@ -1,4 +1,4 @@
-## FFF Growth System — Systems Elements and Interactions (System Dynamics View)
+## Growth System — Systems Elements and Interactions (System Dynamics View)
 
 ### Purpose and scope
 This document formalizes the hybrid SD+ABM model in standard System Dynamics terms. It inventories stocks, flows, converters, lookups, delays, and ABM→SD gateways; describes interactions; and provides causal loop and stock–flow overview diagrams. Naming follows the implementation and `technical_architecture.md`. Time base is years with dt = 0.25 years (quarters). Rates specified “per quarter” are handled explicitly without hidden dt scaling.
@@ -195,6 +195,6 @@ Units: delays and durations in quarters; Time axis is years; lookups read yearly
 
 ## Cross-reference
 - See `technical_architecture.md` for canonical element names and parameter taxonomy
-- See `src/fff_growth_model.py` for SD build and equations, `src/abm_anchor.py` for agent logic, and `simulate_fff_growth.py` for stepwise coupling and KPI capture
+- See `src/growth_model.py` for SD build and equations, `src/abm_anchor.py` for agent logic, and `simulate_growth.py` for stepwise coupling and KPI capture
 
 

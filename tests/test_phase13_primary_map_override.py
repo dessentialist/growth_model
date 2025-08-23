@@ -7,17 +7,19 @@ from src.phase1_data import load_phase1_inputs, apply_primary_map_overrides
 from src.scenario_loader import load_and_validate_scenario
 
 
-def test_primary_map_override_replaces_sector_materials(tmp_path: Path) -> None:
+def test_primary_map_override_replaces_sector_products(tmp_path: Path) -> None:
     repo = Path(__file__).resolve().parents[1]
     base = json.loads((repo / "inputs.json").read_text(encoding="utf-8"))
 
     # Ensure Defense has one baseline mapping to start from
-    base.setdefault("primary_map", {}).setdefault("Defense", [{"material": "Silicon Carbide Fiber", "start_year": 2025}])
+    base.setdefault("primary_map", {}).setdefault(
+        "Defense", [{"product": "Silicon Carbide Fiber", "start_year": 2025}]
+    )
 
     # Write temp inputs
     (tmp_path / "inputs.json").write_text(json.dumps(base), encoding="utf-8")
 
-    # Create scenario YAML overriding Defense to two materials
+    # Create scenario YAML overriding Defense to two products
     scen_text = """
 name: pm_override
 runspecs:
@@ -27,8 +29,8 @@ runspecs:
 overrides:
   primary_map:
     Defense:
-      - { material: "Silicon Nitride Fiber", start_year: 2026 }
-      - { material: "Silicon Carbide Fiber", start_year: 2025 }
+      - { product: "Silicon Nitride Fiber", start_year: 2026 }
+      - { product: "Silicon Carbide Fiber", start_year: 2025 }
 """
     scen_path = tmp_path / "pm_override.yaml"
     scen_path.write_text(scen_text, encoding="utf-8")
@@ -37,10 +39,12 @@ overrides:
     scenario = load_and_validate_scenario(scen_path, bundle=bundle)
     merged = apply_primary_map_overrides(bundle, scenario)
 
-    # Defense should now have exactly these two materials (order-insensitive)
-    mats = set(merged.primary_map.sector_to_materials.get("Defense", []))
-    assert mats == {"Silicon Nitride Fiber", "Silicon Carbide Fiber"}
+    # Defense should now have exactly these two products (order-insensitive)
+    prods = set(merged.primary_map.sector_to_materials.get("Defense", []))
+    assert prods == {"Silicon Nitride Fiber", "Silicon Carbide Fiber"}
 
     # Long table rows for Defense should reflect the same set
-    long_mats = set(merged.primary_map.long[merged.primary_map.long["Sector"] == "Defense"]["Material"].tolist())
-    assert long_mats == mats
+    long_prods = set(
+        merged.primary_map.long[merged.primary_map.long["Sector"] == "Defense"]["Material"].tolist()
+    )
+    assert long_prods == prods

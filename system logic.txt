@@ -1,6 +1,6 @@
 Key System Characteristics & Behaviors (updated for current implementation)
 1. Multi-Dimensional Growth Engine
-the FFF Growth System is a sophisticated dual-client acquisition model operating across:
+the Growth System is a sophisticated dual-client acquisition model operating across:
 4 Sectors: Defense, Nuclear, Semiconductors, Aviation
 7 Materials: Silicon Carbide Fiber, Silicon Carbide Powder, Silicon Nitride Fiber, UHT, Boron_fiber, B4C_Fiber, WC_Fiber
 2 Client Types: Anchor clients (project-based) vs. Direct clients (material-based)
@@ -197,7 +197,7 @@ cumulative_client_revenue(t) = integral(client_revenue(t))
 # - The runner accepts one scenario per run, selected either by explicit path (--scenario) or preset name (--preset) under the 'scenarios/' folder.
 # - Scenario overrides are strictly validated: every constant and lookup key must match a constructed model element; unknown keys are errors.
 # - Price lookup points are used as provided; capacity lookup points are per‑year and the model converts to per‑quarter internally.
-# - After each run, two CSVs are written: the default 'FFF_Growth_System_Complete_Results.csv' and a suffixed copy 'FFF_Growth_System_Complete_Results_<scenario>.csv' for easy comparison across scenarios. This does not change KPI content.
+# - After each run, two CSVs are written: the default 'Growth_System_Complete_Results.csv' and a suffixed copy 'Growth_System_Complete_Results_<scenario>.csv' for easy comparison across scenarios. This does not change KPI content.
 
 # Phase 12 - Visualization (read-only, post-processing)
 # - An optional CLI flag `--visualize` generates static PNG plots from the output CSV under 'output/plots/'.

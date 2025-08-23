@@ -5,11 +5,11 @@ from BPTK_Py.modeling.simultaneousScheduler import SimultaneousScheduler
 
 from src.phase1_data import load_phase1_inputs
 from src.scenario_loader import load_and_validate_scenario
-from src.fff_growth_model import build_phase4_model, apply_scenario_overrides
+from src.growth_model import build_phase4_model, apply_scenario_overrides
 from src.naming import (
     client_delivery_flow,
     client_requirement,
-    anchor_delivery_flow_material,
+    anchor_delivery_flow_product,
     agent_demand_sector_input,
 )
 
@@ -27,10 +27,10 @@ class TestDelayBehavior(unittest.TestCase):
 
         model.scheduler = SimultaneousScheduler()
 
-        # Choose first material and any mapped sector
-        material = self.bundle.lists.materials[0]
+        # Choose first product and any mapped sector
+        product = self.bundle.lists.products[0]
         sector = (
-            self.bundle.primary_map.long[self.bundle.primary_map.long["Material"] == material]["Sector"]
+            self.bundle.primary_map.long[self.bundle.primary_map.long["Material"] == product]["Sector"]
             .astype(str)
             .unique()
             .tolist()[0]
@@ -44,13 +44,13 @@ class TestDelayBehavior(unittest.TestCase):
         # Here we do not force client creation, but we still can assert non-negativity and delay monotonicity aspects.
 
         # Inject anchor gateway only at step 0 and then zero, to observe delay on anchor deliveries
-        name_sm = agent_demand_sector_input(sector, material)
+        name_sm = agent_demand_sector_input(sector, product)
         if name_sm in getattr(model, "converters", {}):
             model.converters[name_sm].equation = 5.0
         model.run_step(0, collect_data=False)
 
         # After first step, with positive demand set only at step 0, anchor delivery likely still zero if lag > 0
-        adf0 = float(model.evaluate_equation(anchor_delivery_flow_material(material), t0))
+        adf0 = float(model.evaluate_equation(anchor_delivery_flow_product(product), t0))
         self.assertGreaterEqual(adf0, 0.0)
 
         # Zero the input for the next step and advance
@@ -59,17 +59,17 @@ class TestDelayBehavior(unittest.TestCase):
         model.run_step(1, collect_data=False)
 
         # With positive delayed demand at step 0, anchor delivery may start > 0 only after the lag has elapsed
-        adf1 = float(model.evaluate_equation(anchor_delivery_flow_material(material), t1))
+        adf1 = float(model.evaluate_equation(anchor_delivery_flow_product(product), t1))
         self.assertGreaterEqual(adf1, 0.0)
 
         # Advance another step to ensure no errors evaluate
         model.run_step(2, collect_data=False)
-        adf2 = float(model.evaluate_equation(anchor_delivery_flow_material(material), t2))
+        adf2 = float(model.evaluate_equation(anchor_delivery_flow_product(product), t2))
         self.assertGreaterEqual(adf2, 0.0)
 
         # Client side: requirement and delivery are always non-negative, and delivery follows requirement with its lag
-        req0 = float(model.evaluate_equation(client_requirement(material), t0))
-        cdf0 = float(model.evaluate_equation(client_delivery_flow(material), t0))
+        req0 = float(model.evaluate_equation(client_requirement(product), t0))
+        cdf0 = float(model.evaluate_equation(client_delivery_flow(product), t0))
         self.assertGreaterEqual(req0, 0.0)
         self.assertGreaterEqual(cdf0, 0.0)
 

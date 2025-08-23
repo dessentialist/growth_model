@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# FFF Growth System v2 Installation Script
+# Growth System v2 Installation Script
 # This script sets up the development environment
 
 set -e  # Exit on any error
 
-echo "🚀 Setting up FFF Growth System v2..."
+echo "🚀 Setting up Growth System v2..."
 
 # Check Python version
 python_version=$(python3 --version 2>&1 | grep -oP '\d+\.\d+' | head -1)
@@ -50,4 +50,4 @@ echo "To run the UI:"
 echo "  streamlit run ui/app.py"
 echo ""
 echo "To run a simulation:"
-echo "  python simulate_fff_growth.py --preset baseline"
+echo "  python simulate_growth.py --preset baseline"
