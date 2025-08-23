@@ -1,4 +1,3 @@
-import tempfile
 import unittest
 from pathlib import Path
 
@@ -19,9 +18,11 @@ class TestPriceSensitivity(unittest.TestCase):
         text = {
             "name": "price-sensitivity",
             "runspecs": {"starttime": 2025.0, "stoptime": 2025.5, "dt": 0.25},
-            "overrides": {"constants": {}, "points": {}}
+            "overrides": {"constants": {}, "points": {}},
         }
-        import json, tempfile
+        import json
+        import tempfile
+
         with tempfile.NamedTemporaryFile(delete=False, suffix=".json") as tmp:
             tmp.write(json.dumps(text).encode("utf-8"))
             tmp.flush()
@@ -35,7 +36,7 @@ class TestPriceSensitivity(unittest.TestCase):
             # Choose first material and override its price points upward
             material = self.bundle.lists.materials[0]
             name_price = price_converter(material)
-            self.assertIn(name_price, getattr(model, 'converters', {}))
+            self.assertIn(name_price, getattr(model, "converters", {}))
 
             # New simple price points
             new_points = [(2025.0, 9999.0), (2025.25, 9999.0), (2025.5, 9999.0)]
@@ -55,5 +56,3 @@ class TestPriceSensitivity(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
-

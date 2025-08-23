@@ -32,5 +32,3 @@ def configure_logging(log_dir: Path, debug: bool = False) -> None:
             logging.FileHandler(log_file, mode="w", encoding="utf-8"),
         ],
     )
-
-

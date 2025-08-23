@@ -11,9 +11,7 @@ class TestPhase4Model(unittest.TestCase):
     def setUp(self) -> None:
         # Load real CSVs from Inputs and baseline scenario
         self.bundle = load_phase1_inputs(Path("Inputs"))
-        self.scenario = load_and_validate_scenario(
-            Path("scenarios/baseline.yaml"), bundle=self.bundle
-        )
+        self.scenario = load_and_validate_scenario(Path("scenarios/baseline.yaml"), bundle=self.bundle)
 
     def test_build_and_apply_overrides(self):
         # Build model
@@ -25,8 +23,8 @@ class TestPhase4Model(unittest.TestCase):
         price_name = f"Price_{material.replace(' ', '_')}"
         cap_name = f"max_capacity_lookup_{material.replace(' ', '_')}"
 
-        self.assertIn(price_name, getattr(model, 'converters', {}))
-        self.assertIn(cap_name, getattr(model, 'converters', {}))
+        self.assertIn(price_name, getattr(model, "converters", {}))
+        self.assertIn(cap_name, getattr(model, "converters", {}))
 
         # Apply overrides (from baseline, should be a no-op or partial set)
         apply_scenario_overrides(model, self.scenario)
@@ -38,5 +36,3 @@ class TestPhase4Model(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
-

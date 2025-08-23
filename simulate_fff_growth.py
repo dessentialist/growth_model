@@ -39,12 +39,10 @@ from src.fff_growth_model import build_phase4_model, apply_scenario_overrides
 from src.abm_anchor import (
     build_all_anchor_agent_factories,
     build_sm_anchor_agent_factory,
-    AnchorClientAgentSM,
 )
 from src.naming import (
     agents_to_create_converter,
     agent_demand_sector_input,
-
     total_demand,
     client_delivery_flow,
     anchor_delivery_flow_sector_material,
@@ -96,7 +94,7 @@ def _capture_step_kpis(
     diagnostic rows for `Revenue <sector> <material>` and `Anchor Clients <sector> <material>`.
     Defaults keep these rows absent.
     """
-    
+
     out: dict[str, float] = {}
     sectors: list[str] = list(bundle.lists.sectors)
     materials: list[str] = list(bundle.lists.materials)
@@ -181,7 +179,7 @@ def _capture_step_kpis(
     out["Order Basket"] = sum(out.get(f"Order Basket {m}", 0.0) for m in materials)
     # Order Delivery total
     out["Order Delivery"] = sum(out.get(f"Order Delivery {m}", 0.0) for m in materials)
-    
+
     # Anchor Clients total and Active Projects total from per-step metrics
     if step_idx < len(agent_metrics_by_step):
         step_metrics = agent_metrics_by_step[step_idx]
@@ -265,9 +263,7 @@ def _resolve_scenario_path(scenario: str | None, preset: str | None) -> Path:
         if json_path.exists():
             return json_path
         # Construct a helpful error with available presets
-        available = sorted([
-            p.stem for p in SCENARIOS_DIR.glob("*.yaml")
-        ] + [p.stem for p in SCENARIOS_DIR.glob("*.json")])
+        available = sorted([p.stem for p in SCENARIOS_DIR.glob("*.yaml")] + [p.stem for p in SCENARIOS_DIR.glob("*.json")])
         raise FileNotFoundError(
             f"Preset '{preset}' not found under {SCENARIOS_DIR}. Available presets: {', '.join(available) or '(none)'}"
         )
@@ -374,6 +370,7 @@ def run_stepwise(
                     agent.activation_time_years = activation_time_years
                     # Force ACTIVE immediately
                     from src.abm_anchor import AnchorClientAgentState
+
                     agent.state = AnchorClientAgentState.ACTIVE
                 except Exception:
                     # If agent API changes, fail fast
@@ -423,7 +420,7 @@ def run_stepwise(
                 except Exception as exc:
                     raise RuntimeError(f"Missing or invalid projects_to_client_conversion for sector '{sector}'") from exc
                 num_active = total_completed // ptc
-                remainder = total_completed - num_active * ptc
+                # remainder = total_completed - num_active * ptc  # Remainder is discarded per design
                 if num_active > 0:
                     factory = factories.get(sector)
                     if factory is None:
@@ -435,10 +432,13 @@ def run_stepwise(
                             agent = factory()
                             try:
                                 from src.abm_anchor import AnchorClientAgentState
+
                                 agent.activation_time_years = activation_time_years
                                 agent.state = AnchorClientAgentState.ACTIVE
                             except Exception:
-                                raise RuntimeError(f"Cannot set ACTIVE on derived agent for sector '{sector}' from completed-project seeds")
+                                raise RuntimeError(
+                                    f"Cannot set ACTIVE on derived agent for sector '{sector}' from completed-project seeds"
+                                )
                             agents_by_sector[sector].append(agent)
                         additional_active_by_sector[sector] = additional_active_by_sector.get(sector, 0) + int(num_active)
                         # Adjust SD monitoring/gating stocks by additional active
@@ -474,6 +474,7 @@ def run_stepwise(
                     agent = factory()
                     try:
                         from src.abm_anchor import AnchorClientAgentState
+
                         agent.activation_time_years = activation_time_years
                         agent.state = AnchorClientAgentState.ACTIVE
                     except Exception:
@@ -520,21 +521,26 @@ def run_stepwise(
                     except Exception:
                         raise RuntimeError(f"Missing projects_to_client_conversion for SM pair ('{sector}','{material}')")
                     num_active = total_completed // ptc
-                    remainder = total_completed - num_active * ptc
+                    # remainder = total_completed - num_active * ptc  # Remainder is discarded per design
                     if num_active > 0:
                         # Apply SM aging if provided; otherwise active now
-                        elapsed_q = int(seeds_elapsed_sm.get(sector, {}).get(material, 0)) if isinstance(seeds_elapsed_sm, dict) else 0
+                        elapsed_q = (
+                            int(seeds_elapsed_sm.get(sector, {}).get(material, 0)) if isinstance(seeds_elapsed_sm, dict) else 0
+                        )
                         activation_time_years = start - (elapsed_q * dt)
                         for _ in range(int(num_active)):
                             agent = factory()
                             try:
                                 from src.abm_anchor import AnchorClientAgentState
+
                                 agent.activation_time_years = activation_time_years
                                 agent.state = AnchorClientAgentState.ACTIVE
                             except Exception:
                                 raise RuntimeError(f"Cannot set ACTIVE on derived SM agent for ('{sector}','{material}')")
                             sm_agents_by_pair[(sector, material)].append(agent)
-                        additional_active_by_pair[(sector, material)] = additional_active_by_pair.get((sector, material), 0) + int(num_active)
+                        additional_active_by_pair[(sector, material)] = additional_active_by_pair.get(
+                            (sector, material), 0
+                        ) + int(num_active)
                         # Initialize SD stocks by adding to existing initial_value
                         try:
                             add = float(num_active)
@@ -549,7 +555,9 @@ def run_stepwise(
                                 prev = float(getattr(cum_elem, "initial_value", 0.0) or 0.0)
                                 setattr(cum_elem, "initial_value", prev + add)
                         except Exception as e:
-                            log.debug("SM completed-project seeding stock init adjust failed for (%s,%s): %s", sector, material, e)
+                            log.debug(
+                                "SM completed-project seeding stock init adjust failed for (%s,%s): %s", sector, material, e
+                            )
                     # Discard remainder for SM-mode as well
             if additional_active_by_pair:
                 log.info("Phase 17.x: Derived ACTIVE SM anchors from completed-project seeds: %s", additional_active_by_pair)
@@ -599,7 +607,7 @@ def run_stepwise(
     # 6) Attach a proper BPTK_Py scheduler and run strictly with run_step
     # Using the standard SimultaneousScheduler per BPTK_Py.
     model.scheduler = SimultaneousScheduler()
-    if getattr(model, 'scheduler', None) is None:
+    if getattr(model, "scheduler", None) is None:
         raise RuntimeError("BPTK_Py scheduler could not be initialized; cannot proceed with stepwise run")
 
     # Track lookups we've already warned about (per direction) to avoid spam
@@ -737,7 +745,7 @@ def run_stepwise(
             for material in materials:
                 name_sm = agent_demand_sector_input(sector, material)
                 value = float(agg_sm.get((sector, material), 0.0))
-                if name_sm not in getattr(model, 'converters', {}):
+                if name_sm not in getattr(model, "converters", {}):
                     # Skip silently if mapping says sector uses material but converter is absent
                     continue
                 model.converters[name_sm].equation = value
@@ -821,9 +829,7 @@ def run_stepwise(
                     cc_val,
                 )
         # Always validate FR bounds every step
-        validate_fulfillment_ratio_bounds(
-            model=model, materials=bundle.lists.materials, t=t, log=log
-        )
+        validate_fulfillment_ratio_bounds(model=model, materials=bundle.lists.materials, t=t, log=log)
 
         # Phase 15: Lookup extrapolation warnings (hold-last-value policy).
         # Detect when t is outside provided points for any lookup used this step.
@@ -883,9 +889,7 @@ def run_stepwise(
     try:
         suffix = re.sub(r"[^0-9A-Za-z_]+", "_", str(scenario.name).strip().replace(" ", "_"))
         if suffix:
-            suffixed = output_path.with_name(
-                output_path.stem + f"_{suffix}" + output_path.suffix
-            )
+            suffixed = output_path.with_name(output_path.stem + f"_{suffix}" + output_path.suffix)
             shutil.copyfile(output_path, suffixed)
             log.info("Also wrote suffixed KPI CSV to %s", suffixed)
     except Exception as _e:
@@ -910,6 +914,7 @@ def main() -> int:
     # If scenario provides lists_sm, apply it to the bundle before any SM validations/build
     try:
         from src.phase1_data import apply_lists_sm_override
+
         bundle = apply_lists_sm_override(bundle, scenario)
     except Exception as _e:
         # Non-fatal; will be validated later if in SM-mode
@@ -919,6 +924,7 @@ def main() -> int:
     # Allow scenario per-(s,m) constants to satisfy SM coverage by merging them into bundle.anchor_sm
     try:
         from src.phase1_data import merge_scenario_sm_constants_into_bundle
+
         bundle = merge_scenario_sm_constants_into_bundle(bundle, scenario)
     except Exception as _e:
         # Non-fatal; if merge fails we proceed with existing bundle
@@ -988,5 +994,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
-

@@ -278,4 +278,3 @@ def test_build_sm_agent_factory_uses_strict_sm_params():
     assert isinstance(a1, AnchorClientAgentSM)
     assert isinstance(a2, AnchorClientAgentSM)
     assert a1 is not a2
-

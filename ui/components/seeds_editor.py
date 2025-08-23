@@ -30,7 +30,10 @@ def render_seeds_editor(state: SeedsState, bundle: Phase1Bundle, anchor_mode: st
       - Direct clients (per material)
     """
     st.subheader("Seeds")
-    st.caption("Tip: Completed projects convert to floor(completed / projects_to_client_conversion) ACTIVE anchors at t0; the remainder is discarded (per-agent progress is not fungible).")
+    st.caption(
+        "Tip: Completed projects convert to floor(completed / projects_to_client_conversion) "
+        "ACTIVE anchors at t0; the remainder is discarded (per-agent progress is not fungible)."
+    )
     sectors = list(map(str, bundle.lists.sectors))
     materials = list(map(str, bundle.lists.materials))
 
@@ -51,13 +54,17 @@ def render_seeds_editor(state: SeedsState, bundle: Phase1Bundle, anchor_mode: st
                 c1, c2, c3 = st.columns([1, 1, 1])
                 with c1:
                     cur = state.active_anchor_clients.get(s, 0)
-                    state.active_anchor_clients[s] = _non_negative_int_input(f"ACTIVE anchors @ t0 — {s}", cur, key=f"seed_aac_{s}")
+                    state.active_anchor_clients[s] = _non_negative_int_input(
+                        f"ACTIVE anchors @ t0 — {s}", cur, key=f"seed_aac_{s}"
+                    )
                 with c2:
                     curq = state.elapsed_quarters.get(s, 0)
                     state.elapsed_quarters[s] = _non_negative_int_input(f"Elapsed quarters — {s}", curq, key=f"seed_eq_{s}")
                 with c3:
                     curc = state.completed_projects.get(s, 0)
-                    state.completed_projects[s] = _non_negative_int_input(f"Completed projects — {s}", curc, key=f"seed_cp_{s}")
+                    state.completed_projects[s] = _non_negative_int_input(
+                        f"Completed projects — {s}", curc, key=f"seed_cp_{s}"
+                    )
         tab_idx += 1
 
     if anchor_mode == "sm":
@@ -73,10 +80,14 @@ def render_seeds_editor(state: SeedsState, bundle: Phase1Bundle, anchor_mode: st
                     c1, c2 = st.columns([1, 1])
                     with c1:
                         cur_a = int(row_active.get(m, 0))
-                        row_active[m] = _non_negative_int_input(f"ACTIVE @ t0 — {s} • {m}", cur_a, key=f"seed_sm_active_{s}_{m}")
+                        row_active[m] = _non_negative_int_input(
+                            f"ACTIVE @ t0 — {s} • {m}", cur_a, key=f"seed_sm_active_{s}_{m}"
+                        )
                     with c2:
                         cur_c = int(row_cp.get(m, 0))
-                        row_cp[m] = _non_negative_int_input(f"Completed projects — {s} • {m}", cur_c, key=f"seed_sm_cp_{s}_{m}")
+                        row_cp[m] = _non_negative_int_input(
+                            f"Completed projects — {s} • {m}", cur_c, key=f"seed_sm_cp_{s}_{m}"
+                        )
                 # Persist non-zero entries only
                 row_active = {m: v for m, v in row_active.items() if v > 0}
                 row_cp = {m: v for m, v in row_cp.items() if v > 0}
@@ -106,6 +117,3 @@ def render_seeds_editor(state: SeedsState, bundle: Phase1Bundle, anchor_mode: st
 
 
 __all__ = ["render_seeds_editor"]
-
-
-

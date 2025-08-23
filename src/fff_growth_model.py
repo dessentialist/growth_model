@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 """
-Phase 4, 6 & 7 (prereqs) — SD Model: Direct Clients, Lookups, Gateways, Anchor Deliveries, Agent Creation Signals (BPTK_Py SD-DSL)
+Phase 4, 6 & 7 (prereqs) — SD Model: Direct Clients, Lookups, Gateways, 
+Anchor Deliveries, Agent Creation Signals (BPTK_Py SD-DSL)
 
 This module builds the System Dynamics (SD) portion required for:
 Phase 4
@@ -46,8 +47,6 @@ from BPTK_Py.sddsl import functions as F
 
 from .naming import (
     # constants & lookups
-    price_lookup_name,
-    max_capacity_lookup_name,
     price_converter,
     max_capacity_converter,
     other_constant,
@@ -120,11 +119,7 @@ def _eq_if_started_and_under_tam(
     tam: object,
 ):
     """Compose: base_rate * If(Time >= start_year, 1, 0) * If(CL < TAM, 1, 0)."""
-    return (
-        base_rate
-        * F.If(F.time() >= start_year, 1, 0)
-        * F.If(cl_stock < tam, 1, 0)
-    )
+    return base_rate * F.If(F.time() >= start_year, 1, 0) * F.If(cl_stock < tam, 1, 0)
 
 
 def _round_down_positive(x):
@@ -155,9 +150,7 @@ def _build_anchor_constants(model: Model, bundle: Phase1Bundle, elements: Dict[s
             try:
                 value = bundle.anchor.by_sector.at[param, sector]
             except Exception as exc:
-                raise ValueError(
-                    f"Missing anchor parameter '{param}' for sector '{sector}'"
-                ) from exc
+                raise ValueError(f"Missing anchor parameter '{param}' for sector '{sector}'") from exc
             c.equation = _as_float(value)
             elements[const_name] = c
 
@@ -281,7 +274,9 @@ def _require_anchor_sm_value(bundle: Phase1Bundle, sector: str, material: str, p
     return float(sel.iloc[0]["Value"])
 
 
-def _ensure_sm_anchor_constants_for_pair(model: Model, bundle: Phase1Bundle, sector: str, material: str, elements: Dict[str, object]) -> None:
+def _ensure_sm_anchor_constants_for_pair(
+    model: Model, bundle: Phase1Bundle, sector: str, material: str, elements: Dict[str, object]
+) -> None:
     """Ensure all SM-mode per-(s,m) anchor constants exist for a pair.
 
     - Creates constants for the full 17.1 set.
@@ -319,7 +314,9 @@ def _ensure_sm_anchor_constants_for_pair(model: Model, bundle: Phase1Bundle, sec
         elements[name_sm] = c
 
 
-def _build_sm_agent_creation_block(model: Model, bundle: Phase1Bundle, sector: str, material: str, elements: Dict[str, object]) -> None:
+def _build_sm_agent_creation_block(
+    model: Model, bundle: Phase1Bundle, sector: str, material: str, elements: Dict[str, object]
+) -> None:
     """Build SM-mode per-(s,m) lead generation and accumulate-and-fire creation signals.
 
     Elements created (Phase 17.2):
@@ -521,7 +518,8 @@ def _build_material_block(
     cl_stock.equation = total_new
 
     # ---- Average order quantity growth ----
-    # avg_order_quantity_<m> = avg_order_quantity_initial_<m> * (1 + client_requirement_growth_<m>)^(max(0, Time - lead_start_year_<m>))
+    # avg_order_quantity_<m> = avg_order_quantity_initial_<m> * 
+    #   (1 + client_requirement_growth_<m>)^(max(0, Time - lead_start_year_<m>))
     avg_name = avg_order_quantity(material)
     avg = model.converter(avg_name)
     # Client requirement growth is per quarter: exponent must count elapsed quarters.
@@ -542,8 +540,6 @@ def _build_material_block(
 
     # ---- Lookups: capacity and price ----
     # max_capacity_lookup_<m> = lookup(time, max_capacity_<m>)
-    cap_lookup_table = max_capacity_lookup_name(material)
-    price_lookup_table = price_lookup_name(material)
     cap_conv_name = max_capacity_converter(material)
     price_conv_name = price_converter(material)
 
@@ -574,7 +570,8 @@ def _build_material_block(
     elements[price_conv_name] = price_conv
 
     # Record lookup metadata on the model to support Phase 15 extrapolation warnings
-    # Structure: model._lookup_points_meta[converter_name] = {"points": [(t,v)...], "tmin":, "tmax":, "kind": "capacity"|"price"}
+    # Structure: model._lookup_points_meta[converter_name] = 
+    #   {"points": [(t,v)...], "tmin":, "tmax":, "kind": "capacity"|"price"}
     meta = getattr(model, "_lookup_points_meta", None)
     if meta is None:
         meta = {}
@@ -721,9 +718,7 @@ def _build_material_block(
                 try:
                     use_value = _as_float(bundle.anchor.by_sector.at["requirement_to_order_lag", sector])
                 except Exception as exc:
-                    raise ValueError(
-                        f"Missing anchor parameter 'requirement_to_order_lag' for sector '{sector}'"
-                    ) from exc
+                    raise ValueError(f"Missing anchor parameter 'requirement_to_order_lag' for sector '{sector}'") from exc
         if rtol_sm_name not in const_map:
             rtol_sm = model.constant(rtol_sm_name)
             rtol_sm.equation = _as_float(use_value)
@@ -825,20 +820,18 @@ def apply_scenario_overrides(model: Model, scenario: Scenario) -> None:
         # Use model-internal registry instead of attribute access
         const_map = getattr(model, "constants", {})
         if const_name not in const_map:
-            raise ValueError(
-                f"Scenario constant '{const_name}' not found in model elements; check naming alignment"
-            )
+            raise ValueError(f"Scenario constant '{const_name}' not found in model elements; check naming alignment")
         const_map[const_name].equation = float(value)
 
     # Apply lookup points
     for lookup_name, points in scenario.points.items():
         # Determine corresponding converter name
         if lookup_name.startswith("price_"):
-            material = lookup_name[len("price_") :].replace("_", " ")
+            material = lookup_name[len("price_"):].replace("_", " ")
             conv_name = price_converter(material)
             scale = 1.0
         elif lookup_name.startswith("max_capacity_"):
-            material = lookup_name[len("max_capacity_") :].replace("_", " ")
+            material = lookup_name[len("max_capacity_"):].replace("_", " ")
             conv_name = max_capacity_converter(material)
             # Capacity points are specified per year; model uses per-quarter. Preserve the build-time /4 scaling.
             scale = 0.25
@@ -847,13 +840,9 @@ def apply_scenario_overrides(model: Model, scenario: Scenario) -> None:
 
         conv_map = getattr(model, "converters", {})
         if conv_name not in conv_map:
-            raise ValueError(
-                f"Lookup converter '{conv_name}' for override '{lookup_name}' not found in model"
-            )
+            raise ValueError(f"Lookup converter '{conv_name}' for override '{lookup_name}' not found in model")
         normalized = [(float(t), float(v)) for (t, v) in points]
-        conv_map[conv_name].equation = (
-            F.lookup(F.time(), normalized) * scale
-        )
+        conv_map[conv_name].equation = F.lookup(F.time(), normalized) * scale
         # Update lookup meta for Phase 15 warnings/extrapolation awareness
         meta = getattr(model, "_lookup_points_meta", None)
         if meta is None:
@@ -872,5 +861,3 @@ __all__ = [
     "build_phase4_model",
     "apply_scenario_overrides",
 ]
-
-

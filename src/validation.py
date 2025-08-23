@@ -143,6 +143,7 @@ def validate_agents_to_create_sm_signals(
                 log.error(msg)
             raise RuntimeError(msg)
 
+
 def validate_fulfillment_ratio_bounds(
     *, model, materials: Iterable[str], t: float, log: Optional[logging.Logger] = None
 ) -> None:
@@ -230,5 +231,3 @@ def sample_gateways(
             parts.append(f"{s}={v:.4f}")
             total += v
         log.debug("t=%.2f Gateway %s: %s | sum=%.4f", t, m, ", ".join(parts) if parts else "(none)", total)
-
-

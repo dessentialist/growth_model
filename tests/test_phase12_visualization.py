@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 from pathlib import Path
 
 import pytest
@@ -26,5 +25,3 @@ def test_phase12_generate_plots_smoke(tmp_path: Path):
     for p in out_paths:
         assert p.exists(), f"Plot not created: {p}"
         assert p.stat().st_size > 0, f"Plot file is empty: {p}"
-
-

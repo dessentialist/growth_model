@@ -100,5 +100,3 @@ def test_completed_projects_sm_mode(tmp_path: Path) -> None:
     # floor(5 / 2) = 2 ACTIVE anchors at t0
     val = _read_kpi_csv_value(out_csv, "Anchor Clients Defense")
     assert int(val) == 2
-
-

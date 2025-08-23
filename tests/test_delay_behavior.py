@@ -30,7 +30,10 @@ class TestDelayBehavior(unittest.TestCase):
         # Choose first material and any mapped sector
         material = self.bundle.lists.materials[0]
         sector = (
-            self.bundle.primary_map.long[self.bundle.primary_map.long["Material"] == material]["Sector"].astype(str).unique().tolist()[0]
+            self.bundle.primary_map.long[self.bundle.primary_map.long["Material"] == material]["Sector"]
+            .astype(str)
+            .unique()
+            .tolist()[0]
         )
 
         t0 = float(self.scenario.runspecs.starttime)
@@ -42,7 +45,7 @@ class TestDelayBehavior(unittest.TestCase):
 
         # Inject anchor gateway only at step 0 and then zero, to observe delay on anchor deliveries
         name_sm = agent_demand_sector_input(sector, material)
-        if name_sm in getattr(model, 'converters', {}):
+        if name_sm in getattr(model, "converters", {}):
             model.converters[name_sm].equation = 5.0
         model.run_step(0, collect_data=False)
 
@@ -51,7 +54,7 @@ class TestDelayBehavior(unittest.TestCase):
         self.assertGreaterEqual(adf0, 0.0)
 
         # Zero the input for the next step and advance
-        if name_sm in getattr(model, 'converters', {}):
+        if name_sm in getattr(model, "converters", {}):
             model.converters[name_sm].equation = 0.0
         model.run_step(1, collect_data=False)
 
@@ -73,5 +76,3 @@ class TestDelayBehavior(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
-

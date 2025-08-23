@@ -5,7 +5,6 @@ import unittest
 
 from src.phase1_data import load_phase1_inputs
 from src.scenario_loader import load_and_validate_scenario
-from src.io_paths import PROJECT_ROOT
 
 
 class TestScenarioLoader(unittest.TestCase):
@@ -118,5 +117,3 @@ overrides:
 
 if __name__ == "__main__":
     unittest.main()
-
-

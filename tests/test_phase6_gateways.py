@@ -33,28 +33,28 @@ class TestPhase6Gateways(unittest.TestCase):
 
         # Expect per-sector input converter
         name_input = agent_demand_sector_input(sector, material)
-        self.assertIn(name_input, getattr(model, 'converters', {}))
+        self.assertIn(name_input, getattr(model, "converters", {}))
 
         # Expect aggregated, total demand and fulfillment ratio per material
         name_agg = agent_aggregated_demand(material)
         name_td = total_demand(material)
         name_fr = fulfillment_ratio(material)
         for n in (name_agg, name_td, name_fr):
-            self.assertIn(n, getattr(model, 'converters', {}))
+            self.assertIn(n, getattr(model, "converters", {}))
 
         # Expect delayed agent demand and anchor delivery per sector-material
         name_delayed = delayed_agent_demand(sector, material)
         name_adf_sm = anchor_delivery_flow_sector_material(sector, material)
         for n in (name_delayed, name_adf_sm):
-            self.assertIn(n, getattr(model, 'converters', {}))
+            self.assertIn(n, getattr(model, "converters", {}))
 
         # Expect material-level anchor delivery aggregator
         name_adf_m = anchor_delivery_flow_material(material)
-        self.assertIn(name_adf_m, getattr(model, 'converters', {}))
+        self.assertIn(name_adf_m, getattr(model, "converters", {}))
 
         # requirement_to_order_lag constant (sector-level) must exist
         name_rtol = anchor_constant("requirement_to_order_lag", sector)
-        self.assertIn(name_rtol, getattr(model, 'constants', {}))
+        self.assertIn(name_rtol, getattr(model, "constants", {}))
 
         # Numeric update should be accepted for gateway inputs (no compile-time error)
         model.converters[name_input].equation = 5.0
@@ -64,5 +64,3 @@ class TestPhase6Gateways(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
-

@@ -160,12 +160,12 @@ class AnchorClientAgent:
         self.requirements: Dict[str, float] = {m: 0.0 for m in self.material_start_year_by_material}
 
         # Phase 16: store per-(s,m) overrides as dicts with defaults
-        self._sm_initial_requirement_rate = {str(k): float(v) for k, v in (dict(sm_initial_requirement_rate or {}) ).items()}
-        self._sm_initial_req_growth = {str(k): float(v) for k, v in (dict(sm_initial_req_growth or {}) ).items()}
-        self._sm_ramp_requirement_rate = {str(k): float(v) for k, v in (dict(sm_ramp_requirement_rate or {}) ).items()}
-        self._sm_ramp_req_growth = {str(k): float(v) for k, v in (dict(sm_ramp_req_growth or {}) ).items()}
-        self._sm_steady_requirement_rate = {str(k): float(v) for k, v in (dict(sm_steady_requirement_rate or {}) ).items()}
-        self._sm_steady_req_growth = {str(k): float(v) for k, v in (dict(sm_steady_req_growth or {}) ).items()}
+        self._sm_initial_requirement_rate = {str(k): float(v) for k, v in (dict(sm_initial_requirement_rate or {})).items()}
+        self._sm_initial_req_growth = {str(k): float(v) for k, v in (dict(sm_initial_req_growth or {})).items()}
+        self._sm_ramp_requirement_rate = {str(k): float(v) for k, v in (dict(sm_ramp_requirement_rate or {})).items()}
+        self._sm_ramp_req_growth = {str(k): float(v) for k, v in (dict(sm_ramp_req_growth or {})).items()}
+        self._sm_steady_requirement_rate = {str(k): float(v) for k, v in (dict(sm_steady_requirement_rate or {})).items()}
+        self._sm_steady_req_growth = {str(k): float(v) for k, v in (dict(sm_steady_req_growth or {})).items()}
 
     # ----- Public read-only properties (useful for tests and runner) -----
     @property
@@ -210,7 +210,7 @@ class AnchorClientAgent:
         if self.state is AnchorClientAgentState.POTENTIAL:
             # ACTIVE PROJECTS FIX: Complete existing projects first, then start new ones
             # This ensures projects have at least one step of in-progress duration.
-            # 
+            #
             # Previous bug: Starting projects and then immediately checking for completion
             # in the same step caused projects with short durations (e.g., 1 quarter) to
             # complete immediately, resulting in zero in-progress projects in KPIs.
@@ -224,9 +224,7 @@ class AnchorClientAgent:
                 self.activation_time_years is None
                 and self._num_projects_completed >= self.params.projects_to_client_conversion
             ):
-                self.activation_time_years = t_years + _quarters_to_years(
-                    self.params.anchor_client_activation_delay_quarters
-                )
+                self.activation_time_years = t_years + _quarters_to_years(self.params.anchor_client_activation_delay_quarters)
                 self.state = AnchorClientAgentState.PENDING_ACTIVATION
 
         # If waiting for activation and time is reached, activate now
@@ -440,6 +438,7 @@ __all__ = [
 # Phase 17.3 — SM-mode ABM
 # -----------------------------
 
+
 @dataclass(frozen=True)
 class AnchorClientSMParams:
     """Container for required per-(sector, material) parameters in SM-mode.
@@ -547,9 +546,7 @@ class AnchorClientAgentSM:
                 self.activation_time_years is None
                 and self._num_projects_completed >= self.params.projects_to_client_conversion
             ):
-                self.activation_time_years = t_years + _quarters_to_years(
-                    self.params.anchor_client_activation_delay_quarters
-                )
+                self.activation_time_years = t_years + _quarters_to_years(self.params.anchor_client_activation_delay_quarters)
                 self.state = AnchorClientAgentState.PENDING_ACTIVATION
 
         if self.state is AnchorClientAgentState.PENDING_ACTIVATION:
@@ -640,7 +637,9 @@ def build_sm_anchor_agent_factory(bundle: "Phase1Bundle", sector: str, material:
     # Build params strictly from SM table
     params = AnchorClientSMParams(
         anchor_start_year_years=float(_require_anchor_sm(bundle, sector, material, "anchor_start_year")),
-        anchor_client_activation_delay_quarters=float(_require_anchor_sm(bundle, sector, material, "anchor_client_activation_delay")),
+        anchor_client_activation_delay_quarters=float(
+            _require_anchor_sm(bundle, sector, material, "anchor_client_activation_delay")
+        ),
         project_generation_rate=float(_require_anchor_sm(bundle, sector, material, "project_generation_rate")),
         max_projects_per_pc=float(_require_anchor_sm(bundle, sector, material, "max_projects_per_pc")),
         project_duration_quarters=float(_require_anchor_sm(bundle, sector, material, "project_duration")),
@@ -662,10 +661,10 @@ def build_sm_anchor_agent_factory(bundle: "Phase1Bundle", sector: str, material:
 
 
 # Export SM-mode symbols
-__all__.extend([
-    "AnchorClientSMParams",
-    "AnchorClientAgentSM",
-    "build_sm_anchor_agent_factory",
-])
-
-
+__all__.extend(
+    [
+        "AnchorClientSMParams",
+        "AnchorClientAgentSM",
+        "build_sm_anchor_agent_factory",
+    ]
+)

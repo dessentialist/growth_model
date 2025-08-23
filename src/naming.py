@@ -89,9 +89,7 @@ class NameRegistry:
         if existing != source:
             raise ValueError(
                 "Name collision detected: final name '{final}' already registered for "
-                "source={src1}, attempted source={src2}".format(
-                    final=final_name, src1=existing, src2=source
-                )
+                "source={src1}, attempted source={src2}".format(final=final_name, src1=existing, src2=source)
             )
 
 
@@ -152,6 +150,7 @@ def create_element_name(
 
 
 # ---- Canonical helper functions (match technical_architecture.md) ----
+
 
 # Constants (scenario overrides, SD constants)
 def anchor_constant(param: str, sector: str, *, registry: Optional[NameRegistry] = None) -> str:
@@ -348,7 +347,8 @@ def agent_creation_inflow_sm(sector: str, material: str, *, registry: Optional[N
 
 
 def agent_creation_outflow_sm(sector: str, material: str, *, registry: Optional[NameRegistry] = None) -> str:
-    """Canonical name for per-(sector, material) Agent_Creation_Outflow converter (integerize via floor-like round) in SM-mode."""
+    """Canonical name for per-(sector, material) Agent_Creation_Outflow converter 
+    (integerize via floor-like round) in SM-mode."""
     return create_element_name("Agent_Creation_Outflow", sector, material, registry=registry)
 
 
@@ -358,7 +358,8 @@ def agents_to_create_converter_sm(sector: str, material: str, *, registry: Optio
 
 
 def cumulative_inflow_sm(sector: str, material: str, *, registry: Optional[NameRegistry] = None) -> str:
-    """Canonical name for per-(sector, material) Cumulative_Inflow converter feeding the cumulative created stock in SM-mode."""
+    """Canonical name for per-(sector, material) Cumulative_Inflow converter 
+    feeding the cumulative created stock in SM-mode."""
     return create_element_name("Cumulative_Inflow", sector, material, registry=registry)
 
 
@@ -426,5 +427,3 @@ __all__ = [
     "cumulative_inflow_sm",
     "cumulative_agents_created_sm",
 ]
-
-

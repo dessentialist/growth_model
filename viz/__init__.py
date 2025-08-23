@@ -14,5 +14,3 @@ __all__ = [
     "plot_capacity_utilization",
     "generate_all_plots_from_csv",
 ]
-
-

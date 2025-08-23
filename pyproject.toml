@@ -1,0 +1,13 @@
+[tool.ruff]
+# Set line length to 127 to match our flake8 configuration
+line-length = 127
+
+[tool.ruff.lint]
+# Enable only E (pycodestyle errors) and F (pyflakes) to match flake8 behavior
+# Ignore E402 (module level import not at top of file) since imports after
+# module docstrings are a standard Python practice
+select = ["E", "F"]
+ignore = ["E402"]
+
+[tool.black]
+line-length = 127

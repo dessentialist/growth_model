@@ -1,6 +1,4 @@
-import os
 import unittest
-from pathlib import Path
 
 from src.kpi_extractor import build_row_order
 
@@ -41,5 +39,3 @@ class TestPhase176RowOrder(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
-

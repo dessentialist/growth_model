@@ -4,7 +4,6 @@ from pathlib import Path
 from src.phase1_data import load_phase1_inputs
 from src.scenario_loader import load_and_validate_scenario
 from src.fff_growth_model import build_phase4_model, apply_scenario_overrides
-from src.abm_anchor import build_all_anchor_agent_factories
 from src.naming import agents_to_create_converter, agent_demand_sector_input
 
 
@@ -32,7 +31,7 @@ class TestPhase7RunnerScaffolding(unittest.TestCase):
 
         # Update sector-material gateway numeric value and evaluate at next time
         name_sm = agent_demand_sector_input(sector, material)
-        if name_sm in getattr(model, 'converters', {}):
+        if name_sm in getattr(model, "converters", {}):
             model.converters[name_sm].equation = 1.23
         # Re-evaluate creation signal at next time step (no scheduler dependency)
         t_next = self.scenario.runspecs.starttime + self.scenario.runspecs.dt
@@ -42,5 +41,3 @@ class TestPhase7RunnerScaffolding(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
-

@@ -80,7 +80,7 @@ def test_sm_mode_partial_anchor_params_sm_coverage_fails_in_loader(tmp_path: Pat
     # Write a minimal SM-mode scenario
     scenario_yaml = _write_yaml(
         tmp_path,
-        f"""
+        """
         name: sm_partial
         runspecs:
           starttime: 2025.0
@@ -162,5 +162,3 @@ def test_sm_mode_unknown_per_sm_override_rejected(tmp_path: Path):
     with pytest.raises(ValueError) as exc:
         load_and_validate_scenario(scenario_yaml, bundle=base)
     assert "Unknown constants" in str(exc.value)
-
-

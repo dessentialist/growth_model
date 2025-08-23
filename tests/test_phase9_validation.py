@@ -45,15 +45,11 @@ class TestPhase9Validation(unittest.TestCase):
         # Evaluate at t=starttime without advancing scheduler
         t = float(self.scenario.runspecs.starttime)
         # Should not raise for baseline
-        validate_agents_to_create_signals(
-            model=self.model, sectors=self.bundle.lists.sectors, t=t
-        )
+        validate_agents_to_create_signals(model=self.model, sectors=self.bundle.lists.sectors, t=t)
 
     def test_fulfillment_ratio_bounds(self):
         t = float(self.scenario.runspecs.starttime)
-        validate_fulfillment_ratio_bounds(
-            model=self.model, materials=self.bundle.lists.materials, t=t
-        )
+        validate_fulfillment_ratio_bounds(model=self.model, materials=self.bundle.lists.materials, t=t)
 
     def test_revenue_identity_initial(self):
         # Single-step identity should hold at t=start
@@ -74,5 +70,3 @@ class TestPhase9Validation(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
-

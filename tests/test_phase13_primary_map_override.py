@@ -44,5 +44,3 @@ overrides:
     # Long table rows for Defense should reflect the same set
     long_mats = set(merged.primary_map.long[merged.primary_map.long["Sector"] == "Defense"]["Material"].tolist())
     assert long_mats == mats
-
-

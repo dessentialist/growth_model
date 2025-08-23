@@ -6,8 +6,6 @@ These tests validate that permissible keys are generated and that an in-memory
 scenario dict can be validated successfully with simple overrides.
 """
 
-from pathlib import Path
-
 import pytest
 
 from src.phase1_data import load_phase1_inputs
@@ -17,7 +15,6 @@ from src.scenario_loader import (
 )
 from src.naming import price_lookup_name, max_capacity_lookup_name
 from ui.state import UIState, PrimaryMapEntry
-from ui.services.validation_client import get_bundle
 from ui.services.builder import write_scenario_yaml
 
 
@@ -66,6 +63,8 @@ def test_validate_scenario_with_points_override():
     }
     s = validate_scenario_dict(bundle, scenario_dict)
     assert pl in s.points
+
+
 def test_validate_with_primary_map_and_seeds(tmp_path):
     bundle = load_phase1_inputs()
     mats = list(bundle.lists.materials)
@@ -91,7 +90,6 @@ def test_validate_with_primary_map_and_seeds(tmp_path):
     assert written.exists()
 
 
-
 def test_validate_scenario_points_strictly_increasing_years():
     bundle = load_phase1_inputs()
     mats = list(bundle.lists.materials)
@@ -106,5 +104,3 @@ def test_validate_scenario_points_strictly_increasing_years():
     }
     with pytest.raises(ValueError):
         _ = validate_scenario_dict(bundle, scenario_dict)
-
-

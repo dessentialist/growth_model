@@ -66,5 +66,3 @@ class TestPhase8KPIExtraction(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
-

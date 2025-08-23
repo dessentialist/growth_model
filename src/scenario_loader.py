@@ -26,7 +26,7 @@ from dataclasses import dataclass
 import difflib
 import json
 from pathlib import Path
-from typing import Dict, Iterable, List, Mapping, MutableMapping, Optional, Sequence, Tuple
+from typing import Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 
 import yaml
 
@@ -112,9 +112,7 @@ def _coerce_numeric(value: object, field_name: str) -> float:
     raise ValueError(f"Non-numeric value for '{field_name}': {value!r}")
 
 
-def _coerce_points(
-    points: Sequence[Sequence[object]], lookup_name: str
-) -> List[Tuple[float, float]]:
+def _coerce_points(points: Sequence[Sequence[object]], lookup_name: str) -> List[Tuple[float, float]]:
     """Validate and normalize a list of [time, value] pairs to sorted floats.
 
     The function is deliberately strict about structure and monotonicity to
@@ -145,7 +143,9 @@ def _nearest_matches(name: str, candidates: Iterable[str], n: int = 3) -> List[s
     return difflib.get_close_matches(name, list(candidates), n=n)
 
 
-def _collect_permissible_override_keys(bundle: Phase1Bundle, *, anchor_mode: str = "sector", extra_sm_pairs: Optional[List[Tuple[str, str]]] = None) -> Tuple[set, set]:
+def _collect_permissible_override_keys(
+    bundle: Phase1Bundle, *, anchor_mode: str = "sector", extra_sm_pairs: Optional[List[Tuple[str, str]]] = None
+) -> Tuple[set, set]:
     """Return (constants_keys, points_keys) permissible for overrides.
 
     - constants_keys include anchor param × sector and other param × material
@@ -202,6 +202,7 @@ def _collect_permissible_override_keys(bundle: Phase1Bundle, *, anchor_mode: str
         }
     # SM universe from lists_sm if available, else derive from primary_map; include extra pairs from scenario overrides
     import pandas as pd
+
     sm_df_universe = getattr(bundle, "lists_sm", None)
     if sm_df_universe is None or sm_df_universe.empty:
         sm_df_universe = bundle.primary_map.long[["Sector", "Material"]].drop_duplicates()
@@ -222,7 +223,9 @@ def _collect_permissible_override_keys(bundle: Phase1Bundle, *, anchor_mode: str
     return constants, points
 
 
-def _sm_constants_from_overrides(constants: Mapping[str, float], bundle: Phase1Bundle, params: set[str]) -> set[Tuple[str, str, str]]:
+def _sm_constants_from_overrides(
+    constants: Mapping[str, float], bundle: Phase1Bundle, params: set[str]
+) -> set[Tuple[str, str, str]]:
     """Return set of (Sector, Material, Param) triples that are present in scenario overrides.
 
     This helps SM-mode consider scenario-provided constants as satisfying coverage, even if
@@ -243,7 +246,9 @@ def _sm_constants_from_overrides(constants: Mapping[str, float], bundle: Phase1B
     return found
 
 
-def _validate_seeds(raw_seeds: Optional[Mapping[str, object]], *, bundle: Phase1Bundle) -> Tuple[Dict[str, int], Dict[str, int]]:
+def _validate_seeds(
+    raw_seeds: Optional[Mapping[str, object]], *, bundle: Phase1Bundle
+) -> Tuple[Dict[str, int], Dict[str, int]]:
     """Validate and normalize Phase 14 seeding configuration.
 
     Schema (YAML):
@@ -284,14 +289,25 @@ def _validate_seeds(raw_seeds: Optional[Mapping[str, object]], *, bundle: Phase1
     elapsed_map = _normalize_counts(raw_seeds.get("elapsed_quarters"), "elapsed_quarters")
 
     # Guard against extra/unknown keys at this level
-    allowed = {"active_anchor_clients", "elapsed_quarters", "direct_clients", "active_anchor_clients_sm", "completed_projects", "completed_projects_sm", "elapsed_quarters_sm", "__scenario_lists_sm__"}
+    allowed = {
+        "active_anchor_clients",
+        "elapsed_quarters",
+        "direct_clients",
+        "active_anchor_clients_sm",
+        "completed_projects",
+        "completed_projects_sm",
+        "elapsed_quarters_sm",
+        "__scenario_lists_sm__",
+    }
     extras = set(raw_seeds.keys()) - allowed
     if extras:
         raise ValueError(f"seeds contains unknown keys: {', '.join(sorted(extras))}")
     return active_map, elapsed_map
 
 
-def _validate_seeds_sm(raw_seeds: Optional[Mapping[str, object]], *, bundle: Phase1Bundle, anchor_mode: str) -> Dict[str, Dict[str, int]]:
+def _validate_seeds_sm(
+    raw_seeds: Optional[Mapping[str, object]], *, bundle: Phase1Bundle, anchor_mode: str
+) -> Dict[str, Dict[str, int]]:
     """Phase 17.1: Validate SM-mode seeding configuration.
 
     Schema (YAML):
@@ -313,6 +329,7 @@ def _validate_seeds_sm(raw_seeds: Optional[Mapping[str, object]], *, bundle: Pha
     # The scenario-level lists_sm is parsed earlier in load_and_validate_scenario and stored temporarily
     # on a private key in the seeds block for validation purposes.
     import pandas as pd
+
     scenario_sm_pairs: List[Tuple[str, str]] | None = None
     if isinstance(raw_seeds, Mapping):
         scenario_sm_pairs = raw_seeds.get("__scenario_lists_sm__")  # type: ignore[assignment]
@@ -346,7 +363,9 @@ def _validate_seeds_sm(raw_seeds: Optional[Mapping[str, object]], *, bundle: Pha
     return out
 
 
-def _validate_completed_projects(raw_seeds: Optional[Mapping[str, object]], *, bundle: Phase1Bundle, anchor_mode: str) -> Dict[str, int]:
+def _validate_completed_projects(
+    raw_seeds: Optional[Mapping[str, object]], *, bundle: Phase1Bundle, anchor_mode: str
+) -> Dict[str, int]:
     """Validate sector-mode completed projects backlog seeds.
 
     Schema:
@@ -380,7 +399,9 @@ def _validate_completed_projects(raw_seeds: Optional[Mapping[str, object]], *, b
     return out
 
 
-def _validate_completed_projects_sm(raw_seeds: Optional[Mapping[str, object]], *, bundle: Phase1Bundle, anchor_mode: str) -> Dict[str, Dict[str, int]]:
+def _validate_completed_projects_sm(
+    raw_seeds: Optional[Mapping[str, object]], *, bundle: Phase1Bundle, anchor_mode: str
+) -> Dict[str, Dict[str, int]]:
     """Validate SM-mode completed projects backlog per (sector, material).
 
     Schema:
@@ -399,6 +420,7 @@ def _validate_completed_projects_sm(raw_seeds: Optional[Mapping[str, object]], *
         raise ValueError("seeds.completed_projects_sm must be a mapping of sector -> mapping(material -> int)")
     # Use scenario-provided lists_sm if available (injected earlier on private key), else bundle.lists_sm
     import pandas as pd
+
     scenario_sm_pairs: List[Tuple[str, str]] | None = None
     if isinstance(raw_seeds, Mapping):
         scenario_sm_pairs = raw_seeds.get("__scenario_lists_sm__")  # type: ignore[assignment]
@@ -427,7 +449,9 @@ def _validate_completed_projects_sm(raw_seeds: Optional[Mapping[str, object]], *
     return out
 
 
-def _validate_elapsed_quarters_sm(raw_seeds: Optional[Mapping[str, object]], *, bundle: Phase1Bundle, anchor_mode: str) -> Dict[str, Dict[str, int]]:
+def _validate_elapsed_quarters_sm(
+    raw_seeds: Optional[Mapping[str, object]], *, bundle: Phase1Bundle, anchor_mode: str
+) -> Dict[str, Dict[str, int]]:
     """Validate SM-mode elapsed quarters per (sector, material).
 
     Schema:
@@ -446,6 +470,7 @@ def _validate_elapsed_quarters_sm(raw_seeds: Optional[Mapping[str, object]], *, 
         raise ValueError("seeds.elapsed_quarters_sm must be a mapping of sector -> mapping(material -> int)")
     # Build SM universe
     import pandas as pd
+
     sm_df = getattr(bundle, "lists_sm", None)
     if sm_df is None or sm_df.empty:
         # Allow scenario-level lists_sm injected earlier for validation when present
@@ -453,7 +478,9 @@ def _validate_elapsed_quarters_sm(raw_seeds: Optional[Mapping[str, object]], *, 
         if scenario_sm_pairs:
             sm_df = pd.DataFrame(scenario_sm_pairs, columns=["Sector", "Material"]).drop_duplicates()
         else:
-            raise ValueError("SM-mode requires non-empty lists_sm (provide via scenario or inputs.json) to validate elapsed_quarters_sm")
+            raise ValueError(
+                "SM-mode requires non-empty lists_sm (provide via scenario or inputs.json) to validate elapsed_quarters_sm"
+            )
     allowed_pairs = {(str(r["Sector"]), str(r["Material"])) for _, r in sm_df.iterrows()}
     out: Dict[str, Dict[str, int]] = {}
     for sector, mat_map in block.items():
@@ -500,9 +527,7 @@ def _validate_direct_seeds(raw_seeds: Optional[Mapping[str, object]], *, bundle:
     return out
 
 
-def _validate_primary_map_override(
-    raw_pm: object, *, bundle: Phase1Bundle
-) -> Dict[str, List[Tuple[str, float]]]:
+def _validate_primary_map_override(raw_pm: object, *, bundle: Phase1Bundle) -> Dict[str, List[Tuple[str, float]]]:
     """Validate and normalize primary_map overrides.
 
     Schema:
@@ -543,26 +568,18 @@ def _validate_primary_map_override(
             if not mat:
                 raise ValueError(f"overrides.primary_map['{sector}'][{idx}] missing 'material'")
             if mat not in mats_set:
-                raise ValueError(
-                    f"overrides.primary_map['{sector}'][{idx}] material '{mat}' is not in inputs lists.materials"
-                )
+                raise ValueError(f"overrides.primary_map['{sector}'][{idx}] material '{mat}' is not in inputs lists.materials")
             try:
                 sy = _coerce_numeric(e.get("start_year"), f"overrides.primary_map['{sector}'][{idx}].start_year")
-            except Exception as exc:
+            except Exception:
                 raise
             # Cross-table presence checks
             if mat not in other_cols:
-                raise ValueError(
-                    f"overrides.primary_map['{sector}'][{idx}] material '{mat}' not present in other_params"
-                )
+                raise ValueError(f"overrides.primary_map['{sector}'][{idx}] material '{mat}' not present in other_params")
             if mat not in prod_mats:
-                raise ValueError(
-                    f"overrides.primary_map['{sector}'][{idx}] material '{mat}' not present in production table"
-                )
+                raise ValueError(f"overrides.primary_map['{sector}'][{idx}] material '{mat}' not present in production table")
             if mat not in price_mats:
-                raise ValueError(
-                    f"overrides.primary_map['{sector}'][{idx}] material '{mat}' not present in pricing table"
-                )
+                raise ValueError(f"overrides.primary_map['{sector}'][{idx}] material '{mat}' not present in pricing table")
             normalized[mat] = float(sy)
         if normalized:
             out[sector] = [(m, normalized[m]) for m in sorted(normalized.keys())]
@@ -601,9 +618,7 @@ def _validate_overrides(
             unknown_points.append(name)
             continue
         if not isinstance(raw_points, Sequence):
-            raise ValueError(
-                f"overrides.points['{name}'] must be a list of [time, value] pairs"
-            )
+            raise ValueError(f"overrides.points['{name}'] must be a list of [time, value] pairs")
         points_out[name] = _coerce_points(raw_points, name)
 
     if unknown_constants or unknown_points:
@@ -612,21 +627,15 @@ def _validate_overrides(
             messages.append(
                 "Unknown constants: "
                 + ", ".join(
-                    f"{n} (suggest: {', '.join(_nearest_matches(n, permissible_constants))})"
-                    for n in unknown_constants
+                    f"{n} (suggest: {', '.join(_nearest_matches(n, permissible_constants))})" for n in unknown_constants
                 )
             )
         if unknown_points:
             messages.append(
                 "Unknown points: "
-                + ", ".join(
-                    f"{n} (suggest: {', '.join(_nearest_matches(n, permissible_points))})"
-                    for n in unknown_points
-                )
+                + ", ".join(f"{n} (suggest: {', '.join(_nearest_matches(n, permissible_points))})" for n in unknown_points)
             )
-        raise ValueError(
-            "Scenario overrides contain unknown keys. " + " | ".join(messages)
-        )
+        raise ValueError("Scenario overrides contain unknown keys. " + " | ".join(messages))
 
     return constants_out, points_out
 
@@ -666,9 +675,7 @@ def _validate_runspecs(raw_runspecs: Optional[Mapping[str, object]]) -> RunSpecs
     return RunSpecs(start, stop, dt, mode)
 
 
-def load_and_validate_scenario(
-    path: Path, *, bundle: Phase1Bundle
-) -> Scenario:
+def load_and_validate_scenario(path: Path, *, bundle: Phase1Bundle) -> Scenario:
     """Load a scenario file and validate it against Phase 1 inputs.
 
     Parameters
@@ -699,7 +706,7 @@ def load_and_validate_scenario(
     # Build extra (sector, material) pairs from primary_map overrides to expand permissible constants surface
     extra_pairs: List[Tuple[str, str]] = []
     for sector, entries in (pm_overrides or {}).items():
-        for (mat, _sy) in entries:
+        for mat, _sy in entries:
             extra_pairs.append((sector, mat))
 
     # 3a) Optional scenario-level lists_sm (SM universe). Validate against lists and store as tuples.
@@ -733,9 +740,7 @@ def load_and_validate_scenario(
     permissible_constants, permissible_points = _collect_permissible_override_keys(
         bundle, anchor_mode=runspecs.anchor_mode, extra_sm_pairs=extra_pairs or None
     )
-    constants, points = _validate_overrides(
-        raw.get("overrides", {}) or {}, permissible_constants, permissible_points
-    )
+    constants, points = _validate_overrides(raw.get("overrides", {}) or {}, permissible_constants, permissible_points)
 
     # Phase 14: seeds (scenario-specific)
     seeds_block = raw.get("seeds")
@@ -758,6 +763,7 @@ def load_and_validate_scenario(
             raise ValueError("SM-mode prohibits seeds.active_anchor_clients; use seeds.active_anchor_clients_sm instead")
         # Validate lists_sm exists (scenario-level satisfies requirement); prefer scenario-provided pairs
         import pandas as pd
+
         if scenario_lists_sm_pairs:
             sm_df = pd.DataFrame(scenario_lists_sm_pairs, columns=["Sector", "Material"]).drop_duplicates()
         else:
@@ -789,11 +795,12 @@ def load_and_validate_scenario(
         }
         anchor_sm_df = getattr(bundle, "anchor_sm", None)
         if anchor_sm_df is None or anchor_sm_df.empty:
-            raise ValueError("SM-mode requires anchor_params_sm with full coverage for all targeted parameters and pairs in lists_sm")
+            raise ValueError(
+                "SM-mode requires anchor_params_sm with full coverage for all targeted parameters and pairs in lists_sm"
+            )
         # Create a set of available triples
         available = {
-            (str(r["Sector"]).strip(), str(r["Material"]).strip(), str(r["Param"]).strip())
-            for _, r in anchor_sm_df.iterrows()
+            (str(r["Sector"]).strip(), str(r["Material"]).strip(), str(r["Param"]).strip()) for _, r in anchor_sm_df.iterrows()
         }
         # Also count scenario-provided per-(s,m) constants toward coverage
         available |= _sm_constants_from_overrides(constants, bundle, targeted_sm_params)
@@ -807,9 +814,7 @@ def load_and_validate_scenario(
         if missing:
             # Keep message concise but actionable; cap long lists
             preview = ", ".join(missing[:10]) + (" ..." if len(missing) > 10 else "")
-            raise ValueError(
-                "SM-mode missing per-(sector, material) parameters for: " + preview
-            )
+            raise ValueError("SM-mode missing per-(sector, material) parameters for: " + preview)
 
     return Scenario(
         name=name,
@@ -842,9 +847,7 @@ def list_permissible_override_keys(
     Returns a dictionary:
       { "constants": set[str], "points": set[str] }
     """
-    constants, points = _collect_permissible_override_keys(
-        bundle, anchor_mode=anchor_mode, extra_sm_pairs=extra_sm_pairs
-    )
+    constants, points = _collect_permissible_override_keys(bundle, anchor_mode=anchor_mode, extra_sm_pairs=extra_sm_pairs)
     return {"constants": constants, "points": points}
 
 
@@ -871,7 +874,7 @@ def validate_scenario_dict(bundle: Phase1Bundle, scenario_dict: Mapping[str, obj
     # Extra (sector, material) pairs from primary_map to expand constants surface
     extra_pairs: List[Tuple[str, str]] = []
     for sector, entries in (pm_overrides or {}).items():
-        for (mat, _sy) in entries:
+        for mat, _sy in entries:
             extra_pairs.append((sector, mat))
 
     # Optional scenario-level lists_sm
@@ -904,9 +907,7 @@ def validate_scenario_dict(bundle: Phase1Bundle, scenario_dict: Mapping[str, obj
     permissible_constants, permissible_points = _collect_permissible_override_keys(
         bundle, anchor_mode=runspecs.anchor_mode, extra_sm_pairs=extra_pairs or None
     )
-    constants, points = _validate_overrides(
-        overrides_block, permissible_constants, permissible_points
-    )
+    constants, points = _validate_overrides(overrides_block, permissible_constants, permissible_points)
 
     # Seeds (Phase 14 and SM-mode Phase 17.1)
     seeds_block = scenario_dict.get("seeds")
@@ -918,11 +919,14 @@ def validate_scenario_dict(bundle: Phase1Bundle, scenario_dict: Mapping[str, obj
     seeds_sm = _validate_seeds_sm(seeds_block, bundle=bundle, anchor_mode=runspecs.anchor_mode)
     seeds_elapsed_sm = _validate_elapsed_quarters_sm(seeds_block, bundle=bundle, anchor_mode=runspecs.anchor_mode)
     seeds_completed = _validate_completed_projects(scenario_dict.get("seeds"), bundle=bundle, anchor_mode=runspecs.anchor_mode)
-    seeds_completed_sm = _validate_completed_projects_sm(scenario_dict.get("seeds"), bundle=bundle, anchor_mode=runspecs.anchor_mode)
+    seeds_completed_sm = _validate_completed_projects_sm(
+        scenario_dict.get("seeds"), bundle=bundle, anchor_mode=runspecs.anchor_mode
+    )
 
     # SM-mode strictness
     if runspecs.anchor_mode == "sm":
         import pandas as pd
+
         if scenario_lists_sm_pairs:
             sm_df = pd.DataFrame(scenario_lists_sm_pairs, columns=["Sector", "Material"]).drop_duplicates()
         else:
@@ -953,10 +957,11 @@ def validate_scenario_dict(bundle: Phase1Bundle, scenario_dict: Mapping[str, obj
         }
         anchor_sm_df = getattr(bundle, "anchor_sm", None)
         if anchor_sm_df is None or anchor_sm_df.empty:
-            raise ValueError("SM-mode requires anchor_params_sm with full coverage for all targeted parameters and pairs in lists_sm")
+            raise ValueError(
+                "SM-mode requires anchor_params_sm with full coverage for all targeted parameters and pairs in lists_sm"
+            )
         available = {
-            (str(r["Sector"]).strip(), str(r["Material"]).strip(), str(r["Param"]).strip())
-            for _, r in anchor_sm_df.iterrows()
+            (str(r["Sector"]).strip(), str(r["Material"]).strip(), str(r["Param"]).strip()) for _, r in anchor_sm_df.iterrows()
         }
         available |= _sm_constants_from_overrides(constants, bundle, targeted_sm_params)
         missing: list[str] = []
@@ -1036,10 +1041,10 @@ def validate_overrides_against_model(model, scenario: Scenario) -> None:
     missing_points: list[str] = []
     for lookup_name in scenario.points.keys():
         if lookup_name.startswith("price_"):
-            material = lookup_name[len("price_") :].replace("_", " ")
+            material = lookup_name[len("price_"):].replace("_", " ")
             conv_name = _price_conv_name(material)
         elif lookup_name.startswith("max_capacity_"):
-            material = lookup_name[len("max_capacity_") :].replace("_", " ")
+            material = lookup_name[len("max_capacity_"):].replace("_", " ")
             conv_name = _cap_conv_name(material)
         else:
             # Unknown pattern – fail fast with hint
@@ -1055,5 +1060,3 @@ def validate_overrides_against_model(model, scenario: Scenario) -> None:
         if missing_points:
             parts.append("points: " + ", ".join(missing_points))
         raise ValueError("Override keys do not match built model elements: " + " | ".join(parts))
-
-

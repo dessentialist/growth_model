@@ -173,5 +173,3 @@ __all__ = [
     "find_latest_results_csv",
     "generate_plots_from_csv",
 ]
-
-

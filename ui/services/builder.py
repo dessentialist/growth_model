@@ -8,14 +8,10 @@ structures. Runner-related helpers have been moved to `ui.services.runner` to
 improve cohesion and simplify testing.
 """
 
-import os
-import subprocess
-import time
-from dataclasses import dataclass
 from pathlib import Path
-from typing import Generator, Iterable, Optional
 
-from src.io_paths import LOGS_DIR, OUTPUT_DIR, SCENARIOS_DIR
+
+from src.io_paths import SCENARIOS_DIR
 import yaml
 
 
@@ -59,6 +55,7 @@ def read_log_tail(max_lines: int = 500) -> list[str]:
     from ui.services.runner import read_log_tail as _tail
 
     return _tail(max_lines)
+
 
 # Backward-compatible re-exports for runner helpers previously hosted here.
 # This preserves imports in older tests/modules that still reference

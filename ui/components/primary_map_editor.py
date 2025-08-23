@@ -26,7 +26,7 @@ def _get_current_mapping_for_sector(bundle: Phase1Bundle, sector: str) -> List[T
     entries: List[Tuple[str, float]] = []
     for _, r in rows.iterrows():
         try:
-            entries.append((str(r["Material"]), float(r["StartYear"])) )
+            entries.append((str(r["Material"]), float(r["StartYear"])))
         except Exception:
             # Fallback to 0.0 if parsing fails; UI will allow editing
             entries.append((str(r["Material"]), 0.0))
@@ -66,9 +66,7 @@ def render_primary_map_editor(state: PrimaryMapState, bundle: Phase1Bundle) -> P
         default_selected = [e.material for e in state.by_sector[sector]]
     else:
         default_selected = [m for m, _ in current]
-    selected_materials = st.multiselect(
-        "Materials", options=materials, default=default_selected
-    )
+    selected_materials = st.multiselect("Materials", options=materials, default=default_selected)
 
     # Prepare rows with start years, prefilled from either state or current mapping
     proposed_entries: Dict[str, float] = {}
@@ -84,7 +82,9 @@ def render_primary_map_editor(state: PrimaryMapState, bundle: Phase1Bundle) -> P
     updated_entries: List[PrimaryMapEntry] = []
     for m in selected_materials:
         default_sy = proposed_entries.get(m, 2025.0)
-        sy = st.number_input(f"StartYear for {m}", value=float(default_sy), step=0.25, format="%.2f", key=f"pm_sy_{sector}_{m}")
+        sy = st.number_input(
+            f"StartYear for {m}", value=float(default_sy), step=0.25, format="%.2f", key=f"pm_sy_{sector}_{m}"
+        )
         updated_entries.append(PrimaryMapEntry(material=m, start_year=float(sy)))
 
     # Apply/clear controls
@@ -107,7 +107,14 @@ def render_primary_map_editor(state: PrimaryMapState, bundle: Phase1Bundle) -> P
         for s, entries in sorted(state.by_sector.items()):
             for e in entries:
                 summary_rows.append((s, e.material, e.start_year))
-        st.dataframe({"Sector": [r[0] for r in summary_rows], "Material": [r[1] for r in summary_rows], "StartYear": [r[2] for r in summary_rows]}, use_container_width=True)
+        st.dataframe(
+            {
+                "Sector": [r[0] for r in summary_rows],
+                "Material": [r[1] for r in summary_rows],
+                "StartYear": [r[2] for r in summary_rows],
+            },
+            use_container_width=True,
+        )
     else:
         st.info("No primary map overrides proposed yet.")
 
@@ -115,6 +122,3 @@ def render_primary_map_editor(state: PrimaryMapState, bundle: Phase1Bundle) -> P
 
 
 __all__ = ["render_primary_map_editor"]
-
-
-

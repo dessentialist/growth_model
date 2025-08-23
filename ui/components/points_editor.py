@@ -8,7 +8,7 @@ We constrain to permissible lookup names and enforce strictly increasing times
 with numeric values on the UI side; backend validation will run on save.
 """
 
-from typing import Dict, List, Tuple
+from typing import List, Tuple
 import streamlit as st
 
 from ui.state import ScenarioOverridesState
@@ -30,7 +30,7 @@ def _render_series_editor(name: str, series: List[Tuple[float, float]]) -> List[
     # Sort and show rows
     rows.sort(key=lambda x: x[0])
     # Inline increasing-time check
-    bad_order = any(rows[i][0] <= rows[i-1][0] for i in range(1, len(rows)))
+    bad_order = any(rows[i][0] <= rows[i - 1][0] for i in range(1, len(rows)))
     if bad_order:
         st.warning("Times must be strictly increasing; adjust or remove duplicates.")
 
@@ -98,5 +98,3 @@ def render_points_editor(overrides: ScenarioOverridesState, permissible_points: 
 
 
 __all__ = ["render_points_editor"]
-
-

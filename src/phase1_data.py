@@ -21,14 +21,12 @@ Design choices:
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List, TYPE_CHECKING
 
 import json
 import logging
 import pandas as pd
 
-from .io_paths import INPUTS_DIR
-from typing import TYPE_CHECKING
 if TYPE_CHECKING:  # avoid circular import at runtime
     from .scenario_loader import Scenario  # noqa: F401
 
@@ -36,8 +34,8 @@ if TYPE_CHECKING:  # avoid circular import at runtime
 log = logging.getLogger(__name__)
 
 
-## Note: CSV-specific helpers and loaders have been removed as we now ingest
-## all inputs exclusively from `inputs.json`.
+# Note: CSV-specific helpers and loaders have been removed as we now ingest
+# all inputs exclusively from `inputs.json`.
 
 
 @dataclass
@@ -49,18 +47,14 @@ class ListsData:
         # Expose canonical sector names discovered from JSON `lists` reconstruction.
         # Note: these are used to build SD elements and scenario override keys,
         # so we preserve exact case and spacing from inputs.
-        return (
-            self.markets_sectors_materials["Sector"].dropna().astype(str).str.strip().unique().tolist()
-        )
+        return self.markets_sectors_materials["Sector"].dropna().astype(str).str.strip().unique().tolist()
 
     @property
     def materials(self) -> List[str]:
         # Expose canonical material names discovered from JSON `lists` reconstruction.
         # These names must match other tables (other_params, production, pricing)
         # for coverage validation to pass.
-        return (
-            self.markets_sectors_materials["Material"].dropna().astype(str).str.strip().unique().tolist()
-        )
+        return self.markets_sectors_materials["Material"].dropna().astype(str).str.strip().unique().tolist()
 
 
 @dataclass
@@ -117,13 +111,20 @@ def parse_json_to_bundle(data: dict) -> "Phase1Bundle":
     target_market = "US"
     # TODO: Future EU expansion – support per-market filtering and rebuild lists accordingly
     rows_l = [{"Market": target_market, "Sector": s, "Material": m} for s in sectors for m in materials]
-    lists_df = pd.DataFrame(rows_l, columns=["Market", "Sector", "Material"]) if rows_l else pd.DataFrame(
-        columns=["Market", "Sector", "Material"]
+    lists_df = (
+        pd.DataFrame(rows_l, columns=["Market", "Sector", "Material"])
+        if rows_l
+        else pd.DataFrame(columns=["Market", "Sector", "Material"])
     )
     lists = ListsData(lists_df)
 
-    log.debug("Parsed lists from JSON: markets=%s sectors=%d materials=%d rows=%d",
-              markets, len(sectors), len(materials), len(lists_df))
+    log.debug(
+        "Parsed lists from JSON: markets=%s sectors=%d materials=%d rows=%d",
+        markets,
+        len(sectors),
+        len(materials),
+        len(lists_df),
+    )
 
     # ----- Anchor parameters (params × sectors, numeric) -----
     # Build a wide DataFrame: index are parameter names; columns are sector labels.
@@ -177,7 +178,9 @@ def parse_json_to_bundle(data: dict) -> "Phase1Bundle":
             except Exception as exc:
                 raise ValueError(f"Invalid production entry for material '{mat}': {e}") from exc
     prod_long = (
-        pd.DataFrame(prod_rows, columns=["Year", "Material", "Capacity"]).sort_values(["Material", "Year"]).reset_index(drop=True)
+        pd.DataFrame(prod_rows, columns=["Year", "Material", "Capacity"])
+        .sort_values(["Material", "Year"])
+        .reset_index(drop=True)
         if prod_rows
         else pd.DataFrame(columns=["Year", "Material", "Capacity"])
     )
@@ -203,7 +206,9 @@ def parse_json_to_bundle(data: dict) -> "Phase1Bundle":
             except Exception as exc:
                 raise ValueError(f"Invalid pricing entry for material '{mat}': {e}") from exc
     price_long = (
-        pd.DataFrame(price_rows, columns=["Year", "Material", "Price"]).sort_values(["Material", "Year"]).reset_index(drop=True)
+        pd.DataFrame(price_rows, columns=["Year", "Material", "Price"])
+        .sort_values(["Material", "Year"])
+        .reset_index(drop=True)
         if price_rows
         else pd.DataFrame(columns=["Year", "Material", "Price"])
     )
@@ -310,11 +315,13 @@ def parse_json_to_bundle(data: dict) -> "Phase1Bundle":
             lists_sm_explicit=lists_sm_explicit,
         )
     except TypeError:
-        bundle = Phase1Bundle(lists=lists, anchor=anchor, other=other, production=production, pricing=pricing)  # type: ignore[misc]
+        bundle = Phase1Bundle(  # type: ignore[misc]
+            lists=lists, anchor=anchor, other=other, 
+            production=production, pricing=pricing
+        )
     return bundle
 
-
-## CSV loader functions have been removed.
+    # CSV loader functions have been removed.
 
 
 def validate_coverage(bundle: Phase1Bundle) -> None:
@@ -350,13 +357,9 @@ def validate_coverage(bundle: Phase1Bundle) -> None:
     prod_mats = set(bundle.production.long["Material"].unique())
     price_mats = set(bundle.pricing.long["Material"].unique())
     if not materials.issubset(prod_mats):
-        raise ValueError(
-            f"Production table missing materials: {sorted(materials.difference(prod_mats))}"
-        )
+        raise ValueError(f"Production table missing materials: {sorted(materials.difference(prod_mats))}")
     if not materials.issubset(price_mats):
-        raise ValueError(
-            f"Pricing table missing materials: {sorted(materials.difference(price_mats))}"
-        )
+        raise ValueError(f"Pricing table missing materials: {sorted(materials.difference(price_mats))}")
 
     # Time strictly increasing per material for production and pricing
     for name, long_df, val_col in (
@@ -372,14 +375,10 @@ def validate_coverage(bundle: Phase1Bundle) -> None:
     # Primary material mapping consistency
     mapped_sectors = set(bundle.primary_map.sector_to_materials.keys())
     if not mapped_sectors.issubset(sectors):
-        raise ValueError(
-            f"Primary Material mapping has unknown sectors: {sorted(mapped_sectors.difference(sectors))}"
-        )
+        raise ValueError(f"Primary Material mapping has unknown sectors: {sorted(mapped_sectors.difference(sectors))}")
     mapped_materials = set(bundle.primary_map.long["Material"].unique())
     if not mapped_materials.issubset(materials):
-        raise ValueError(
-            f"Primary Material mapping has unknown materials: {sorted(mapped_materials.difference(materials))}"
-        )
+        raise ValueError(f"Primary Material mapping has unknown materials: {sorted(mapped_materials.difference(materials))}")
 
     # Warn on disabled/placeholder start years (<= 0) in primary material mapping
     if not bundle.primary_map.long.empty:
@@ -404,7 +403,7 @@ def validate_coverage(bundle: Phase1Bundle) -> None:
         if unknown_m:
             raise ValueError(f"lists_sm contains unknown materials: {sorted(unknown_m)}")
     # Validate anchor_sm Param/Value are present for targeted params when provided
-    anchor_sm_df = getattr(bundle, "anchor_sm", pd.DataFrame(columns=["Sector","Material","Param","Value"]))
+    anchor_sm_df = getattr(bundle, "anchor_sm", pd.DataFrame(columns=["Sector", "Material", "Param", "Value"]))
     if anchor_sm_df is not None and not anchor_sm_df.empty:
         # required columns present
         for col in ("Sector", "Material", "Param", "Value"):
@@ -419,7 +418,7 @@ def validate_coverage(bundle: Phase1Bundle) -> None:
             raise ValueError(f"anchor_sm contains unknown materials: {sorted(ref_unknown_m)}")
 
 
-## Primary material mapping is parsed from JSON; CSV mapping loader has been removed.
+# Primary material mapping is parsed from JSON; CSV mapping loader has been removed.
 
 
 @dataclass
@@ -429,6 +428,7 @@ class Phase1Bundle:
     Keeping types and shapes stable preserves downstream expectations in the
     model, naming, and scenario modules.
     """
+
     lists: ListsData
     anchor: AnchorParams
     other: OtherParams
@@ -437,7 +437,7 @@ class Phase1Bundle:
     primary_map: PrimaryMaterialMap
     # Phase 16 additions
     anchor_sm: pd.DataFrame | None = None  # columns [Sector, Material, Param, Value]
-    lists_sm: pd.DataFrame | None = None   # columns [Sector, Material]
+    lists_sm: pd.DataFrame | None = None  # columns [Sector, Material]
     # Phase 17.1: Track whether lists_sm was explicitly provided (True) or
     # derived from primary_map as a best-guess (False). SM-mode requires an
     # explicit lists_sm in inputs.json and must not rely on derivation.
@@ -507,13 +507,13 @@ def apply_primary_map_overrides(bundle: Phase1Bundle, scenario: "Scenario" | Non
     keep_rows = bundle.primary_map.long[~bundle.primary_map.long["Sector"].isin(pm_override.keys())]
     new_rows = []
     for sector, entries in pm_override.items():
-        for (m, sy) in entries:
+        for m, sy in entries:
             new_rows.append({"Sector": sector, "Material": m, "StartYear": float(sy)})
     import pandas as pd
-    merged_long = (
-        pd.concat([keep_rows, pd.DataFrame(new_rows, columns=["Sector", "Material", "StartYear"])], ignore_index=True)
-        .reset_index(drop=True)
-    )
+
+    merged_long = pd.concat(
+        [keep_rows, pd.DataFrame(new_rows, columns=["Sector", "Material", "StartYear"])], ignore_index=True
+    ).reset_index(drop=True)
 
     new_pm = PrimaryMaterialMap(new_mapping, merged_long)
     # Preserve SM-mode structures (anchor_sm, lists_sm, explicitness flag)
@@ -647,5 +647,3 @@ def apply_lists_sm_override(bundle: Phase1Bundle, scenario: "Scenario" | None) -
         lists_sm=df,
         lists_sm_explicit=True,
     )
-
-

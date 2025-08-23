@@ -125,9 +125,11 @@ def collect_kpis_for_step(
     materials: List[str] = list(bundle.lists.materials)
 
     # Validate availability of per-step ABM metrics for this step
-    if agent_metrics_by_step is None or not isinstance(step_idx, int) or not (0 <= step_idx < len(agent_metrics_by_step)):
+    if (agent_metrics_by_step is None or not isinstance(step_idx, int) or 
+            not (0 <= step_idx < len(agent_metrics_by_step))):
         raise RuntimeError(
-            "Per-step ABM metrics are required: provide agent_metrics_by_step with length covering all emitted steps, and a valid step_idx."
+            "Per-step ABM metrics are required: provide agent_metrics_by_step with length "
+            "covering all emitted steps, and a valid step_idx."
         )
 
     # ----- Material-level base series -----
@@ -292,7 +294,7 @@ def extract_and_write_kpis(
     kpi_values_by_step: List[Dict[str, float]] | None = None,
     include_sm_revenue_rows: bool = False,
     include_sm_client_rows: bool = False,
-    ) -> Path:
+) -> Path:
     """End-to-end helper: compute KPI series for all simulated steps and write CSV.
 
     Strict policy: runner-captured KPI values are required.
@@ -342,5 +344,3 @@ __all__ = [
     "build_row_order",
     "extract_and_write_kpis",
 ]
-
-

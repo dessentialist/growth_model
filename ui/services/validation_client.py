@@ -11,7 +11,7 @@ to `src.phase1_data` and `src.scenario_loader` so the UI can request:
 """
 
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 from src.phase1_data import load_phase1_inputs, Phase1Bundle
 from src.scenario_loader import (
@@ -36,8 +36,9 @@ def get_bundle() -> Phase1Bundle:
     return load_phase1_inputs()
 
 
-def get_permissible_keys(bundle: Phase1Bundle, *, anchor_mode: str = "sector",
-                         extra_sm_pairs: Optional[List[Tuple[str, str]]] = None) -> PermissibleKeys:
+def get_permissible_keys(
+    bundle: Phase1Bundle, *, anchor_mode: str = "sector", extra_sm_pairs: Optional[List[Tuple[str, str]]] = None
+) -> PermissibleKeys:
     """Return sorted lists of permissible constant and points keys."""
     data = list_permissible_override_keys(bundle, anchor_mode=anchor_mode, extra_sm_pairs=extra_sm_pairs)
     return PermissibleKeys(constants=sorted(data["constants"]), points=sorted(data["points"]))
@@ -62,5 +63,3 @@ __all__ = [
     "get_permissible_keys",
     "try_validate_scenario_dict",
 ]
-
-

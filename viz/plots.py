@@ -14,8 +14,6 @@ Usage:
 """
 
 from pathlib import Path
-from typing import Iterable
-
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -100,7 +98,13 @@ def plot_revenue_by_material(df: pd.DataFrame) -> Path:
     fig, ax = plt.subplots(figsize=(10, 5))
 
     for row in df.index:
-        if row.startswith("Revenue ") and row not in ("Revenue", "Revenue Defense", "Revenue Nuclear", "Revenue Semiconductors", "Revenue Aviation"):
+        if row.startswith("Revenue ") and row not in (
+            "Revenue",
+            "Revenue Defense",
+            "Revenue Nuclear",
+            "Revenue Semiconductors",
+            "Revenue Aviation",
+        ):
             ax.plot(x, df.loc[row, periods].values, label=row)
 
     ax.set_title("Revenue by Material")
@@ -161,7 +165,8 @@ def plot_order_basket_vs_delivery(df: pd.DataFrame) -> Path:
 
 
 def plot_capacity_utilization(df: pd.DataFrame) -> Path:
-    """If utilization is derivable or present, plot it. Here we approximate as Order Delivery / (Order Basket clipped to >0)."""
+    """If utilization is derivable or present, plot it. 
+    Here we approximate as Order Delivery / (Order Basket clipped to >0)."""
     periods = _period_columns(df)
     if "Order Delivery" not in df.index or "Order Basket" not in df.index:
         # Not fatal; simply skip plot.
@@ -196,5 +201,3 @@ def generate_all_plots_from_csv(csv_path: Path | str) -> list[Path]:
     outputs.append(plot_order_basket_vs_delivery(df))
     outputs.append(plot_capacity_utilization(df))
     return outputs
-
-

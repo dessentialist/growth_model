@@ -60,5 +60,3 @@ def test_phase14_seeding_active_clients_and_requirements(tmp_path: Path) -> None
     # Sanity: output CSV should include the standard header row and at least one data row
     content = output_csv.read_text(encoding="utf-8").splitlines()
     assert len(content) >= 2
-
-

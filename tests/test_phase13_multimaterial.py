@@ -29,7 +29,7 @@ from src.naming import (
     anchor_delivery_flow_material,
     price_converter,
 )
-from src.kpi_extractor import RunGrid, collect_kpis_for_step
+from src.kpi_extractor import collect_kpis_for_step
 
 
 def _load_inputs_json_dict(repo_root: Path) -> dict:
@@ -127,13 +127,16 @@ def test_multi_material_anchor_sector(tmp_path: Path, sector: str, mat_a: str, m
     sector_to_materials = bundle.primary_map.sector_to_materials
 
     # Provide minimal ABM metrics (zeros) to satisfy interface
-    agent_metrics_by_step = [{
-        "t": t,
-        "active_by_sector": {},
-        "inprogress_by_sector": {},
-        "active_total": 0,
-        "inprogress_total": 0,
-    } for _ in range(12)]
+    agent_metrics_by_step = [
+        {
+            "t": t,
+            "active_by_sector": {},
+            "inprogress_by_sector": {},
+            "active_total": 0,
+            "inprogress_total": 0,
+        }
+        for _ in range(12)
+    ]
 
     kpis = collect_kpis_for_step(
         model=model,
@@ -146,5 +149,3 @@ def test_multi_material_anchor_sector(tmp_path: Path, sector: str, mat_a: str, m
     )
 
     assert kpis[f"Revenue {sector}"] == pytest.approx(20.0, rel=0, abs=1e-6)
-
-

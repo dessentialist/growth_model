@@ -4,7 +4,6 @@ from pathlib import Path
 from src.phase1_data import load_phase1_inputs
 from src.abm_anchor import (
     AnchorClientAgent,
-    AnchorClientParams,
     AnchorClientAgentState,
     build_anchor_agent_factory_for_sector,
 )
@@ -86,5 +85,3 @@ class TestPhase5Agents(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
-

@@ -34,7 +34,10 @@ class TestPhase7SchedulerIntegration(unittest.TestCase):
         sectors_using_material = []
         for m in self.bundle.lists.materials:
             sectors_using_material = (
-                self.bundle.primary_map.long[self.bundle.primary_map.long["Material"] == m]["Sector"].astype(str).unique().tolist()
+                self.bundle.primary_map.long[self.bundle.primary_map.long["Material"] == m]["Sector"]
+                .astype(str)
+                .unique()
+                .tolist()
             )
             if sectors_using_material:
                 material = m
@@ -49,7 +52,7 @@ class TestPhase7SchedulerIntegration(unittest.TestCase):
         # Step 0: set all per-sector inputs to 0.0 and step once
         for s in sectors_using_material:
             name_sm = agent_demand_sector_input(s, material)
-            if name_sm in getattr(model, 'converters', {}):
+            if name_sm in getattr(model, "converters", {}):
                 model.converters[name_sm].equation = 0.0
 
         # Advance one step
@@ -70,7 +73,7 @@ class TestPhase7SchedulerIntegration(unittest.TestCase):
         expected_sum = 0.0
         for idx, s in enumerate(sectors_using_material, start=1):
             name_sm = agent_demand_sector_input(s, material)
-            if name_sm in getattr(model, 'converters', {}):
+            if name_sm in getattr(model, "converters", {}):
                 val = float(idx)
                 model.converters[name_sm].equation = val
                 expected_sum += val
@@ -94,5 +97,3 @@ class TestPhase7SchedulerIntegration(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
-

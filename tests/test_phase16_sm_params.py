@@ -33,8 +33,8 @@ def test_phase16_scenario_loader_accepts_sm_constant_override(tmp_path: Path):
     if sm_df is None or sm_df.empty:
         sm_df = bundle.primary_map.long[["Sector", "Material"]].drop_duplicates()
     row = sm_df.iloc[0]
-    sector = str(row["Sector"]) 
-    material = str(row["Material"]) 
+    sector = str(row["Sector"])
+    material = str(row["Material"])
 
     # Compose a scenario YAML with a per-(s,m) override for a targeted param
     const_key = anchor_constant_sm("requirement_to_order_lag", sector, material)
@@ -54,5 +54,3 @@ overrides:
     scenario = load_and_validate_scenario(path, bundle=bundle)
     # Expect the constant to be accepted and normalized to float
     assert pytest.approx(3.5) == scenario.constants[const_key]
-
-

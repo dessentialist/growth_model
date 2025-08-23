@@ -8,7 +8,7 @@ allow keys from the permissible set to avoid name drift. Values are coerced to
 float by Streamlit inputs; backend will re-validate on save.
 """
 
-from typing import Dict, List, Tuple
+from typing import List
 import streamlit as st
 
 from ui.state import ScenarioOverridesState
@@ -68,5 +68,3 @@ def render_constants_editor(overrides: ScenarioOverridesState, permissible_const
 
 
 __all__ = ["render_constants_editor"]
-
-

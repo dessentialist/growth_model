@@ -51,17 +51,11 @@ class TestNamingUtilities(unittest.TestCase):
     def test_helper_alignment(self):
         # Ensures that helper functions produce the exact canonical names
         # enumerated in the technical architecture document.
-        self.assertEqual(anchor_constant("anchor_lead_generation_rate", "Defense"),
-                         "anchor_lead_generation_rate_Defense")
-        self.assertEqual(other_constant("price", "Silicon Carbide"),
-                         "price_Silicon_Carbide")
-        self.assertEqual(price_lookup_name("Silicon Carbide Fiber"),
-                         "price_Silicon_Carbide_Fiber")
-        self.assertEqual(anchor_lead_generation("Aviation"),
-                         "Anchor_Lead_Generation_Aviation")
+        self.assertEqual(anchor_constant("anchor_lead_generation_rate", "Defense"), "anchor_lead_generation_rate_Defense")
+        self.assertEqual(other_constant("price", "Silicon Carbide"), "price_Silicon_Carbide")
+        self.assertEqual(price_lookup_name("Silicon Carbide Fiber"), "price_Silicon_Carbide_Fiber")
+        self.assertEqual(anchor_lead_generation("Aviation"), "Anchor_Lead_Generation_Aviation")
 
 
 if __name__ == "__main__":
     unittest.main()
-
-

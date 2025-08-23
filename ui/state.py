@@ -105,9 +105,7 @@ class UIState:
         if self.primary_map.by_sector:
             pm_block = {}
             for sector, entries in self.primary_map.by_sector.items():
-                pm_block[sector] = [
-                    {"material": e.material, "start_year": float(e.start_year)} for e in entries
-                ]
+                pm_block[sector] = [{"material": e.material, "start_year": float(e.start_year)} for e in entries]
 
         seeds_block: Optional[dict] = None
         if (
@@ -132,9 +130,7 @@ class UIState:
             if self.seeds.completed_projects:
                 seeds_block["completed_projects"] = dict(self.seeds.completed_projects)
             if self.seeds.completed_projects_sm:
-                seeds_block["completed_projects_sm"] = {
-                    s: dict(mmap) for s, mmap in self.seeds.completed_projects_sm.items()
-                }
+                seeds_block["completed_projects_sm"] = {s: dict(mmap) for s, mmap in self.seeds.completed_projects_sm.items()}
 
         overrides_block: dict = {
             "constants": dict(self.overrides.constants),
@@ -271,5 +267,3 @@ __all__ = [
     "SeedsState",
     "UIState",
 ]
-
-
