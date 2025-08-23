@@ -1,8 +1,0 @@
-name: sm_override_test
-runspecs:
-  starttime: 2025.0
-  stoptime: 2032.0
-  dt: 0.25
-overrides:
-  constants:
-    requirement_to_order_lag_Defense_Silicon_Carbide_Fiber: 6.0

@@ -103,21 +103,12 @@ logs/*.json
 logs/*.yaml
 logs/*.yml
 
-# Input files that might contain sensitive data
-inputs.json
-inputs.yaml
-inputs.yml
+# Input files (keep these for public repo)
+# inputs.json - contains default model parameters
+# scenarios/*.yaml - contains example scenarios
 
-# Scenario files that might contain sensitive data
-scenarios/*.yaml
-scenarios/*.yml
-scenarios/*.json
-
-# Docker
-.dockerignore
-Dockerfile.*
-docker-compose*.yml
-docker-compose*.yaml
+# Docker (keep these for public repo)
+# Dockerfile.ui - provides container option for UI
 
 # Build artifacts
 *.tar.gz
