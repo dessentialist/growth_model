@@ -17,6 +17,12 @@ import time
 from pathlib import Path
 import sys
 
+# Ensure project root is on sys.path so imports like `ui.*` and `src.*` work even
+# when Streamlit sets the working directory to the `ui/` folder.
+_PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(_PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(_PROJECT_ROOT))
+
 import pandas as pd
 import streamlit as st
 
@@ -38,12 +44,6 @@ from ui.components.points_editor import render_points_editor
 from ui.components.primary_map_editor import render_primary_map_editor
 from ui.components.seeds_editor import render_seeds_editor
 from ui.services.validation_client import get_bundle, get_permissible_keys, try_validate_scenario_dict
-
-# Ensure project root is on sys.path so imports like `ui.*` and `src.*` work even
-# when Streamlit sets the working directory to the `ui/` folder.
-_PROJECT_ROOT = Path(__file__).resolve().parents[1]
-if str(_PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(_PROJECT_ROOT))
 
 st.set_page_config(page_title="Growth System – Scenario Runner", layout="wide")
 
