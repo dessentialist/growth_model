@@ -1,0 +1,9 @@
+name: direct_seed_test
+runspecs:
+  starttime: 2025.0
+  stoptime: 2032.0
+  dt: 0.25
+overrides: {}
+seeds:
+  direct_clients:
+    Silicon Carbide Fiber: 10

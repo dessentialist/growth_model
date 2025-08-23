@@ -1,0 +1,13 @@
+name: "multi_material_defense_aviation"
+
+runspecs:
+  starttime: 2025.0
+  stoptime: 2032.0
+  dt: 0.25
+
+# No explicit overrides needed; the mapping is set in inputs.json.
+overrides:
+  constants: {}
+  points: {}
+
+

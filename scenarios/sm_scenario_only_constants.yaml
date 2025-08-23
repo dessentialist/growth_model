@@ -1,0 +1,30 @@
+name: sm_scenario_only_constants
+runspecs:
+  starttime: 2027.0
+  stoptime: 2029.0
+  dt: 0.25
+  anchor_mode: sector  # sector-mode: only targeted per-(s,m) params allowed
+
+overrides:
+  # Define a new sector→material mapping that relies on scenario per-(s,m) constants only.
+  # We choose Aviation→Boron_fiber which has no anchor_params_sm entry in inputs.json by default.
+  primary_map:
+    Aviation:
+      - { material: "Boron_fiber", start_year: 2028 }
+
+  # Per-(sector, material) constants provided entirely by this scenario (sector-mode targeted subset)
+  constants:
+    initial_requirement_rate_Aviation_Boron_fiber: 1.0
+    initial_req_growth_Aviation_Boron_fiber: 0.05
+    ramp_requirement_rate_Aviation_Boron_fiber: 50.0
+    ramp_req_growth_Aviation_Boron_fiber: 0.15
+    steady_requirement_rate_Aviation_Boron_fiber: 120.0
+    steady_req_growth_Aviation_Boron_fiber: 0.02
+    requirement_to_order_lag_Aviation_Boron_fiber: 1.0
+
+seeds:
+  # Sector-mode seed: create one ACTIVE Aviation anchor at t0 so requirements start when mapping active
+  active_anchor_clients:
+    Aviation: 1
+
+

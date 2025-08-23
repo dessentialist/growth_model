@@ -1,0 +1,35 @@
+name: sm_contrast_start_lag
+runspecs:
+  starttime: 2025.0
+  stoptime: 2030.0
+  dt: 0.25
+  anchor_mode: sm
+
+overrides:
+  constants:
+    # Defense: two materials with different start years and lags
+    anchor_start_year_Defense_Silicon_Carbide_Fiber: 2025.0
+    requirement_to_order_lag_Defense_Silicon_Carbide_Fiber: 0.5   # 2 quarters
+
+    anchor_start_year_Defense_Silicon_Nitride_Fiber: 2027.0
+    requirement_to_order_lag_Defense_Silicon_Nitride_Fiber: 2.0   # 8 quarters
+
+    # Semiconductors: early start, short lag
+    anchor_start_year_Semiconductors_Silicon_Carbide_Powder: 2025.0
+    requirement_to_order_lag_Semiconductors_Silicon_Carbide_Powder: 0.5
+
+    # Aviation: mid start, moderate lag
+    anchor_start_year_Aviation_UHT: 2026.0
+    requirement_to_order_lag_Aviation_UHT: 1.0
+
+seeds:
+  active_anchor_clients_sm:
+    Defense:
+      Silicon Carbide Fiber: 2
+      Silicon Nitride Fiber: 2
+    Semiconductors:
+      Silicon Carbide Powder: 1
+    Aviation:
+      UHT: 1
+
+

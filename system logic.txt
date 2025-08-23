@@ -1,0 +1,235 @@
+Key System Characteristics & Behaviors (updated for current implementation)
+1. Multi-Dimensional Growth Engine
+the FFF Growth System is a sophisticated dual-client acquisition model operating across:
+4 Sectors: Defense, Nuclear, Semiconductors, Aviation
+7 Materials: Silicon Carbide Fiber, Silicon Carbide Powder, Silicon Nitride Fiber, UHT, Boron_fiber, B4C_Fiber, WC_Fiber
+2 Client Types: Anchor clients (project-based) vs. Direct clients (material-based)
+
+Discrete Client Conversion (Direct channel)
+- Fractional conversions accumulate in `Potential_Clients_<material>`; only whole clients are created via accumulate-and-fire.
+- Each discrete client contributes to requirements; fulfillment applies a delay and a shared capacity ratio.
+2. Core Behavioral Patterns
+a) Anchor Client Journey (Project-Based)
+Leads → Potential clients/projects → Active clients after activation delay → Requirements
+Phases: Initial → Ramp → Steady (durations and rates per sector; optional per-(sector, material) in SM-related phases)
+Conversion threshold: activation requires a specific number of completed projects per potential client
+Each complete lead generated goes through the journey as and when they get activated, at different points in time. 
+Similarly, each potential client, and anchor client have their own flows that activate and proceed at different points in time. 
+Even though the rates may be fractional, the stocks are cumulative integer values. And within the stocks of cumulative inetegers, each increment triggers a separate flow.
+b) Direct Client Journey (Material-Based)
+Inbound/outbound leads → Clients → Requirements → Orders
+Simpler linear progression with TAM constraints
+Growth over time with increasing order quantities
+c) Shared Capacity Constraints
+Single capacity lookup per material caps both channels via `Fulfillment_Ratio_<m>`; hold-last policy outside lookup ranges.
+Deliveries are delayed versions of demand × ratio (anchor uses requirement_to_order_lag, direct uses requirement_to_fulfilment_delay).
+3. Key System Intelligence
+The model exhibits several sophisticated behaviors:
+Time-based activation: Different materials activate for different sectors at different years; sectors may map to multiple primary materials (multi-material anchors). Each mapping has its own StartYear and requirement-to-order lag, which may be defined per-(sector, material) (Phase 16) or fall back to a sector-level lag.
+Competitive resource allocation: Anchor vs. direct clients compete for limited capacity
+Multi-phase growth patterns: Requirements evolve through distinct phases with different characteristics
+Revenue diversification: Multiple revenue streams with different risk/growth profiles
+
+Phase 14 seeding behavior
+- Scenarios may seed Active Anchor Clients at t0 per sector. These seeded agents are ACTIVE immediately and generate requirements from step 0, while still respecting sector–material start years (no requirements before a mapping’s StartYear).
+- To ensure ATAM (lead cap) accounts for seeds without changing equations, the SD stock `CPC_<sector>` is initialized with the seeded count (conservative mapping), and `Cumulative_Agents_Created_<sector>` is initialized for monitoring. This way, lead generation gating `If(CPC_<s> < ATAM_<s>, 1, 0)` includes seeded clients in the cap without double-applying conversions.
+- Scenarios may also seed Direct Clients per material at t0 by initializing the cumulative clients stock `C_<material>` to the seeded count and clearing the `Potential_Clients_<material>` accumulator. This preserves discrete conversion pacing and avoids immediate extra fires.
+
+
+
+for {market}
+    
+    # SECTOR SELECTION
+    for {sector}
+
+    ATAM = ATAM{sector}
+
+        # PRIMARY MATERIAL LOOP
+            
+        for {primary_material}
+            
+        # ANCHOR LEAD GENERATION MODULE    
+            anchor_start_year=anchor_start_year{sector}
+            # for every quarter,
+            anchor_lead_generation_rate = anchor_lead_generation_rate{sector}
+            anchor_lead_generation_limiter = ATAM{sector}
+            # the pc stock is the cumulative sum of leads upto that time period
+            stock(cpc) = floor(cumsum(anchor_lead_generation_rate))
+            lead_to_pc_coversion_rate = lead_to_pc_coversion_rate{sector}
+            # lead generation stops when ATAM{sector} is reached
+            anchor_lead_generation_rate = 0 when stock(cpc) > anchor_lead_generation_limiter
+            stock(pc) = stock(cpc) * lead_to_pc_coversion_rate
+            
+                # stock(pc) is to only be considered in the "active state", when the stock is an integer greater than 0  
+                when floor(stock(pc) > 0)
+                    for {pc} # where pc is an integer counter of the cumulative number of pc uptil that time period
+
+                    project_generation_rate=project_generation_rate{sector}
+                    # the projects_per_pc stock is the cumulative sum of project generation rate upto that time period
+                    stock(projects_per_pc) = cumsum(project_generation_rate)
+                    # project generation stops when stock(projects_per_pc) reaches max_projects_per_pc
+                    project_generation_rate = 0 when stock(projects_per_pc) = max_projects_per_pc{sector}
+                    stock(completed_projects_per_pc) = 0    
+                    
+                        # the projects_per_pc stock is only considered in the "active state", when the stock is an integer
+                        when floor(stock(projects_per_pc)) > 0
+                            for {project} # where project is an integer counter of the cumulative number of projects uptil that time period
+                            # the project duration is the number of quarters it takes to complete the project
+                            project_duration=project_duration{sector} 
+                            # after the project duration delay
+                            stock(completed_projects_per_pc)=+1 
+                    
+                        when floor(completed_projects_per_pc)/projects_to_client_conversion{sector}=>1
+                            stock{ac}=+1
+            
+            # REQUIREMENT GENERATION MODULE
+            
+            # stock(ac) is to only be considered in the "active state", when the stock is an integer 
+            when floor(stock{ac}) > 0
+                for {ac} # where ac is an integer counter of the cumulative number of ac uptil that time period
+                    anchor_client_activation_delay=anchor_client_activation_delay{sector}
+                        
+                        # the initial phase duration is the number of quarters it takes to complete the initial phase
+                        for time_period in range(initial_phase_duration)
+                        anchor_requirement_generation_rate=anchor_requirement_generation_rate{primary_material}{initial_value}
+                        stock(requirement{primary_material})(t)=anchor_requirement_generation_rate
+
+                        anchor_requirement_generation_rate(t+1) = anchor_requirement_generation_rate(t) * (1+initial_requirement_growth_rate{primary_material})
+
+                        # the ramp phase duration is for the defined number of quarters after the initial phase
+                        for time_period in range(ramp_phase_duration)
+                        anchor_requirement_generation_rate=anchor_requirement_generation_rate{primary_material}{ramp_value}
+                        stock(requirement{primary_material})(t)=anchor_requirement_generation_rate
+                        anchor_requirement_generation_rate(t+1) = anchor_requirement_generation_rate(t) * (1+ramp_requirement_growth_rate{primary_material})
+                    
+                        # the steady phase duration starts after the ramp phase ends
+                        for time_period from (steady_phase_start)
+                        anchor_requirement_generation_rate=anchor_requirement_generation_rate{primary_material}{steady_value}
+                        stock(requirement{primary_material})(t)=anchor_requirement_generation_rate
+                        anchor_requirement_generation_rate(t+1) = anchor_requirement_generation_rate(t) * (1+ramp_requirement_growth_rate{primary_material})
+
+            
+            # sum(stock(requirement{primary_material}))(t) refers to the requirements from all parallel flows of ac at time t 
+            when sum(stock(requirement{primary_material}))(t)>0 
+            n = requirement_to_order_lag{primary_material}{sector}
+            total_material_order{primary_material}(t+n) = sum(stock(requirement{primary_material}))(t) # this stock should the sum of all the requirements from all parallel acs
+            
+
+
+        # Anchor Revenue MODULE
+        # Fulfilled_order{primary_material} should be takes into account the sum of all the orders for that material across clients in that given time period. It is limited by the maximum capacity of that material. 
+        stock(fulfilled_order{primary_material})(t)=min(sum(total_material_order){primary_material}(t),max_capacity(t){primary_material})
+
+# OTHER CLIENTS LEAD GENERATION FLOW (per-step KPI presentation)
+for {material}
+    lead_start_year=lead_start_year{material}
+    inbound_lead_generation_rate=inbound_lead_generation_rate{material}
+    outbound_lead_generation_rate=outbound_lead_generation_rate{material}
+    lead_generation_limiter = TAM{material}
+# KPIs are captured during the run (no post-run fallback). The runner converts per-year lead converters to per-step values using dt when computing KPIs.
+    # The lead conversion rate represents the fraction of the total number of leads that get converted to active clients. 
+    lead_to_c_coversion_rate = lead_to_c_coversion_rate{material}
+    # When the total number of CL is greater than TAM, lead generation stops 
+    when stock(cl){material} > lead_generation_limiter, lead_to_c_coversion_rate = 0
+    # DISCRETE CLIENT CONVERSION LOGIC ("Accumulate & Fire")
+    # This prevents explosive growth by only converting new leads once
+    # and ensuring integer client creation for individual lifecycles
+    
+# Per-step total new leads used for KPIs: (inbound + outbound) * dt
+total_new_leads_flow{material}(t) = (inbound_lead_generation_rate + outbound_lead_generation_rate) * dt
+    fractional_client_conversion{material}(t) = total_new_leads_flow{material}(t) * lead_to_c_conversion_rate{material}
+    
+    # PotentialClients accumulates fractional conversions until integer threshold
+    stock(potential_clients){material}(t) = cumsum(fractional_client_conversion{material}(t)) - cumsum(floor(potential_clients{material}(t)))
+    
+    # Client creation only happens when integer threshold is reached
+    client_creation_flow{material}(t) = floor(stock(potential_clients){material}(t))
+    
+    # The stock c represents the total number of discrete clients that will place orders
+    stock(c){material} = cumsum(client_creation_flow{material}(t))
+    requirement_to_fulfilmet_delay = requirement_to_fulfilmet_delay
+
+        # stock(pc) is to only be considered in the "active state", when the stock is an integer greater than 0  
+        when floor(stock(c))>0
+            for {c} of {material}{sector}
+                # activation delay between when a client is captured and the first order they place
+                lead_to_requirement_delay(t) = lead_to_requirement_delay{material}{sector}
+                # average rate of quantity of material per quarter ordered by a client when they place the first order
+                avg_order_quantity_client = avg_order_quantity_client{material}{sector}(t)
+                # the first client order is placed after the activation delay
+                client_requirement_basket(t+lead_to_requirement_delay) = avg_order_quantity_client(t)
+                    # from the second order, there is a uniform lag between requr
+                    after t>1
+                    client_requirement_basket(t) = avg_order_quantity_client(t)
+                # The client order fulfillment happens after a uniform delay and is the minimum of either requirements or maximum capacity of that material
+                client_order_fulfilment(t+requirement_to_fulfilmet_delay) = min(client_requirement_basket{material}(t),max_capacity{material}(t))
+                # The rate of the average order quantity increases by a uniform rate every quarter 
+                avg_order_quantity_client{material}(t+1)=client_requirement_growth*avg_order_quantity_client{material}(t)
+
+        total_material_order_clients{material}(t) = sum(stock(client_order_fulfilment{material}))(t) # this stock should the sum of all the requirements from all parallel c
+            
+
+# REVENUE CALCULATION LOGIC (FIXED - Using flows, not cumulative stocks)
+# Revenue calculation uses DELIVERY FLOWS to calculate quarterly revenue only
+# This prevents double-counting of historical deliveries and aligns with Phase 4
+# SD model wiring (client and anchor delivery flows are capacity-constrained and
+# computed from lookups and gateway-updated demands).
+
+# Anchor delivery flows (capacity-constrained)
+anchor_delivery_flow{sector}{material}(t) = min(total_material_order{primary_material}(t), max_capacity{primary_material}(t))
+
+# Client delivery flows (capacity-constrained with delay)
+client_delivery_flow{material}(t) = delay(min(client_requirement_basket{material}(t), max_capacity{material}(t)), requirement_to_fulfilment_delay)
+
+# Quarterly revenue calculation (Price × Delivery Flow for current quarter)
+anchor_revenue(t) = sum(anchor_delivery_flow{sector}{primary_material}(t) * price{primary_material}(t))
+client_revenue(t) = sum(client_delivery_flow{material}(t) * price{material}(t))
+
+# Optional: Cumulative revenue stocks for lifetime totals
+cumulative_anchor_revenue(t) = integral(anchor_revenue(t))
+cumulative_client_revenue(t) = integral(client_revenue(t))
+
+# Note: Fulfilled_Order stocks still exist for tracking cumulative deliveries,
+# but revenue calculation uses the flows to ensure quarterly accuracy
+
+
+# Phase 11 - Scenario handling and outputs (operational notes)
+# - The runner accepts one scenario per run, selected either by explicit path (--scenario) or preset name (--preset) under the 'scenarios/' folder.
+# - Scenario overrides are strictly validated: every constant and lookup key must match a constructed model element; unknown keys are errors.
+# - Price lookup points are used as provided; capacity lookup points are per‑year and the model converts to per‑quarter internally.
+# - After each run, two CSVs are written: the default 'FFF_Growth_System_Complete_Results.csv' and a suffixed copy 'FFF_Growth_System_Complete_Results_<scenario>.csv' for easy comparison across scenarios. This does not change KPI content.
+
+# Phase 12 - Visualization (read-only, post-processing)
+# - An optional CLI flag `--visualize` generates static PNG plots from the output CSV under 'output/plots/'.
+# - Plots include: total and sector revenue, revenue by material, leads and clients, order basket vs delivery, and approximate capacity utilization.
+# - Quarter labels are read directly from the CSV header to support variable horizons without assumptions about period count.
+
+
+####################################################################
+# Phase 3 Data Validation (JSON-first, US-only) — Addendum
+#
+# - inputs.json must include a top-level 'lists' key.
+# - Lists reconstruction is US-only in this phase; 'US' must appear in Market.
+#   If 'US' is missing, ingestion fails fast with a clear error.
+# - Primary material mapping entries with StartYear <= 0 are treated as disabled
+#   or placeholders; these are logged as warnings (non-fatal) during validation.
+# - Production and Pricing tables are validated to have strictly increasing
+#   Year per material and non-negative values, as before.
+# - Names are preserved exactly as in JSON across bundle tables to maintain
+#   alignment with naming utilities and SD model element creation.
+####################################################################
+
+                        
+
+
+
+                    
+
+                        
+
+
+
+
+
+
+        

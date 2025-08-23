@@ -1,0 +1,26 @@
+name: sm_lists_sm_demo
+runspecs:
+  starttime: 2025.0
+  stoptime: 2027.0
+  dt: 0.25
+  anchor_mode: sm
+
+# Provide SM universe directly in the scenario (scenario precedence over inputs.json)
+lists_sm:
+  - { Sector: Defense,          Material: "Silicon Carbide Fiber" }
+  - { Sector: Semiconductors,   Material: "Silicon Carbide Powder" }
+  - { Sector: Nuclear,          Material: "Silicon Carbide Fiber" }
+  - { Sector: Aviation,         Material: "UHT" }
+
+# Use existing inputs.json anchor_params_sm coverage; no constants overrides needed for this demo
+overrides:
+  constants: {}
+
+seeds:
+  active_anchor_clients_sm:
+    Defense:
+      Silicon Carbide Fiber: 1
+    Semiconductors:
+      Silicon Carbide Powder: 1
+
+

@@ -1,0 +1,9 @@
+name: working_scenario
+runspecs:
+  starttime: 2025.0
+  stoptime: 2032.0
+  dt: 0.25
+  anchor_mode: sector
+overrides:
+  constants: {}
+  points: {}

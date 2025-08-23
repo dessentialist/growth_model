@@ -1,0 +1,390 @@
+scenario:
+  name: baseline
+  runspecs:
+    starttime: 2025.0
+    stoptime: 2032.0
+    dt: 0.25
+  overrides:
+    constants: {}
+    points: {}
+    primary_map: null
+  seeds: null
+phase1_inputs:
+  lists:
+    sectors:
+    - Defense
+    - Nuclear
+    - Semiconductors
+    - Aviation
+    materials:
+    - Silicon Carbide Fiber
+    - Silicon Carbide Powder
+    - Silicon Nitride Fiber
+    - UHT
+    - Boron_fiber
+    - B4C_Fiber
+    - WC_Fiber
+  anchor_params_by_sector:
+    ATAM:
+      Aviation: 4.0
+      Defense: 4.0
+      Nuclear: 4.0
+      Semiconductors: 5.0
+    anchor_client_activation_delay:
+      Aviation: 1.25
+      Defense: 0.75
+      Nuclear: 0.5
+      Semiconductors: 0.25
+    anchor_lead_generation_rate:
+      Aviation: 0.5
+      Defense: 0.75
+      Nuclear: 0.5
+      Semiconductors: 0.5
+    anchor_start_year:
+      Aviation: 2026.0
+      Defense: 2025.0
+      Nuclear: 2025.0
+      Semiconductors: 2026.0
+    initial_phase_duration:
+      Aviation: 0.5
+      Defense: 0.5
+      Nuclear: 0.5
+      Semiconductors: 0.5
+    initial_req_growth:
+      Aviation: 0.05
+      Defense: 0.05
+      Nuclear: 0.05
+      Semiconductors: 0.05
+    initial_requirement_rate:
+      Aviation: 2.0
+      Defense: 2.0
+      Nuclear: 2.0
+      Semiconductors: 2.0
+    lead_to_pc_conversion_rate:
+      Aviation: 1.0
+      Defense: 0.75
+      Nuclear: 0.75
+      Semiconductors: 0.75
+    max_projects_per_pc:
+      Aviation: 2.0
+      Defense: 4.0
+      Nuclear: 2.0
+      Semiconductors: 2.0
+    project_duration:
+      Aviation: 1.0
+      Defense: 1.0
+      Nuclear: 1.0
+      Semiconductors: 0.5
+    project_generation_rate:
+      Aviation: 0.5
+      Defense: 0.75
+      Nuclear: 0.5
+      Semiconductors: 0.75
+    projects_to_client_conversion:
+      Aviation: 2.0
+      Defense: 4.0
+      Nuclear: 2.0
+      Semiconductors: 1.0
+    ramp_phase_duration:
+      Aviation: 1.5
+      Defense: 1.5
+      Nuclear: 1.5
+      Semiconductors: 1.5
+    ramp_req_growth:
+      Aviation: 0.15
+      Defense: 0.15
+      Nuclear: 0.15
+      Semiconductors: 0.15
+    ramp_requirement_rate:
+      Aviation: 100.0
+      Defense: 150.0
+      Nuclear: 200.0
+      Semiconductors: 200.0
+    requirement_to_order_lag:
+      Aviation: 0.75
+      Defense: 0.75
+      Nuclear: 0.5
+      Semiconductors: 0.5
+    steady_req_growth:
+      Aviation: 0.02
+      Defense: 0.02
+      Nuclear: 0.02
+      Semiconductors: 0.02
+    steady_requirement_rate:
+      Aviation: 200.0
+      Defense: 300.0
+      Nuclear: 400.0
+      Semiconductors: 400.0
+  other_params_by_material:
+    TAM:
+      B4C_Fiber: 30.0
+      Boron_fiber: 30.0
+      Silicon Carbide Fiber: 50.0
+      Silicon Carbide Powder: 50.0
+      Silicon Nitride Fiber: 30.0
+      UHT: 30.0
+      WC_Fiber: 30.0
+    avg_order_quantity_initial:
+      B4C_Fiber: 2.0
+      Boron_fiber: 2.0
+      Silicon Carbide Fiber: 3.0
+      Silicon Carbide Powder: 5.0
+      Silicon Nitride Fiber: 5.0
+      UHT: 2.0
+      WC_Fiber: 2.0
+    client_requirement_growth:
+      B4C_Fiber: 0.02
+      Boron_fiber: 0.02
+      Silicon Carbide Fiber: 0.02
+      Silicon Carbide Powder: 0.02
+      Silicon Nitride Fiber: 0.02
+      UHT: 0.02
+      WC_Fiber: 0.02
+    inbound_lead_generation_rate:
+      B4C_Fiber: 0.0
+      Boron_fiber: 0.0
+      Silicon Carbide Fiber: 1.0
+      Silicon Carbide Powder: 2.0
+      Silicon Nitride Fiber: 0.5
+      UHT: 0.0
+      WC_Fiber: 0.0
+    lead_start_year:
+      B4C_Fiber: 2030.0
+      Boron_fiber: 2030.0
+      Silicon Carbide Fiber: 2025.0
+      Silicon Carbide Powder: 2025.0
+      Silicon Nitride Fiber: 2028.0
+      UHT: 2027.0
+      WC_Fiber: 2030.0
+    lead_to_c_conversion_rate:
+      B4C_Fiber: 1.0
+      Boron_fiber: 1.0
+      Silicon Carbide Fiber: 0.75
+      Silicon Carbide Powder: 0.75
+      Silicon Nitride Fiber: 1.0
+      UHT: 1.0
+      WC_Fiber: 1.0
+    lead_to_requirement_delay:
+      B4C_Fiber: 0.25
+      Boron_fiber: 0.25
+      Silicon Carbide Fiber: 0.25
+      Silicon Carbide Powder: 0.25
+      Silicon Nitride Fiber: 0.25
+      UHT: 0.25
+      WC_Fiber: 0.25
+    outbound_lead_generation_rate:
+      B4C_Fiber: 0.5
+      Boron_fiber: 0.5
+      Silicon Carbide Fiber: 1.0
+      Silicon Carbide Powder: 2.0
+      Silicon Nitride Fiber: 0.5
+      UHT: 0.5
+      WC_Fiber: 0.5
+    requirement_to_fulfilment_delay:
+      B4C_Fiber: 0.25
+      Boron_fiber: 0.25
+      Silicon Carbide Fiber: 0.25
+      Silicon Carbide Powder: 0.25
+      Silicon Nitride Fiber: 0.25
+      UHT: 0.25
+      WC_Fiber: 0.25
+  production_by_material:
+    B4C_Fiber:
+    - year: 2029.0
+      capacity: 7.68
+    - year: 2030.0
+      capacity: 7.68
+    - year: 2031.0
+      capacity: 10.25
+    Boron_fiber:
+    - year: 2028.0
+      capacity: 4.46
+    - year: 2029.0
+      capacity: 4.46
+    - year: 2030.0
+      capacity: 5.95
+    - year: 2031.0
+      capacity: 8.92
+    Silicon Carbide Fiber:
+    - year: 2025.0
+      capacity: 5.0
+    - year: 2026.0
+      capacity: 3.68
+    - year: 2027.0
+      capacity: 5.53
+    - year: 2028.0
+      capacity: 7.37
+    - year: 2029.0
+      capacity: 7.37
+    - year: 2030.0
+      capacity: 9.21
+    - year: 2031.0
+      capacity: 9.21
+    Silicon Carbide Powder:
+    - year: 2025.0
+      capacity: 5.0
+    - year: 2026.0
+      capacity: 203.3
+    - year: 2027.0
+      capacity: 254.12
+    - year: 2028.0
+      capacity: 304.95
+    - year: 2029.0
+      capacity: 355.77
+    - year: 2030.0
+      capacity: 406.6
+    - year: 2031.0
+      capacity: 457.42
+    Silicon Nitride Fiber:
+    - year: 2025.0
+      capacity: 5.0
+    - year: 2026.0
+      capacity: 16.78
+    - year: 2027.0
+      capacity: 16.78
+    - year: 2028.0
+      capacity: 22.38
+    - year: 2029.0
+      capacity: 22.38
+    - year: 2030.0
+      capacity: 27.97
+    - year: 2031.0
+      capacity: 27.97
+    UHT:
+    - year: 2025.0
+      capacity: 5.0
+    - year: 2026.0
+      capacity: 20.52
+    - year: 2027.0
+      capacity: 20.52
+    - year: 2028.0
+      capacity: 20.52
+    - year: 2029.0
+      capacity: 34.2
+    - year: 2030.0
+      capacity: 34.2
+    - year: 2031.0
+      capacity: 34.2
+    WC_Fiber:
+    - year: 2029.0
+      capacity: 47.66
+    - year: 2030.0
+      capacity: 47.66
+    - year: 2031.0
+      capacity: 63.55
+  pricing_by_material:
+    B4C_Fiber:
+    - year: 2025.0
+      price: 10000.0
+    - year: 2026.0
+      price: 10000.0
+    - year: 2027.0
+      price: 10000.0
+    - year: 2028.0
+      price: 10000.0
+    - year: 2029.0
+      price: 10000.0
+    - year: 2030.0
+      price: 10000.0
+    - year: 2031.0
+      price: 10000.0
+    Boron_fiber:
+    - year: 2025.0
+      price: 10000.0
+    - year: 2026.0
+      price: 10000.0
+    - year: 2027.0
+      price: 10000.0
+    - year: 2028.0
+      price: 10000.0
+    - year: 2029.0
+      price: 10000.0
+    - year: 2030.0
+      price: 10000.0
+    - year: 2031.0
+      price: 10000.0
+    Silicon Carbide Fiber:
+    - year: 2025.0
+      price: 8000.0
+    - year: 2026.0
+      price: 8000.0
+    - year: 2027.0
+      price: 7500.0
+    - year: 2028.0
+      price: 7500.0
+    - year: 2029.0
+      price: 7000.0
+    - year: 2030.0
+      price: 7000.0
+    - year: 2031.0
+      price: 6500.0
+    Silicon Carbide Powder:
+    - year: 2025.0
+      price: 500.0
+    - year: 2026.0
+      price: 500.0
+    - year: 2027.0
+      price: 500.0
+    - year: 2028.0
+      price: 450.0
+    - year: 2029.0
+      price: 450.0
+    - year: 2030.0
+      price: 400.0
+    - year: 2031.0
+      price: 350.0
+    Silicon Nitride Fiber:
+    - year: 2025.0
+      price: 18000.0
+    - year: 2026.0
+      price: 18000.0
+    - year: 2027.0
+      price: 18000.0
+    - year: 2028.0
+      price: 17000.0
+    - year: 2029.0
+      price: 16000.0
+    - year: 2030.0
+      price: 15000.0
+    - year: 2031.0
+      price: 15000.0
+    UHT:
+    - year: 2025.0
+      price: 20000.0
+    - year: 2026.0
+      price: 20000.0
+    - year: 2027.0
+      price: 20000.0
+    - year: 2028.0
+      price: 18500.0
+    - year: 2029.0
+      price: 18000.0
+    - year: 2030.0
+      price: 17000.0
+    - year: 2031.0
+      price: 16000.0
+    WC_Fiber:
+    - year: 2025.0
+      price: 10000.0
+    - year: 2026.0
+      price: 10000.0
+    - year: 2027.0
+      price: 10000.0
+    - year: 2028.0
+      price: 10000.0
+    - year: 2029.0
+      price: 10000.0
+    - year: 2030.0
+      price: 10000.0
+    - year: 2031.0
+      price: 10000.0
+  effective_primary_material_map:
+    Defense:
+    - Silicon Carbide Fiber
+    - Silicon Nitride Fiber
+    Nuclear:
+    - Silicon Carbide Fiber
+    Semiconductors:
+    - Silicon Carbide Powder
+    Aviation:
+    - UHT

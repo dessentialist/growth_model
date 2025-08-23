@@ -1,0 +1,7 @@
+pandas
+BPTK_Py==2.1.1
+PyYAML
+matplotlib>=3.7
+Pillow>=10.0
+streamlit>=1.32
+pytest>=7.0

@@ -1,0 +1,49 @@
+name: sm_full_demo
+runspecs:
+  starttime: 2025.0
+  stoptime: 2030.0
+  dt: 0.25
+  anchor_mode: sm
+
+overrides:
+  # Demonstrate per-(sector, material) constants overrides in SM-mode
+  constants:
+    # Adjust requirement phase parameters for Defense on Silicon Carbide Fiber
+    initial_requirement_rate_Defense_Silicon_Carbide_Fiber: 3.0
+    ramp_requirement_rate_Defense_Silicon_Carbide_Fiber: 180.0
+    steady_requirement_rate_Defense_Silicon_Carbide_Fiber: 320.0
+    requirement_to_order_lag_Defense_Silicon_Carbide_Fiber: 1.0
+    # Defense on Silicon Nitride Fiber (different from SCF to illustrate divergence within the same sector)
+    initial_requirement_rate_Defense_Silicon_Nitride_Fiber: 2.5
+    ramp_requirement_rate_Defense_Silicon_Nitride_Fiber: 140.0
+    steady_requirement_rate_Defense_Silicon_Nitride_Fiber: 280.0
+    requirement_to_order_lag_Defense_Silicon_Nitride_Fiber: 2.0
+    # Nuclear on Silicon Carbide Fiber
+    initial_requirement_rate_Nuclear_Silicon_Carbide_Fiber: 1.5
+    ramp_requirement_rate_Nuclear_Silicon_Carbide_Fiber: 120.0
+    steady_requirement_rate_Nuclear_Silicon_Carbide_Fiber: 280.0
+    requirement_to_order_lag_Nuclear_Silicon_Carbide_Fiber: 2.0
+    # Semiconductors on Silicon Carbide Powder
+    initial_requirement_rate_Semiconductors_Silicon_Carbide_Powder: 1.8
+    ramp_requirement_rate_Semiconductors_Silicon_Carbide_Powder: 220.0
+    steady_requirement_rate_Semiconductors_Silicon_Carbide_Powder: 380.0
+    requirement_to_order_lag_Semiconductors_Silicon_Carbide_Powder: 1.5
+    # Aviation on UHT
+    initial_requirement_rate_Aviation_UHT: 1.2
+    ramp_requirement_rate_Aviation_UHT: 90.0
+    steady_requirement_rate_Aviation_UHT: 210.0
+    requirement_to_order_lag_Aviation_UHT: 0.75
+
+seeds:
+  active_anchor_clients_sm:
+    Defense:
+      Silicon Carbide Fiber: 2
+      Silicon Nitride Fiber: 1
+    Nuclear:
+      Silicon Carbide Fiber: 1
+    Semiconductors:
+      Silicon Carbide Powder: 1
+    Aviation:
+      UHT: 1
+
+

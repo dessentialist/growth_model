@@ -1,0 +1,67 @@
+Output Stocks,2025Q1,2025Q2,2025Q3,2025Q4,2026Q1,2026Q2,2026Q3,2026Q4
+Revenue,10000.0,10000.0,10000.0,10000.0,14418.382115833527,23743.679473533666,34582.159756263,36197.332753838855
+Revenue Defense,10000.0,10000.0,10000.0,10000.0,9340.0,8544.375,7698.226835607493,6829.429766847901
+Revenue Nuclear,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Revenue Semiconductors,0.0,0.0,0.0,0.0,0.0,0.0,22097.803028379454,23000.531862209617
+Revenue Aviation,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Revenue Silicon Carbide Fiber,10000.0,10000.0,10000.0,10000.0,9416.382115833527,8743.559473533667,7984.251961203002,7281.887083514146
+Revenue Silicon Carbide Powder,0.0,0.0,0.0,0.0,5002.0,15000.12,26597.907795059993,28915.44567032471
+Revenue Silicon Nitride Fiber,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Revenue UHT,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Revenue Boron_fiber,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Revenue B4C_Fiber,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Revenue WC_Fiber,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Revenue Defense Silicon Carbide Fiber,10000.0,10000.0,10000.0,10000.0,9340.0,8544.375,7698.226835607493,6829.429766847901
+Revenue Defense Silicon Nitride Fiber,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Revenue Nuclear Silicon Carbide Fiber,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Revenue Semiconductors Silicon Carbide Powder,0.0,0.0,0.0,0.0,0.0,0.0,22097.803028379454,23000.531862209617
+Revenue Aviation UHT,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Anchor Leads,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Anchor Leads Defense,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Anchor Leads Nuclear,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Anchor Leads Semiconductors,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Anchor Leads Aviation,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Active Projects,0.0,0.0,0.0,1.0,3.0,3.0,3.0,5.0
+Active Projects Defense,0.0,0.0,0.0,1.0,1.0,2.0,1.0,2.0
+Active Projects Nuclear,0.0,0.0,0.0,0.0,1.0,0.0,1.0,1.0
+Active Projects Semiconductors,0.0,0.0,0.0,0.0,1.0,1.0,1.0,2.0
+Active Projects Aviation,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Anchor Clients,1.0,1.0,1.0,1.0,1.0,1.0,2.0,2.0
+Anchor Clients Defense,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0
+Anchor Clients Nuclear,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Anchor Clients Semiconductors,0.0,0.0,0.0,0.0,0.0,0.0,1.0,1.0
+Anchor Clients Aviation,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Anchor Clients Defense Silicon Carbide Fiber,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0
+Anchor Clients Defense Silicon Nitride Fiber,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Anchor Clients Nuclear Silicon Carbide Fiber,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Anchor Clients Semiconductors Silicon Carbide Powder,0.0,0.0,0.0,0.0,0.0,0.0,1.0,1.0
+Anchor Clients Aviation UHT,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Other Leads,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0
+Other Leads Defense,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Other Leads Nuclear,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Other Leads Semiconductors,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Other Leads Aviation,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Other Clients,0.0,0.0,3.0,9.0,12.0,18.0,21.0,27.0
+Other Clients Silicon Carbide Fiber,0.0,0.0,1.0,3.0,4.0,6.0,7.0,9.0
+Other Clients Silicon Carbide Powder,0.0,0.0,2.0,6.0,8.0,12.0,14.0,18.0
+Other Clients Silicon Nitride Fiber,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Other Clients UHT,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Other Clients Boron_fiber,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Other Clients B4C_Fiber,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Other Clients WC_Fiber,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Order Basket,150.0,172.5,300.0,319.0052,351.120312,370.36240832000004,602.7296482496,652.224240965824
+Order Basket Silicon Carbide Fiber,150.0,172.5,300.0,309.0012,321.120072,330.36240192,342.7296480576,352.22424096134404
+Order Basket Silicon Carbide Powder,0.0,0.0,0.0,10.004,30.00024,40.0000064,260.000000192,300.00000000447994
+Order Basket Silicon Nitride Fiber,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Order Basket UHT,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Order Basket Boron_fiber,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Order Basket B4C_Fiber,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Order Basket WC_Fiber,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Order Delivery,1.25,1.25,1.25,1.25,11.18104776447919,31.110533266480466,54.22604164963005,58.78589292537258
+Order Delivery Silicon Carbide Fiber,1.25,1.25,1.25,1.25,1.1770477644791908,1.1102932664804657,1.0302260595100647,0.9550015847231667
+Order Delivery Silicon Carbide Powder,0.0,0.0,0.0,0.0,10.004,30.00024,53.195815590119985,57.830891340649416
+Order Delivery Silicon Nitride Fiber,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Order Delivery UHT,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Order Delivery Boron_fiber,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Order Delivery B4C_Fiber,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Order Delivery WC_Fiber,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0

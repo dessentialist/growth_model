@@ -1,0 +1,464 @@
+{
+  "lists": [
+    {
+      "Market": [
+        "US",
+        "EU"
+      ]
+    },
+    {
+      "Sector": [
+        "Defense",
+        "Nuclear",
+        "Semiconductors",
+        "Aviation"
+      ]
+    },
+    {
+      "Material": [
+        "Silicon Carbide Fiber",
+        "Silicon Carbide Powder",
+        "Silicon Nitride Fiber",
+        "UHT",
+        "Boron_fiber",
+        "B4C_Fiber",
+        "WC_Fiber"
+      ]
+    }
+  ],
+  "anchor_params": {
+    "anchor_start_year": {
+      "Aviation": 2026,
+      "Defense": 2025,
+      "Nuclear": 2025,
+      "Semiconductors": 2026
+    },
+    "anchor_client_activation_delay": {
+      "Aviation": 1.25,
+      "Defense": 0.75,
+      "Nuclear": 0.5,
+      "Semiconductors": 0.25
+    },
+    "anchor_lead_generation_rate": {
+      "Aviation": 0.5,
+      "Defense": 0.75,
+      "Nuclear": 0.5,
+      "Semiconductors": 0.5
+    },
+    "lead_to_pc_conversion_rate": {
+      "Aviation": 1,
+      "Defense": 0.75,
+      "Nuclear": 0.75,
+      "Semiconductors": 0.75
+    },
+    "project_generation_rate": {
+      "Aviation": 0.5,
+      "Defense": 0.75,
+      "Nuclear": 0.5,
+      "Semiconductors": 0.75
+    },
+    "max_projects_per_pc": {
+      "Aviation": 2,
+      "Defense": 4,
+      "Nuclear": 2,
+      "Semiconductors": 2
+    },
+    "project_duration": {
+      "Aviation": 1,
+      "Defense": 1,
+      "Nuclear": 1,
+      "Semiconductors": 0.5
+    },
+    "projects_to_client_conversion": {
+      "Aviation": 2,
+      "Defense": 4,
+      "Nuclear": 2,
+      "Semiconductors": 1
+    },
+    "initial_phase_duration": {
+      "Aviation": 0.5,
+      "Defense": 0.5,
+      "Nuclear": 0.5,
+      "Semiconductors": 0.5
+    },
+    "ramp_phase_duration": {
+      "Aviation": 1.5,
+      "Defense": 1.5,
+      "Nuclear": 1.5,
+      "Semiconductors": 1.5
+    },
+    "initial_requirement_rate": {
+      "Aviation": 2,
+      "Defense": 2,
+      "Nuclear": 2,
+      "Semiconductors": 2
+    },
+    "initial_req_growth": {
+      "Aviation": 0.05,
+      "Defense": 0.05,
+      "Nuclear": 0.05,
+      "Semiconductors": 0.05
+    },
+    "ramp_requirement_rate": {
+      "Aviation": 100,
+      "Defense": 150,
+      "Nuclear": 200,
+      "Semiconductors": 200
+    },
+    "ramp_req_growth": {
+      "Aviation": 0.15,
+      "Defense": 0.15,
+      "Nuclear": 0.15,
+      "Semiconductors": 0.15
+    },
+    "steady_requirement_rate": {
+      "Aviation": 200,
+      "Defense": 300,
+      "Nuclear": 400,
+      "Semiconductors": 400
+    },
+    "steady_req_growth": {
+      "Aviation": 0.02,
+      "Defense": 0.02,
+      "Nuclear": 0.02,
+      "Semiconductors": 0.02
+    },
+    "requirement_to_order_lag": {
+      "Aviation": 0.75,
+      "Defense": 0.75,
+      "Nuclear": 0.5,
+      "Semiconductors": 0.5
+    },
+    "ATAM": {
+      "Aviation": 4,
+      "Defense": 4,
+      "Nuclear": 4,
+      "Semiconductors": 5
+    }
+  },
+  "other_params": {
+    "lead_start_year": {
+      "Silicon Carbide Fiber": 2025,
+      "Silicon Carbide Powder": 2025,
+      "Silicon Nitride Fiber": 2028,
+      "UHT": 2027,
+      "Boron_fiber": 2030,
+      "B4C_Fiber": 2030,
+      "WC_Fiber": 2030
+    },
+    "inbound_lead_generation_rate": {
+      "Silicon Carbide Fiber": 1.0,
+      "Silicon Carbide Powder": 2.0,
+      "Silicon Nitride Fiber": 0.5,
+      "UHT": 0,
+      "Boron_fiber": 0,
+      "B4C_Fiber": 0,
+      "WC_Fiber": 0
+    },
+    "outbound_lead_generation_rate": {
+      "Silicon Carbide Fiber": 1.0,
+      "Silicon Carbide Powder": 2.0,
+      "Silicon Nitride Fiber": 0.5,
+      "UHT": 0.5,
+      "Boron_fiber": 0.5,
+      "B4C_Fiber": 0.5,
+      "WC_Fiber": 0.5
+    },
+    "lead_to_c_conversion_rate": {
+      "Silicon Carbide Fiber": 0.75,
+      "Silicon Carbide Powder": 0.75,
+      "Silicon Nitride Fiber": 1,
+      "UHT": 1,
+      "Boron_fiber": 1,
+      "B4C_Fiber": 1,
+      "WC_Fiber": 1
+    },
+    "lead_to_requirement_delay": {
+      "Silicon Carbide Fiber": 0.25,
+      "Silicon Carbide Powder": 0.25,
+      "Silicon Nitride Fiber": 0.25,
+      "UHT": 0.25,
+      "Boron_fiber": 0.25,
+      "B4C_Fiber": 0.25,
+      "WC_Fiber": 0.25
+    },
+    "requirement_to_fulfilment_delay": {
+      "Silicon Carbide Fiber": 0.25,
+      "Silicon Carbide Powder": 0.25,
+      "Silicon Nitride Fiber": 0.25,
+      "UHT": 0.25,
+      "Boron_fiber": 0.25,
+      "B4C_Fiber": 0.25,
+      "WC_Fiber": 0.25
+    },
+    "avg_order_quantity_initial": {
+      "Silicon Carbide Fiber": 3.0,
+      "Silicon Carbide Powder": 5.0,
+      "Silicon Nitride Fiber": 5.0,
+      "UHT": 2,
+      "Boron_fiber": 2,
+      "B4C_Fiber": 2,
+      "WC_Fiber": 2
+    },
+    "client_requirement_growth": {
+      "Silicon Carbide Fiber": 0.02,
+      "Silicon Carbide Powder": 0.02,
+      "Silicon Nitride Fiber": 0.02,
+      "UHT": 0.02,
+      "Boron_fiber": 0.02,
+      "B4C_Fiber": 0.02,
+      "WC_Fiber": 0.02
+    },
+    "TAM": {
+      "Silicon Carbide Fiber": 50.0,
+      "Silicon Carbide Powder": 50.0,
+      "Silicon Nitride Fiber": 30.0,
+      "UHT": 30,
+      "Boron_fiber": 30,
+      "B4C_Fiber": 30,
+      "WC_Fiber": 30
+    }
+  },
+  "production": {
+    "Silicon Carbide Fiber": [
+      {"year": 2025, "capacity": 5.0},
+      {"year": 2026, "capacity": 3.68},
+      {"year": 2027, "capacity": 5.53},
+      {"year": 2028, "capacity": 7.37},
+      {"year": 2029, "capacity": 7.37},
+      {"year": 2030, "capacity": 9.21},
+      {"year": 2031, "capacity": 9.21}
+    ],
+    "Silicon Carbide Powder": [
+      {"year": 2025, "capacity": 5.0},
+      {"year": 2026, "capacity": 203.3},
+      {"year": 2027, "capacity": 254.12},
+      {"year": 2028, "capacity": 304.95},
+      {"year": 2029, "capacity": 355.77},
+      {"year": 2030, "capacity": 406.6},
+      {"year": 2031, "capacity": 457.42}
+    ],
+    "Silicon Nitride Fiber": [
+      {"year": 2025, "capacity": 5.0},
+      {"year": 2026, "capacity": 16.78},
+      {"year": 2027, "capacity": 16.78},
+      {"year": 2028, "capacity": 22.38},
+      {"year": 2029, "capacity": 22.38},
+      {"year": 2030, "capacity": 27.97},
+      {"year": 2031, "capacity": 27.97}
+    ],
+    "UHT": [
+      {"year": 2025, "capacity": 5.0},
+      {"year": 2026, "capacity": 20.52},
+      {"year": 2027, "capacity": 20.52},
+      {"year": 2028, "capacity": 20.52},
+      {"year": 2029, "capacity": 34.2},
+      {"year": 2030, "capacity": 34.2},
+      {"year": 2031, "capacity": 34.2}
+    ],
+    "Boron_fiber": [
+      {"year": 2028, "capacity": 4.46},
+      {"year": 2029, "capacity": 4.46},
+      {"year": 2030, "capacity": 5.95},
+      {"year": 2031, "capacity": 8.92}
+    ],
+    "B4C_Fiber": [
+      {"year": 2029, "capacity": 7.68},
+      {"year": 2030, "capacity": 7.68},
+      {"year": 2031, "capacity": 10.25}
+    ],
+    "WC_Fiber": [
+      {"year": 2029, "capacity": 47.66},
+      {"year": 2030, "capacity": 47.66},
+      {"year": 2031, "capacity": 63.55}
+    ]
+  },
+  "pricing": {
+    "Silicon Carbide Fiber": [
+      {"year": 2025, "price": 8000},
+      {"year": 2026, "price": 8000},
+      {"year": 2027, "price": 7500},
+      {"year": 2028, "price": 7500},
+      {"year": 2029, "price": 7000},
+      {"year": 2030, "price": 7000},
+      {"year": 2031, "price": 6500}
+    ],
+    "Silicon Carbide Powder": [
+      {"year": 2025, "price": 500},
+      {"year": 2026, "price": 500},
+      {"year": 2027, "price": 500},
+      {"year": 2028, "price": 450},
+      {"year": 2029, "price": 450},
+      {"year": 2030, "price": 400},
+      {"year": 2031, "price": 350}
+    ],
+    "Silicon Nitride Fiber": [
+      {"year": 2025, "price": 18000},
+      {"year": 2026, "price": 18000},
+      {"year": 2027, "price": 18000},
+      {"year": 2028, "price": 17000},
+      {"year": 2029, "price": 16000},
+      {"year": 2030, "price": 15000},
+      {"year": 2031, "price": 15000}
+    ],
+    "UHT": [
+      {"year": 2025, "price": 20000},
+      {"year": 2026, "price": 20000},
+      {"year": 2027, "price": 20000},
+      {"year": 2028, "price": 18500},
+      {"year": 2029, "price": 18000},
+      {"year": 2030, "price": 17000},
+      {"year": 2031, "price": 16000}
+    ],
+    "Boron_fiber": [
+      {"year": 2025, "price": 10000},
+      {"year": 2026, "price": 10000},
+      {"year": 2027, "price": 10000},
+      {"year": 2028, "price": 10000},
+      {"year": 2029, "price": 10000},
+      {"year": 2030, "price": 10000},
+      {"year": 2031, "price": 10000}
+    ],
+    "B4C_Fiber": [
+      {"year": 2025, "price": 10000},
+      {"year": 2026, "price": 10000},
+      {"year": 2027, "price": 10000},
+      {"year": 2028, "price": 10000},
+      {"year": 2029, "price": 10000},
+      {"year": 2030, "price": 10000},
+      {"year": 2031, "price": 10000}
+    ],
+    "WC_Fiber": [
+      {"year": 2025, "price": 10000},
+      {"year": 2026, "price": 10000},
+      {"year": 2027, "price": 10000},
+      {"year": 2028, "price": 10000},
+      {"year": 2029, "price": 10000},
+      {"year": 2030, "price": 10000},
+      {"year": 2031, "price": 10000}
+    ]
+  },
+  "primary_map": {
+    "Defense": [
+      {"material": "Silicon Carbide Fiber", "start_year": 2025},
+      {"material": "Silicon Nitride Fiber", "start_year": 2027}
+    ],
+    "Nuclear": [{"material": "Silicon Carbide Fiber", "start_year": 2025}],
+    "Semiconductors": [{"material": "Silicon Carbide Powder", "start_year": 2025}],
+    "Aviation": [
+      {"material": "UHT", "start_year": 2026}
+    ]
+  },
+  "lists_sm": [],
+  "anchor_params_sm": {
+    "anchor_start_year": {
+      "Defense": {"Silicon Carbide Fiber": 2025, "Silicon Nitride Fiber": 2027},
+      "Nuclear": {"Silicon Carbide Fiber": 2025, "UHT": 2026},
+      "Semiconductors": {"Silicon Carbide Powder": 2025, "Silicon Carbide Fiber": 2027},
+      "Aviation": {"UHT": 2026, "Silicon Nitride Fiber": 2027}
+    },
+    "anchor_client_activation_delay": {
+      "Defense": {"Silicon Carbide Fiber": 0.75, "Silicon Nitride Fiber": 0.75},
+      "Nuclear": {"Silicon Carbide Fiber": 0.5, "UHT": 0.5},
+      "Semiconductors": {"Silicon Carbide Powder": 0.25, "Silicon Carbide Fiber": 0.25},
+      "Aviation": {"UHT": 1.25, "Silicon Nitride Fiber": 1.25}
+    },
+    "anchor_lead_generation_rate": {
+      "Defense": {"Silicon Carbide Fiber": 0.75, "Silicon Nitride Fiber": 0.75},
+      "Nuclear": {"Silicon Carbide Fiber": 0.5, "UHT": 0.5},
+      "Semiconductors": {"Silicon Carbide Powder": 0.5, "Silicon Carbide Fiber": 0.6},
+      "Aviation": {"UHT": 0.5, "Silicon Nitride Fiber": 0.4}
+    },
+    "lead_to_pc_conversion_rate": {
+      "Defense": {"Silicon Carbide Fiber": 0.75, "Silicon Nitride Fiber": 0.75},
+      "Nuclear": {"Silicon Carbide Fiber": 0.75, "UHT": 0.75},
+      "Semiconductors": {"Silicon Carbide Powder": 0.75, "Silicon Carbide Fiber": 0.7},
+      "Aviation": {"UHT": 1.0, "Silicon Nitride Fiber": 0.9}
+    },
+    "project_generation_rate": {
+      "Defense": {"Silicon Carbide Fiber": 0.75, "Silicon Nitride Fiber": 0.75},
+      "Nuclear": {"Silicon Carbide Fiber": 0.5, "UHT": 0.5},
+      "Semiconductors": {"Silicon Carbide Powder": 0.75, "Silicon Carbide Fiber": 0.7},
+      "Aviation": {"UHT": 0.5, "Silicon Nitride Fiber": 0.45}
+    },
+    "max_projects_per_pc": {
+      "Defense": {"Silicon Carbide Fiber": 4, "Silicon Nitride Fiber": 4},
+      "Nuclear": {"Silicon Carbide Fiber": 2, "UHT": 2},
+      "Semiconductors": {"Silicon Carbide Powder": 2, "Silicon Carbide Fiber": 2},
+      "Aviation": {"UHT": 2, "Silicon Nitride Fiber": 2}
+    },
+    "project_duration": {
+      "Defense": {"Silicon Carbide Fiber": 1, "Silicon Nitride Fiber": 1},
+      "Nuclear": {"Silicon Carbide Fiber": 1, "UHT": 1},
+      "Semiconductors": {"Silicon Carbide Powder": 0.5, "Silicon Carbide Fiber": 0.5},
+      "Aviation": {"UHT": 1, "Silicon Nitride Fiber": 1}
+    },
+    "projects_to_client_conversion": {
+      "Defense": {"Silicon Carbide Fiber": 4, "Silicon Nitride Fiber": 4},
+      "Nuclear": {"Silicon Carbide Fiber": 2, "UHT": 2},
+      "Semiconductors": {"Silicon Carbide Powder": 1, "Silicon Carbide Fiber": 1},
+      "Aviation": {"UHT": 2, "Silicon Nitride Fiber": 2}
+    },
+    "initial_phase_duration": {
+      "Defense": {"Silicon Carbide Fiber": 0.5, "Silicon Nitride Fiber": 0.5},
+      "Nuclear": {"Silicon Carbide Fiber": 0.5, "UHT": 0.5},
+      "Semiconductors": {"Silicon Carbide Powder": 0.5, "Silicon Carbide Fiber": 0.5},
+      "Aviation": {"UHT": 0.5, "Silicon Nitride Fiber": 0.5}
+    },
+    "ramp_phase_duration": {
+      "Defense": {"Silicon Carbide Fiber": 1.5, "Silicon Nitride Fiber": 1.5},
+      "Nuclear": {"Silicon Carbide Fiber": 1.5, "UHT": 1.5},
+      "Semiconductors": {"Silicon Carbide Powder": 1.5, "Silicon Carbide Fiber": 1.5},
+      "Aviation": {"UHT": 1.5, "Silicon Nitride Fiber": 1.5}
+    },
+    "ATAM": {
+      "Defense": {"Silicon Carbide Fiber": 4, "Silicon Nitride Fiber": 4},
+      "Nuclear": {"Silicon Carbide Fiber": 4, "UHT": 4},
+      "Semiconductors": {"Silicon Carbide Powder": 5, "Silicon Carbide Fiber": 5},
+      "Aviation": {"UHT": 4, "Silicon Nitride Fiber": 4}
+    },
+    "initial_requirement_rate": {
+      "Defense": {"Silicon Carbide Fiber": 2, "Silicon Nitride Fiber": 2},
+      "Nuclear": {"Silicon Carbide Fiber": 2, "UHT": 2},
+      "Semiconductors": {"Silicon Carbide Powder": 2, "Silicon Carbide Fiber": 2.2},
+      "Aviation": {"UHT": 2, "Silicon Nitride Fiber": 1.6}
+    },
+    "initial_req_growth": {
+      "Defense": {"Silicon Carbide Fiber": 0.05, "Silicon Nitride Fiber": 0.05},
+      "Nuclear": {"Silicon Carbide Fiber": 0.05, "UHT": 0.05},
+      "Semiconductors": {"Silicon Carbide Powder": 0.05, "Silicon Carbide Fiber": 0.06},
+      "Aviation": {"UHT": 0.05, "Silicon Nitride Fiber": 0.04}
+    },
+    "ramp_requirement_rate": {
+      "Defense": {"Silicon Carbide Fiber": 150, "Silicon Nitride Fiber": 150},
+      "Nuclear": {"Silicon Carbide Fiber": 200, "UHT": 180},
+      "Semiconductors": {"Silicon Carbide Powder": 200, "Silicon Carbide Fiber": 180},
+      "Aviation": {"UHT": 100, "Silicon Nitride Fiber": 110}
+    },
+    "ramp_req_growth": {
+      "Defense": {"Silicon Carbide Fiber": 0.15, "Silicon Nitride Fiber": 0.15},
+      "Nuclear": {"Silicon Carbide Fiber": 0.15, "UHT": 0.15},
+      "Semiconductors": {"Silicon Carbide Powder": 0.15, "Silicon Carbide Fiber": 0.18},
+      "Aviation": {"UHT": 0.15, "Silicon Nitride Fiber": 0.14}
+    },
+    "steady_requirement_rate": {
+      "Defense": {"Silicon Carbide Fiber": 300, "Silicon Nitride Fiber": 300},
+      "Nuclear": {"Silicon Carbide Fiber": 400, "UHT": 360},
+      "Semiconductors": {"Silicon Carbide Powder": 400, "Silicon Carbide Fiber": 360},
+      "Aviation": {"UHT": 200, "Silicon Nitride Fiber": 220}
+    },
+    "steady_req_growth": {
+      "Defense": {"Silicon Carbide Fiber": 0.02, "Silicon Nitride Fiber": 0.02},
+      "Nuclear": {"Silicon Carbide Fiber": 0.02, "UHT": 0.02},
+      "Semiconductors": {"Silicon Carbide Powder": 0.02, "Silicon Carbide Fiber": 0.02},
+      "Aviation": {"UHT": 0.02, "Silicon Nitride Fiber": 0.02}
+    },
+    "requirement_to_order_lag": {
+      "Defense": {"Silicon Carbide Fiber": 0.75, "Silicon Nitride Fiber": 0.75},
+      "Nuclear": {"Silicon Carbide Fiber": 0.5, "UHT": 0.5},
+      "Semiconductors": {"Silicon Carbide Powder": 0.5, "Silicon Carbide Fiber": 0.5},
+      "Aviation": {"UHT": 0.75, "Silicon Nitride Fiber": 0.75}
+    }
+  }
+}
+

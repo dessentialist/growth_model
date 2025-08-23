@@ -1,0 +1,11 @@
+name: short_2025_2029
+
+runspecs:
+  starttime: 2025.0
+  stoptime: 2029.0
+  dt: 0.25
+
+overrides:
+  constants: {}
+  points: {}
+

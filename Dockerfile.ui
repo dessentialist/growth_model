@@ -1,0 +1,34 @@
+# Optional Docker image for the Streamlit UI layer only (Phase 12 packaging)
+# Usage:
+#   docker build -f Dockerfile.ui -t fff-ui .
+#   docker run --rm -p 8501:8501 \
+#     -v $(pwd)/scenarios:/app/scenarios \
+#     -v $(pwd)/logs:/app/logs \
+#     -v $(pwd)/output:/app/output \
+#     fff-ui
+
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# System deps
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy minimal code needed for UI
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY ui ./ui
+COPY src ./src
+COPY viz ./viz
+COPY simulate_fff_growth.py ./simulate_fff_growth.py
+COPY inputs.json ./inputs.json
+COPY Inputs ./Inputs
+
+ENV PYTHONUNBUFFERED=1
+
+EXPOSE 8501
+
+CMD ["streamlit", "run", "ui/app.py", "--server.port=8501", "--server.address=0.0.0.0"]

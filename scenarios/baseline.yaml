@@ -1,0 +1,7 @@
+name: "baseline"
+runspecs:
+  starttime: 2025.0
+  stoptime: 2032.0
+  dt: 0.25
+overrides: {}
+

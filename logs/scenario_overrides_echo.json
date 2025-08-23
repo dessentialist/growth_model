@@ -1,0 +1,19 @@
+{
+  "name": "baseline",
+  "runspecs": {
+    "starttime": 2025.0,
+    "stoptime": 2032.0,
+    "dt": 0.25,
+    "anchor_mode": "sector"
+  },
+  "overrides": {
+    "constants": {},
+    "points": {}
+  },
+  "seeds": {
+    "active_anchor_clients": {},
+    "elapsed_quarters": {},
+    "direct_clients": {},
+    "active_anchor_clients_sm": {}
+  }
+}

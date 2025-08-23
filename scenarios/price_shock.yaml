@@ -1,0 +1,26 @@
+name: price-shock
+runspecs:
+  starttime: 2025.0
+  stoptime: 2032.0
+  dt: 0.25
+overrides:
+  constants: {}
+  points:
+    # Increase prices for first two materials as an example; adjust as needed
+    price_Silicon_Carbide_Fiber:
+      - [2025.0, 12000]
+      - [2026.0, 11000]
+      - [2027.0, 10000]
+      - [2028.0, 9500]
+      - [2029.0, 9000]
+      - [2030.0, 8500]
+      - [2031.0, 8000]
+    price_Silicon_Carbide_Powder:
+      - [2025.0, 800]
+      - [2026.0, 800]
+      - [2027.0, 750]
+      - [2028.0, 700]
+      - [2029.0, 650]
+      - [2030.0, 600]
+      - [2031.0, 550]
+

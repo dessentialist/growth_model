@@ -1,0 +1,16 @@
+name: sm_minimal
+runspecs:
+  starttime: 2025.0
+  stoptime: 2027.0
+  dt: 0.25
+  anchor_mode: sm
+
+# Minimal SM-mode scenario relies on inputs.json for full anchor_params_sm and lists_sm
+# No overrides necessary; demonstrates strict SM-mode wiring and basic run
+
+seeds:
+  active_anchor_clients_sm:
+    Defense:
+      Silicon Carbide Fiber: 1
+
+

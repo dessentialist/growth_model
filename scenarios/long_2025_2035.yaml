@@ -1,0 +1,11 @@
+name: long_2025_2035
+
+runspecs:
+  starttime: 2025.0
+  stoptime: 2035.0
+  dt: 0.25
+
+overrides:
+  constants: {}
+  points: {}
+
