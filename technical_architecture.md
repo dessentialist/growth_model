@@ -1,7 +1,9 @@
-## Growth System – Technical Architecture (BPTK_Py Hybrid, Pattern 1)
+## Product Growth System – Technical Architecture (BPTK_Py Hybrid, Pattern 1)
 
 ### Purpose
-Enable robust scenario planning for revenue and KPIs by aligning the model and runner with BPTK_Py’s hybrid SD+ABM capabilities. This architecture treats each Anchor Client as an agent, couples agent behavior to SD via a stepwise ABM→SD gateway, and externalizes scenario inputs in JSON/YAML. Single-scenario execution per run is prioritized for simplicity and reliability.
+Enable robust scenario planning for revenue and KPIs by aligning the model and runner with BPTK_Py's hybrid SD+ABM capabilities. This architecture treats each Anchor Client as an agent, couples agent behavior to SD via a stepwise ABM→SD gateway, and externalizes scenario inputs in JSON/YAML. Single-scenario execution per run is prioritized for simplicity and reliability.
+
+The system is designed to be industry-agnostic, allowing you to model any sectors and products by configuring the inputs. No hard-coded industry assumptions are made.
 
 ### Objectives & Scope
 - **Objectives**: Scenario planning with tweakable exogenous/endogenous inputs; quarterly KPIs (revenue, leads, clients, deliveries, baskets, projects).
@@ -30,8 +32,8 @@ Enable robust scenario planning for revenue and KPIs by aligning the model and r
 - Packaging: `Makefile` targets (`install`, `run_ui`, `run_baseline`, `test`, `lint`); optional `Dockerfile.ui` to containerize the UI (mount `scenarios/`, `logs/`, `output/`).
 
 ### Modeling Approach
-- **Hybrid Pattern 1 (recommended)**: Predefine per-material gateway converters that accept numeric inputs each time step. The runner computes aggregated agent demand and sets gateway values before advancing the SD step.
-- **Why this pattern**: Minimal intrusion, explicit data flow, easy logging and validation, and fully compatible with BPTK_Py’s deterministic SD equation evaluation.
+- **Hybrid Pattern 1 (recommended)**: Predefine per-product gateway converters that accept numeric inputs each time step. The runner computes aggregated agent demand and sets gateway values before advancing the SD step.
+- **Why this pattern**: Minimal intrusion, explicit data flow, easy logging and validation, and fully compatible with BPTK_Py's deterministic SD equation evaluation.
 
 ### Core Components
 - **System Dynamics (SD) Model**
@@ -39,90 +41,90 @@ Enable robust scenario planning for revenue and KPIs by aligning the model and r
   - Uses BPTK_Py stocks/flows/converters/lookup tables for time-continuous dynamics at dt = 0.25 (quarterly).
 
 - **Agent-Based Model (ABM)**
-  - `AnchorClientAgent` per sector; each agent has lifecycle and generates material-specific requirements according to three phases (initial, ramp, steady), activation delays, and sector-specific parameters.
-  - Agents act each time step to update per-material requirements.
-  - Phase 17.3 (SM‑mode ABM): `AnchorClientAgentSM` bound to a single (sector, material) with a self‑contained lifecycle (POTENTIAL → PENDING_ACTIVATION → ACTIVE). Factory `build_sm_anchor_agent_factory(sector, material)` constructs agents strictly from `anchor_params_sm` for the pair (no sector fallbacks). Requirements are generated only when ACTIVE and after `anchor_start_year_<s>_<m>`.
+  - `AnchorClientAgent` per sector; each agent has lifecycle and generates product-specific requirements according to three phases (initial, ramp, steady), activation delays, and sector-specific parameters.
+  - Agents act each time step to update per-product requirements.
+  - Phase 17.3 (SM‑mode ABM): `AnchorClientAgentSM` bound to a single (sector, product) with a self‑contained lifecycle (POTENTIAL → PENDING_ACTIVATION → ACTIVE). Factory `build_sm_anchor_agent_factory(sector, product)` constructs agents strictly from `anchor_params_sm` for the pair (no sector fallbacks). Requirements are generated only when ACTIVE and after `anchor_start_year_<s>_<p>`.
 
-- **ABM→SD Gateway Converters (per sector–material)**
-  - For each sector s and material m used by s, define a converter `Agent_Demand_Sector_Input_<s>_<m>` with a numeric equation (value set by runner each step).
-  - Define `Agent_Aggregated_Demand_<m> = sum_over_sectors_s(Agent_Demand_Sector_Input_<s>_<m>)`.
-  - `Total_Demand_<m> = Agent_Aggregated_Demand_<m> + Client_Requirement_<m>`
-  - Capacity, deliveries, and revenue use `Total_Demand_<m>` while retaining sector attribution for anchor deliveries. Sectors may map to multiple materials; the model constructs `Agent_Demand_Sector_Input_<s>_<m>` and `Anchor_Delivery_Flow_<s>_<m>` for every mapped pair and aggregates by material and by sector for KPIs.
+- **ABM→SD Gateway Converters (per sector–product)**
+  - For each sector s and product p used by s, define a converter `Agent_Demand_Sector_Input_<s>_<p>` with a numeric equation (value set by runner each step).
+  - Define `Agent_Aggregated_Demand_<p> = sum_over_sectors_s(Agent_Demand_Sector_Input_<s>_<p>)`.
+  - `Total_Demand_<p> = Agent_Aggregated_Demand_<p> + Client_Requirement_<p>`
+  - Capacity, deliveries, and revenue use `Total_Demand_<p>` while retaining sector attribution for anchor deliveries. Sectors may map to multiple products; the model constructs `Agent_Demand_Sector_Input_<s>_<p>` and `Anchor_Delivery_Flow_<s>_<p>` for every mapped pair and aggregates by product and by sector for KPIs.
 
 - **Scenario Configuration (JSON/YAML)**
   - One scenario file per run; provides constants and lookup overrides using exact model element names.
-  - Runner supports `--preset <name>` to select files under `scenarios/`. Unknown override keys are strict errors with nearest-name suggestions; overrides are validated against built model elements before application (no partials). In SM‑mode (17.5 strictness), only per‑(s,m) anchor constants are permissible override keys for anchor parameters.
+  - Runner supports `--preset <name>` to select files under `scenarios/`. Unknown override keys are strict errors with nearest-name suggestions; overrides are validated against built model elements before application (no partials). In SM‑mode (17.5 strictness), only per‑(s,p) anchor constants are permissible override keys for anchor parameters.
   - UI (Phases 3–11) builds an in‑memory scenario via tabs for runspecs, constants, points, primary map, and seeds; validates using `src.scenario_loader.validate_scenario_dict`; can write YAML to `scenarios/`; can load/duplicate scenarios; and can run either a named preset or the current scenario from the sidebar. The UI does not alter model logic; it is an isolated layer under `ui/`.
-  - After a run, the runner writes the default CSV and an additional suffixed CSV `Growth_System_Complete_Results_<scenario>.csv` for cross-scenario comparisons. This does not change KPI logic or model state.
+  - After a run, the runner writes the default CSV and an additional suffixed CSV `Product_Growth_System_Complete_Results_<scenario>.csv` for cross-scenario comparisons. This does not change KPI logic or model state.
 
 - **Stepwise Simulation Runner**
   - Initializes model, registers agent factories, builds SD structure, creates gateways, applies scenario overrides.
-  - Executes a per-step loop: reads SD triggers, creates agents, runs agent actions, aggregates per-material demand, sets gateway converter values, advances SD one step using the scheduler (`run_step`), collects outputs.
-  - SM-mode (Phase 17.4/17.5): per-(sector, material) creation signals `Agents_To_Create_<s>_<m>` drive instantiation via SM factories; SM seeding initializes `CPC_<s>_<m>` and `Cumulative_Agents_Created_<s>_<m>`; KPI capture sums `Anchor_Lead_Generation_<s>_<m>` when sector-level is absent. Strict rules: sector-level creation and seeding are disallowed in SM-mode; `lists_sm` must be explicit in `inputs.json`; full `anchor_params_sm` coverage is required for every pair.
+  - Executes a per-step loop: reads SD triggers, creates agents, runs agent actions, aggregates per-product demand, sets gateway converter values, advances SD one step using the scheduler (`run_step`), collects outputs.
+  - SM-mode (Phase 17.4/17.5): per-(sector, product) creation signals `Agents_To_Create_<s>_<p>` drive instantiation via SP factories; SP seeding initializes `CPC_<s>_<p>` and `Cumulative_Agents_Created_<s>_<p>`; KPI capture sums `Anchor_Lead_Generation_<s>_<p>` when sector-level is absent. Strict rules: sector-level creation and seeding are disallowed in SM-mode; `lists_sm` must be explicit in `inputs.json`; full `anchor_params_sm` coverage is required for every pair.
 
 ## Data Inputs
 - JSON-first (`inputs.json`) with strict validation:
   - Top-level `'lists'` is required; lists are reconstructed US-only in this phase and must include `'US'`.
-  - `anchor_params` (per sector), `other_params` (per material), `production` (per material by year), `pricing` (per material by year), `primary_map` (sector→materials with start_year). Phase 16 adds optional `anchor_params_sm` (per-(sector, material) targeted parameters) and optional `lists_sm` (explicit SM universe; if absent, derived from `primary_map`).
+  - `anchor_params` (per sector), `other_params` (per product), `production` (per product by year), `pricing` (per product by year), `primary_map` (sector→products with start_year). Phase 16 adds optional `anchor_params_sm` (per-(sector, product) targeted parameters) and optional `lists_sm` (explicit SP universe; if absent, derived from `primary_map`).
   - Primary map entries with `start_year <= 0` are allowed but logged as warnings (treated as disabled).
   - Production/Pricing time series must have strictly increasing years and non-negative values.
   - SM‑mode (Phase 17.5): requires explicit `lists_sm` (not derived) and complete `anchor_params_sm` coverage for the full anchor set per pair listed in the implementation plan.
 
 ## Naming & Dimensions
-- Use `create_element_name(base[, sector][, material])` to generate BPTK-compatible names: underscores for spaces, generous length limit (~100 chars) with hash-based truncation only if needed; detect collisions. Phase 16 adds `anchor_constant_sm(param, sector, material)` for per-(s,m) constants names (e.g., `requirement_to_order_lag_Defense_Silicon_Carbide_Fiber`).
+- Use `create_element_name(base[, sector][, product])` to generate BPTK-compatible names: underscores for spaces, generous length limit (~100 chars) with hash-based truncation only if needed; detect collisions. Phase 16 adds `anchor_constant_sm(param, sector, product)` for per-(s,p) constants names (e.g., `requirement_to_order_lag_Defense_Silicon_Carbide_Fiber`).
 - Names should remain stable across runs so scenarios can reliably override elements.
 
 ## SD Structure (essential elements)
 - Anchor lead-gen per sector: `Anchor_Lead_Generation_<sector>`, `CPC_<sector>`, `New_PC_Flow_<sector>`.
-- Project conversion per sector using “accumulate-and-fire” logic; activation delays drive AC activation.
-- Direct client submodel per material: leads → discrete clients → requirements (with delays) → fulfillment.
-- Capacity per material via `max_capacity_lookup_<material>` converter (lookup on `max_capacity_<material>(Time)`).
-- Total demand per material: `Total_Demand_<material> = Agent_Demand_Input_<material> + Client_Requirement_<material>`.
+- Project conversion per sector using "accumulate-and-fire" logic; activation delays drive AC activation.
+- Direct client submodel per product: leads → discrete clients → requirements (with delays) → fulfillment.
+- Capacity per product via `max_capacity_lookup_<product>` converter (lookup on `max_capacity_<product>(Time)`).
+- Total demand per product: `Total_Demand_<product> = Agent_Demand_Input_<product> + Client_Requirement_<product>`.
 - Fulfillment ratio, delivery flows:
-  - `Anchor_Delivery_Flow_<material>` (delayed, capacity-constrained sum of sector agent demands).
-  - `Client_Delivery_Flow_<material>` (delayed, capacity-constrained client fulfillment).
-- Revenue: `Price_<material> = lookup(price_<material>, Time)`, then `Anchor_Revenue`, `Client_Revenue`, `Total_Revenue`.
+  - `Anchor_Delivery_Flow_<product>` (delayed, capacity-constrained sum of sector agent demands).
+  - `Client_Delivery_Flow_<product>` (delayed, capacity-constrained client fulfillment).
+- Revenue: `Price_<product> = lookup(price_<product>, Time)`, then `Anchor_Revenue`, `Client_Revenue`, `Total_Revenue`.
 
 ## ABM Structure (essential elements)
-- `AnchorClientAgent` properties: sector, parameters, `primary_materials`, `state`, per-material `requirements`, `activation_time`, project counters.
-- `act(time, round_no, step_no)`: complete due projects, start projects if eligible, switch to ACTIVE when threshold met, generate requirements by phase for relevant materials.
-- Per-step outputs used by runner to aggregate requirements by material.
-- Phase 17.3: `AnchorClientAgentSM` properties: sector, material, strict per‑(s,m) params, lifecycle state, activation time, project counters; `act(...)` updates a single-material requirement per step with initial/ramp/steady phases.
+- `AnchorClientAgent` properties: sector, parameters, `primary_products`, `state`, per-product `requirements`, `activation_time`, project counters.
+- `act(time, round_no, step_no)`: complete due projects, start projects if eligible, switch to ACTIVE when threshold met, generate requirements by phase for relevant products.
+- Per-step outputs used by runner to aggregate requirements by product.
+- Phase 17.3: `AnchorClientAgentSM` properties: sector, product, strict per‑(s,p) params, lifecycle state, activation time, project counters; `act(...)` updates a single-product requirement per step with initial/ramp/steady phases.
 
 ## System Logic Overview (plain language)
 
 This captures the business intent without technical details:
 
 - Structure
-  - Markets contain sectors; each sector uses one or more primary materials starting in specific years.
-  - Two channels: Anchor clients (sector-specific, agent-based) and Other clients (material-specific, aggregated SD).
+  - Markets contain sectors; each sector uses one or more primary products starting in specific years.
+  - Two channels: Anchor clients (sector-specific, agent-based) and Other clients (product-specific, aggregated SD).
 
 - Anchor clients (per sector, per client)
   - Leads are generated at a sector rate, capped by an addressable limit (ATAM). Leads accumulate to Potential Clients (PC).
   - PCs start projects up to a max projects-per-PC; projects complete after a duration.
   - When completed projects reach a threshold, the PC becomes an Active Client after an activation delay.
-  - Active clients generate requirements for the sector’s primary materials in three phases (initial, ramp, steady) with configurable rates/growth and material start years.
+  - Active clients generate requirements for the sector’s primary products in three phases (initial, ramp, steady) with configurable rates/growth and product start years.
 
-- Other (direct) clients (per material)
-  - Inbound and outbound leads accrue, capped by a material TAM.
+- Other (direct) clients (per product)
+  - Inbound and outbound leads accrue, capped by a product TAM.
   - Discrete client creation uses accumulate-and-fire (only whole clients are created).
   - Clients place orders with an average quantity that grows over time; requirements convert to orders via a lead-to-requirement delay and are fulfilled after a fulfillment delay.
 
 - Demand aggregation and fulfillment
-  - Total demand per material = Anchor agent demand (sum across sectors) + Direct client requirements.
-  - Each material has a time-varying capacity; fulfillment uses a proportional ratio across channels by default.
-  - Anchor orders use sector–material specific requirement-to-order lags; direct client orders include fulfillment delays.
+  - Total demand per product = Anchor agent demand (sum across sectors) + Direct client requirements.
+  - Each product has a time-varying capacity; fulfillment uses a proportional ratio across channels by default.
+  - Anchor orders use sector–product specific requirement-to-order lags; direct client orders include fulfillment delays.
 
 - Pricing & Revenue
-  - Material prices vary over time.
+  - Product prices vary over time.
   - Quarterly revenue = deliveries × price; computed for Anchor and Direct, then summed.
 
 - KPIs (quarterly)
-  - Revenue (total, by sector, by material)
+  - Revenue (total, by sector, by product)
   - Anchor Leads, Anchor Clients, Active Projects
-  - Other Leads (total and by sector via material mapping) — reported per quarter. Since SD lead converters are scaled by 4 for correct integration at dt=0.25, KPI extraction divides by 4 to present per-quarter units.
-  - Other Clients (by material)
-  - Order Basket and Order Delivery (by material)
+  - Other Leads (total and by sector via product mapping) — reported per quarter. Since SD lead converters are scaled by 4 for correct integration at dt=0.25, KPI extraction divides by 4 to present per-quarter units.
+  - Other Clients (by product)
+  - Order Basket and Order Delivery (by product)
 
 ## Scenario Configuration Schema
 
@@ -158,7 +160,7 @@ overrides:
     requirement_to_order_lag_Defense: 4.0
     ATAM_Defense: 3.0
     
-    # Other Client Parameters (per material)
+    # Other Client Parameters (per product)
     lead_start_year_Silicon_Carbide_Fiber: 2025.0
     inbound_lead_generation_rate_Silicon_Carbide_Fiber: 0.5
     outbound_lead_generation_rate_Silicon_Carbide_Fiber: 1.0
@@ -167,10 +169,10 @@ overrides:
     requirement_to_fulfilment_delay_Silicon_Carbide_Fiber: 1.0
     avg_order_quantity_initial_Silicon_Carbide_Fiber: 10.0
     client_requirement_growth_Silicon_Carbide_Fiber: 0.05
-    TAM_material_Silicon_Carbide_Fiber: 50.0
+    TAM_product_Silicon_Carbide_Fiber: 50.0
     
   points:
-    # Time-varying lookups (price and capacity per material)
+    # Time-varying lookups (price and capacity per product)
     price_Silicon_Carbide_Fiber:
       - [2025.0, 8000.0]
       - [2026.0, 8000.0]
@@ -187,7 +189,7 @@ Runspecs:
 
 ```yaml
 runspecs:
-  anchor_mode: sm  # strict per-(sector, material) mode
+  anchor_mode: sm  # strict per-(sector, product) mode
 ```
 
 Seeding in SM-mode:
@@ -201,11 +203,11 @@ seeds:
 
 Examples provided:
 - `scenarios/sm_minimal.yaml`: minimal seed-only SM run
-- `scenarios/sm_full_demo.yaml`: shows per-(s,m) constant overrides and multi-pair seeds
+- `scenarios/sm_full_demo.yaml`: shows per-(s,p) constant overrides and multi-pair seeds
 
-### Phase 13 — primary_map overrides (multi‑material anchors)
+### Phase 13 — primary_map overrides (multi‑product anchors)
 
-Scenarios can override the sector→materials mapping using `overrides.primary_map`.
+Scenarios can override the sector→products mapping using `overrides.primary_map`.
 This replaces the mapping for the listed sectors and leaves others unchanged.
 
 Schema:
@@ -214,12 +216,12 @@ Schema:
 overrides:
   primary_map:
     <sector>:
-      - { material: <string>, start_year: <float> }
+      - { product: <string>, start_year: <float> }
       - ...
 ```
 
 Rules:
-- Sectors and materials must exist in `inputs.json` lists; materials must also exist in `other_params`, `production`, and `pricing`.
+- Sectors and products must exist in `inputs.json` lists; products must also exist in `other_params`, `production`, and `pricing`.
 - `start_year` must be numeric.
 - For each sector listed, the mapping is replaced atomically by the provided list (no partial merges).
 
@@ -234,11 +236,11 @@ runspecs:
 overrides:
   primary_map:
     Defense:
-      - { material: "Silicon Nitride Fiber", start_year: 2026 }
-      - { material: "Silicon Carbide Fiber", start_year: 2025 }
+      - { product: "Silicon Nitride Fiber", start_year: 2026 }
+      - { product: "Silicon Carbide Fiber", start_year: 2025 }
     Aviation:
-      - { material: "UHT", start_year: 2026 }
-      - { material: "Boron_fiber", start_year: 2026 }
+      - { product: "UHT", start_year: 2026 }
+      - { product: "Boron_fiber", start_year: 2026 }
 ```
 
 **Parameter Categories:**
@@ -251,21 +253,21 @@ overrides:
    - Order processing: `requirement_to_order_lag`
    - Market limits: `ATAM`
 
-2. **Other Client Parameters (per material)**: All parameters from `Other Client Parameters.csv`
+2. **Other Client Parameters (per product)**: All parameters from `Other Client Parameters.csv`
    - Timing: `lead_start_year`
    - Lead generation: `inbound_lead_generation_rate`, `outbound_lead_generation_rate`
    - Conversion: `lead_to_c_conversion_rate`
    - Delays: `lead_to_requirement_delay`, `requirement_to_fulfilment_delay`
    - Order behavior: `avg_order_quantity_initial`, `client_requirement_growth`
-   - Market limits: `TAM` (note: the current dataset uses `TAM`, not `TAM_material`)
+   - Market limits: `TAM` (note: the current dataset uses `TAM`, not `TAM_product`)
 
-3. **Time-varying Lookups (per material)**: From `inputs.json` sections `pricing` and `production`
-   - `price_<material>`: Price evolution over time (JSON points parsed to lookup)
-   - `max_capacity_<material>`: Capacity evolution over time (JSON points parsed to lookup)
+3. **Time-varying Lookups (per product)**: From `inputs.json` sections `pricing` and `production`
+   - `price_<product>`: Price evolution over time (JSON points parsed to lookup)
+   - `max_capacity_<product>`: Capacity evolution over time (JSON points parsed to lookup)
 
 **Naming Convention:**
-- Constants: `parameter_name_sector` or `parameter_name_material` (using underscores for spaces)
-- Points: `price_material` or `max_capacity_material` (using underscores for spaces). Capacity points are per-year; the model scales to per-quarter internally.
+- Constants: `parameter_name_sector` or `parameter_name_product` (using underscores for spaces)
+- Points: `price_product` or `max_capacity_product` (using underscores for spaces). Capacity points are per-year; the model scales to per-quarter internally.
 
 **Validation Rules:**
 - Keys must match final element names created by the model. Unknown keys are strict errors (no partial application) with nearest-name suggestions.
@@ -291,26 +293,26 @@ seeds:
 
 Rules and behavior:
 - Sectors must exist in `inputs.json` lists; counts must be non‑negative integers.
-- Seeded agents are instantiated as ACTIVE before the first step and generate requirements immediately, while respecting sector–material start years.
+- Seeded agents are instantiated as ACTIVE before the first step and generate requirements immediately, while respecting sector–product start years.
 - ATAM caps leads, so to include seeds in the lead cap without changing equations, the SD stocks are initialized conservatively: `CPC_<sector> = seeds`, and `Cumulative_Agents_Created_<sector> = seeds` for monitoring. Gating remains `If(CPC_<s> < ATAM_<s>, 1, 0)`.
 
 Direct clients seeding:
-- Scenarios may also seed direct clients per material under `seeds.direct_clients: { <material>: <int> }`.
-- Runner initializes `C_<material>` to the seeded count and clears `Potential_Clients_<material>` to 0. This ensures discrete conversion integrity while enabling seeded demand from direct clients immediately.
+- Scenarios may also seed direct clients per product under `seeds.direct_clients: { <product>: <int> }`.
+- Runner initializes `C_<product>` to the seeded count and clears `Potential_Clients_<product>` to 0. This ensures discrete conversion integrity while enabling seeded demand from direct clients immediately.
 
 ## Stepwise Simulation Lifecycle
 1. **Initialize**: Read scenario file; create `GrowthGrowthSystem` with `runspecs`.
 2. **Load & Validate Data**: Load CSVs; build mappings and check coverage.
 3. **Build SD Model**: Create constants, lookups, lead-gen, discrete conversions, delays, capacity, deliveries, revenue.
-4. **Create Gateways**: For each material, create `Agent_Demand_Input_<material>` and wire `Total_Demand_<material>` to include it.
+4. **Create Gateways**: For each product, create `Agent_Demand_Input_<product>` and wire `Total_Demand_<product>` to include it.
 5. **Register Factories**: For each sector, register `AnchorClientAgent_<sector>`.
 6. **Apply Scenario Overrides**: Set `constant.equation` values and replace `model.points[name]` where provided.
 7. **Run Step Loop (t from start to stop at dt)**:
    - Evaluate per-sector agent creation signal. Preferred signal: the integer outflow based on accumulator (e.g., `Agents_To_Create_<sector>` or `Agent_Creation_Outflow_<sector>`).
    - Instantiate that many agents via the sector factory for the current step.
-   - Execute `act(...)` for all agents, allowing them to update per-material requirements.
-   - Aggregate per-material agent requirements: `sum(requirements[material])` across agents.
-   - Update gateway converter numeric equations: `Agent_Demand_Input_<material> = aggregated_value`.
+   - Execute `act(...)` for all agents, allowing them to update per-product requirements.
+   - Aggregate per-product agent requirements: `sum(requirements[product])` across agents.
+   - Update gateway converter numeric equations: `Agent_Demand_Input_<product> = aggregated_value`.
    - **CRITICAL**: Capture KPI values immediately while gateway values are correct for this step.
    - Advance SD one step using the model's scheduler; collect current-period outputs.
 
@@ -321,33 +323,33 @@ Implementation notes:
 
 ### Gateway Corruption Issue & Fix
 
-**Problem**: During the stepwise run, gateway converters (`Agent_Demand_Sector_Input_<s>_<m>`) are mutated each step to hold numeric constants representing agent demand. After the run completes, these converters retain the final step's values. Post-run KPI extraction evaluating `Total_Demand_<m>` at early times would return final values instead of the correct historical values, causing:
+**Problem**: During the stepwise run, gateway converters (`Agent_Demand_Sector_Input_<s>_<p>`) are mutated each step to hold numeric constants representing agent demand. After the run completes, these converters retain the final step's values. Post-run KPI extraction evaluating `Total_Demand_<p>` at early times would return final values instead of the correct historical values, causing:
 - Early-period Order Basket showing demand that shouldn't exist yet
-- Premature material deliveries for inactive sectors/materials  
+- Premature product deliveries for inactive sectors/products  
 - Corrupted revenue calculations based on incorrect demand flows
 
 **Solution**: Real-time KPI capture during the stepwise loop. The runner now captures KPI values immediately after updating gateway values and before advancing the model. These historical values are stored and used by the KPI extractor instead of post-run model evaluation, ensuring accurate time-series data that reflects actual simulation dynamics.
 
 **Impact**: Resolves three critical issues:
 1. Correct early-period demand values (Order Basket shows 0.0 when expected)
-2. Proper material delivery timing (no premature deliveries for inactive materials)
+2. Proper product delivery timing (no premature deliveries for inactive products)
 3. Accurate Active Projects KPI (fixed by reordering agent project completion logic)
 
 ## KPI Extraction & Outputs (Phase 15)
 - Extract per-step series for:
-  - **Revenue**: Total, by sector (market), and by material (sum of anchor + direct where applicable).
-  - **Anchor Leads**: total + per sector (`CPC_<sector>` as appropriate). In SM-mode the runner computes per-sector leads by summing `Anchor_Lead_Generation_<s>_<m>` converters when `Anchor_Lead_Generation_<s>` is not built.
+  - **Revenue**: Total, by sector (market), and by product (sum of anchor + direct where applicable).
+  - **Anchor Leads**: total + per sector (`CPC_<sector>` as appropriate). In SM-mode the runner computes per-sector leads by summing `Anchor_Lead_Generation_<s>_<p>` converters when `Anchor_Lead_Generation_<s>` is not built.
   - **Active Projects**: computed aggregator (from sector triggers × projects-per-agent proxy) or enhanced to count agent states if desired.
   - **Anchor Clients**: total + per sector (from active-agent proxy or agent counts if enabled in-loop).
-  - **Other Leads/Clients**: Other Leads total only (material-driven aggregation); per-sector Other Leads rows are not emitted. Other Clients remain per material.
-  - **Order Basket/Delivery**: per material using `Total_Demand` and delivery flows.
-- Output: CSV named `Growth_System_Complete_Results.csv`, columns `[Output Stocks, labels...]` where labels are derived from the runspecs grid.
- - Phase 17.6 (optional granularity): When run with flags `--kpi-sm-revenue-rows` and/or `--kpi-sm-client-rows`, the runner appends diagnostic rows `Revenue <sector> <material>` and/or `Anchor Clients <sector> <material>` to the CSV. Defaults leave the CSV surface unchanged.
+  - **Other Leads/Clients**: Other Leads total only (product-driven aggregation); per-sector Other Leads rows are not emitted. Other Clients remain per product.
+  - **Order Basket/Delivery**: per product using `Total_Demand` and delivery flows.
+- Output: CSV named `Product_Growth_System_Complete_Results.csv`, columns `[Output Stocks, labels...]` where labels are derived from the runspecs grid.
+ - Phase 17.6 (optional granularity): When run with flags `--kpi-sm-revenue-rows` and/or `--kpi-sm-client-rows`, the runner appends diagnostic rows `Revenue <sector> <product>` and/or `Anchor Clients <sector> <product>` to the CSV. Defaults leave the CSV surface unchanged.
 - ABM metrics requirement (no fallback): The KPI extractor (`extract_and_write_kpis`) requires a per-step ABM metrics list (`agent_metrics_by_step`) with at least as many entries as emitted steps (typically 28). Each entry must include: `t` (float), `active_by_sector` (dict[str,int]), `inprogress_by_sector` (dict[str,int]), `active_total` (int), `inprogress_total` (int). If you do not track ABM state externally, supply a zero-initialized list to emit agent-based KPI rows as zeros. The lower-level collector `collect_kpis_for_step` mandates `step_idx` and `agent_metrics_by_step` and will raise if metrics are missing or out-of-range.
 
 ## Logging, Validation, and UI Runner
 - **Scenario echo**: dump applied overrides (constants/points) and flag unknown keys.
-- **Gateway checks**: per step, sample-log first N steps of `Agent_Demand_Input_<material>` values and totals.
+- **Gateway checks**: per step, sample-log first N steps of `Agent_Demand_Input_<product>` values and totals.
 - **Creation checks**: per step, log `Agents_To_Create_<sector>`, created count, cumulative.
 - **Capacity & revenue sanity**: log utilization snapshots and period revenue sums; confirm `Total_Revenue ≈ Anchor + Client`.
 - **Extraction safeguards**: missing columns default to zeros with warnings; include summary of non-found elements.
@@ -394,7 +396,7 @@ APIs are provided in `src/scenario_loader.py`:
 
 - `list_permissible_override_keys(bundle, anchor_mode="sector"|"sm", extra_sm_pairs=None)`
   Returns sets of permissible override keys derived from the current inputs and
-  optional extra (sector, material) pairs. This ensures the UI only exposes
+  optional extra (sector, product) pairs. This ensures the UI only exposes
   valid, model-backed names.
 
 - `validate_scenario_dict(bundle, scenario_dict)`
@@ -402,38 +404,38 @@ APIs are provided in `src/scenario_loader.py`:
   `Scenario` object as the file-based loader, enabling UI validation before save.
 
 - `summarize_lists(bundle)`
-  Returns market/sector/material lists and the sector→materials mapping for UI
+  Returns market/sector/product lists and the sector→products mapping for UI
   dropdowns and context.
 
 These helpers surface existing validation/naming logic to the UI and do not
 modify model or runner behavior.
 
-### Per-(sector, material) parameters by mode (quick reference)
+### Per-(sector, product) parameters by mode (quick reference)
 
-Compact reference of which per-(s,m) anchor parameters are exposed in the UI depending on the run mode. In all cases, defaults can be provided in `inputs.json → anchor_params_sm`, and scenarios may override via `overrides.constants` using canonical names from `anchor_constant_sm(param, sector, material)`.
+Compact reference of which per-(s,p) anchor parameters are exposed in the UI depending on the run mode. In all cases, defaults can be provided in `inputs.json → anchor_params_sm`, and scenarios may override via `overrides.constants` using canonical names from `anchor_constant_sm(param, sector, product)`.
 
-| Parameter (per‑(s,m)) | Sector mode (anchor_mode = "sector") | SM mode (anchor_mode = "sm") | Notes |
+| Parameter (per‑(s,p)) | Sector mode (anchor_mode = "sector") | SM mode (anchor_mode = "sm") | Notes |
 | --- | --- | --- | --- |
-| initial_requirement_rate | Visible per‑(s,m) | Visible per‑(s,m) | Requirement family allowed in both modes |
-| initial_req_growth | Visible per‑(s,m) | Visible per‑(s,m) |  |
-| ramp_requirement_rate | Visible per‑(s,m) | Visible per‑(s,m) |  |
-| ramp_req_growth | Visible per‑(s,m) | Visible per‑(s,m) |  |
-| steady_requirement_rate | Visible per‑(s,m) | Visible per‑(s,m) |  |
-| steady_req_growth | Visible per‑(s,m) | Visible per‑(s,m) |  |
-| requirement_to_order_lag | Visible per‑(s,m) | Visible per‑(s,m) | Sector‑mode falls back to sector‑level if per‑(s,m) absent |
-| anchor_start_year | Not per‑(s,m) (sector‑level only) | Visible per‑(s,m) | Full per‑(s,m) set only in SM mode |
-| anchor_client_activation_delay | Not per‑(s,m) | Visible per‑(s,m) |  |
-| anchor_lead_generation_rate | Not per‑(s,m) | Visible per‑(s,m) |  |
-| lead_to_pc_conversion_rate | Not per‑(s,m) | Visible per‑(s,m) |  |
-| project_generation_rate | Not per‑(s,m) | Visible per‑(s,m) |  |
-| max_projects_per_pc | Not per‑(s,m) | Visible per‑(s,m) |  |
-| project_duration | Not per‑(s,m) | Visible per‑(s,m) |  |
-| projects_to_client_conversion | Not per‑(s,m) | Visible per‑(s,m) |  |
-| initial_phase_duration | Not per‑(s,m) | Visible per‑(s,m) |  |
-| ramp_phase_duration | Not per‑(s,m) | Visible per‑(s,m) |  |
-| ATAM | Not per‑(s,m) | Visible per‑(s,m) |  |
+| initial_requirement_rate | Visible per‑(s,p) | Visible per‑(s,p) | Requirement family allowed in both modes |
+| initial_req_growth | Visible per‑(s,p) | Visible per‑(s,p) |  |
+| ramp_requirement_rate | Visible per‑(s,p) | Visible per‑(s,p) |  |
+| ramp_req_growth | Visible per‑(s,p) | Visible per‑(s,p) |  |
+| steady_requirement_rate | Visible per‑(s,p) | Visible per‑(s,p) |  |
+| steady_req_growth | Visible per‑(s,p) | Visible per‑(s,p) |  |
+| requirement_to_order_lag | Visible per‑(s,p) | Visible per‑(s,p) | Sector‑mode falls back to sector‑level if per‑(s,p) absent |
+| anchor_start_year | Not per‑(s,p) (sector‑level only) | Visible per‑(s,p) | Full per‑(s,p) set only in SM mode |
+| anchor_client_activation_delay | Not per‑(s,p) | Visible per‑(s,p) |  |
+| anchor_lead_generation_rate | Not per‑(s,p) | Visible per‑(s,p) |  |
+| lead_to_pc_conversion_rate | Not per‑(s,p) | Visible per‑(s,p) |  |
+| project_generation_rate | Not per‑(s,p) | Visible per‑(s,p) |  |
+| max_projects_per_pc | Not per‑(s,p) | Visible per‑(s,p) |  |
+| project_duration | Not per‑(s,p) | Visible per‑(s,p) |  |
+| projects_to_client_conversion | Not per‑(s,p) | Visible per‑(s,p) |  |
+| initial_phase_duration | Not per‑(s,p) | Visible per‑(s,p) |  |
+| ramp_phase_duration | Not per‑(s,p) | Visible per‑(s,p) |  |
+| ATAM | Not per‑(s,p) | Visible per‑(s,p) |  |
 
-UI note: After applying proposed sector→material mappings in the Primary Map editor, the Constants tab expands its permissible list to include those pairs. Sector mode shows only the requirement_* family per‑(s,m); SM mode exposes the full per‑(s,m) anchor set above.
+UI note: After applying proposed sector→product mappings in the Primary Map editor, the Constants tab expands its permissible list to include those pairs. Sector mode shows only the requirement_* family per‑(s,p); SM mode exposes the full per‑(s,p) anchor set above.
 
 ## Notes & Conventions
 - Numeric units: all delays and durations are in quarters; no dt scaling needed.
@@ -449,10 +451,10 @@ The following maps the business/system logic to this architecture:
 
 - Anchor lead generation (per sector): Implemented with `Anchor_Lead_Generation_<s>`, `CPC_<s>`, and gating on `ATAM_<s>` and `anchor_start_year_<s>`.
 - Potential Clients (PC) and conversion to AC: The spec’s SD project-conversion structure (PC stock, project starts/completions, threshold to AC) is realized via ABM lifecycle on `AnchorClientAgent` (projects started and completed per agent, activation threshold, activation delay). This preserves the intended behavior while moving it from SD to agents.
-- Requirement generation per AC (per primary material): Implemented inside agents with initial/ramp/steady phases and sector parameters, mapped 1:1 to the spec.
-- Requirement→Order lag per sector and material: Supported by computing per-sector, per-material orders with `Material_Orders_<s>_<m> = delay(model, Agent_Demand_<s>_<m>, requirement_to_order_lag_<s>_<m>)`. If `<s>_<m>` is not provided in inputs, the model uses the sector-level `requirement_to_order_lag_<s>` as a fallback (Phase 16 precedence).
-- Capacity-capped fulfillment: Implemented as `Anchor_Delivery_Flow_<m> = min(sum_s Material_Orders_<s>_<m>, max_capacity_lookup_<m>)` and `Client_Fulfilment` as per spec (see equations below). This matches the spec’s MIN-at-fulfillment logic.
-- General lead-gen & direct client orders: Implemented as SD per material with discrete client conversion, order delays, fulfillment delay, and capacity limits. Number of leads is capped by TAM{material}
+- Requirement generation per AC (per primary product): Implemented inside agents with initial/ramp/steady phases and sector parameters, mapped 1:1 to the spec.
+- Requirement→Order lag per sector and product: Supported by computing per-sector, per-product orders with `Material_Orders_<s>_<p> = delay(model, Agent_Demand_<s>_<p>, requirement_to_order_lag_<s>_<p>)`. If `<s>_<p>` is not provided in inputs, the model uses the sector-level `requirement_to_order_lag_<s>` as a fallback (Phase 16 precedence).
+- Capacity-capped fulfillment: Implemented as `Anchor_Delivery_Flow_<p> = min(sum_s Material_Orders_<s>_<p>, max_capacity_lookup_<p>)` and `Client_Fulfilment` as per spec (see equations below). This matches the spec’s MIN-at-fulfillment logic.
+- General lead-gen & direct client orders: Implemented as SD per product with discrete client conversion, order delays, fulfillment delay, and capacity limits. Number of leads is capped by TAM{product}
 - Revenue: Calculated from delivery flows × price lookups (quarterly), matching the spec’s directive to use flows (not cumulative stocks) for revenue.
 - Optional cumulative stocks for delivered orders/revenue: Supported as optional stocks; not required for the KPI flows but available if needed.
 
@@ -474,39 +476,39 @@ This section lists the canonical equations and the exact element names to be cre
   - Cumulative created (stock): `Cumulative_Agents_Created_<s>` with inflow `Cumulative_Inflow_<s> = Agent_Creation_Outflow_<s>`
   - Legacy trigger (monitoring): `Agent_Creation_Trigger_<s> = New_PC_Flow_<s>`
 
- - Direct clients per material m (discrete conversion):
-  - `Inbound_Leads_<m> = inbound_lead_generation_rate_<m> * If(time >= lead_start_year_<m>, 1, 0) * If(CL_<m> < TAM_<m>, 1, 0)`
-  - `Outbound_Leads_<m>` analogous; `CL_<m>` accumulates inbound + outbound.
-  - `Total_New_Leads_<m> = Inbound_Leads_<m> + Outbound_Leads_<m>`
-  - `Fractional_Client_Conversion_<m> = Total_New_Leads_<m> * lead_to_c_conversion_rate_<m>`
-  - `Potential_Clients_<m>` stock accumulates fractional conversions minus `Client_Creation_<m>`
-  - `Client_Creation_<m> = max(0, round(Potential_Clients_<m> - 0.5, 0))`
-  - `C_<m>` accumulates `Client_Creation_<m>`
-  - `avg_order_quantity_<m> = avg_order_quantity_initial_<m> * (1 + client_requirement_growth_<m>)^(max(0, time - lead_start_year_<m>))`
-  - `Client_Requirement_<m> = delay(model, C_<m> * avg_order_quantity_<m>, lead_to_requirement_delay_<m>)`
+ - Direct clients per product p (discrete conversion):
+  - `Inbound_Leads_<p> = inbound_lead_generation_rate_<p> * If(time >= lead_start_year_<p>, 1, 0) * If(CL_<p> < TAM_<p>, 1, 0)`
+  - `Outbound_Leads_<p>` analogous; `CL_<p>` accumulates inbound + outbound.
+  - `Total_New_Leads_<p> = Inbound_Leads_<p> + Outbound_Leads_<p>`
+  - `Fractional_Client_Conversion_<p> = Total_New_Leads_<p> * lead_to_c_conversion_rate_<p>`
+  - `Potential_Clients_<p>` stock accumulates fractional conversions minus `Client_Creation_<p>`
+  - `Client_Creation_<p> = max(0, round(Potential_Clients_<p> - 0.5, 0))`
+  - `C_<p>` accumulates `Client_Creation_<p>`
+  - `avg_order_quantity_<p> = avg_order_quantity_initial_<p> * (1 + client_requirement_growth_<p>)^(max(0, time - lead_start_year_<p>))`
+  - `Client_Requirement_<p> = delay(model, C_<p> * avg_order_quantity_<p>, lead_to_requirement_delay_<p>)`
 
-- Capacity & lookups per material m:
-  - `max_capacity_lookup_<m> = lookup(time, max_capacity_<m>)`
-  - `Price_<m> = lookup(time, price_<m>)`
+- Capacity & lookups per product p:
+  - `max_capacity_lookup_<p> = lookup(time, max_capacity_<p>)`
+  - `Price_<p> = lookup(time, price_<p>)`
 
-- ABM→SD gateway per sector–material (s,m):
-  - `Agent_Demand_Sector_Input_<s>_<m>` is a converter with a numeric equation updated per step by the runner (no dependencies).
-  - `Agent_Aggregated_Demand_<m> = sum_over_sectors_s(Agent_Demand_Sector_Input_<s>_<m>)`
-  - `Total_Demand_<m> = Agent_Aggregated_Demand_<m> + Client_Requirement_<m>`
-  - `Fulfillment_Ratio_<m> = min(1, If(Total_Demand_<m> > 0, max_capacity_lookup_<m> / Total_Demand_<m>, 1))`
+- ABM→SD gateway per sector–product (s,p):
+  - `Agent_Demand_Sector_Input_<s>_<p>` is a converter with a numeric equation updated per step by the runner (no dependencies).
+  - `Agent_Aggregated_Demand_<p> = sum_over_sectors_s(Agent_Demand_Sector_Input_<s>_<p>)`
+  - `Total_Demand_<p> = Agent_Aggregated_Demand_<p> + Client_Requirement_<p>`
+  - `Fulfillment_Ratio_<p> = min(1, If(Total_Demand_<p> > 0, max_capacity_lookup_<p> / Total_Demand_<p>, 1))`
 
  - Deliveries:
-  - Anchor (per sector with sector–material lag L_{s,m}): For each sector s that uses m,
-    - `Delayed_Agent_Demand_<s>_<m> = Agent_Demand_Sector_Input_<s>_<m> * Fulfillment_Ratio_<m>`
-    - `Anchor_Delivery_Flow_<s>_<m> = delay(model, Delayed_Agent_Demand_<s>_<m>, requirement_to_order_lag_<s>_<m>)`
-    - `Anchor_Delivery_Flow_<m> = sum_over_sectors_s( Anchor_Delivery_Flow_<s>_<m> )`
-  - Client delivery: `Client_Delivery_Flow_<m> = delay(model, Delayed_Client_Demand_<m>, requirement_to_fulfilment_delay_<m>)`
-    - `Delayed_Client_Demand_<m> = Client_Requirement_<m> * Fulfillment_Ratio_<m>`
+  - Anchor (per sector with sector–product lag L_{s,p}): For each sector s that uses p,
+    - `Delayed_Agent_Demand_<s>_<p> = Agent_Demand_Sector_Input_<s>_<p> * Fulfillment_Ratio_<p>`
+    - `Anchor_Delivery_Flow_<s>_<p> = delay(model, Delayed_Agent_Demand_<s>_<p>, requirement_to_order_lag_<s>_<p>)`
+    - `Anchor_Delivery_Flow_<p> = sum_over_sectors_s( Anchor_Delivery_Flow_<s>_<p> )`
+  - Client delivery: `Client_Delivery_Flow_<p> = delay(model, Delayed_Client_Demand_<p>, requirement_to_fulfilment_delay_<p>)`
+    - `Delayed_Client_Demand_<p> = Client_Requirement_<p> * Fulfillment_Ratio_<p>`
 
 - Revenue:
-  - Sector-level anchor revenue: `Anchor_Revenue_<s>_<m> = Anchor_Delivery_Flow_<s>_<m> * Price_<m>` and `Anchor_Revenue_<s> = sum_m(Anchor_Revenue_<s>_<m>)`
-  - Material-level revenues: `Anchor_Revenue_<m> = sum_s(Anchor_Revenue_<s>_<m>)`; `Client_Revenue_<m> = Client_Delivery_Flow_<m> * Price_<m>`
-  - Totals: `Anchor_Revenue = sum_m(Anchor_Revenue_<m>)`; `Client_Revenue = sum_m(Client_Revenue_<m>)`; `Total_Revenue = Anchor_Revenue + Client_Revenue`
+  - Sector-level anchor revenue: `Anchor_Revenue_<s>_<p> = Anchor_Delivery_Flow_<s>_<p> * Price_<p>` and `Anchor_Revenue_<s> = sum_p(Anchor_Revenue_<s>_<p>)`
+  - Product-level revenues: `Anchor_Revenue_<p> = sum_s(Anchor_Revenue_<s>_<p>)`; `Client_Revenue_<p> = Client_Delivery_Flow_<p> * Price_<p>`
+  - Totals: `Anchor_Revenue = sum_p(Anchor_Revenue_<p>)`; `Client_Revenue = sum_p(Client_Revenue_<p>)`; `Total_Revenue = Anchor_Revenue + Client_Revenue`
 
 All element names use underscores for spaces and the `<suffix>` convention above.
 
@@ -561,7 +563,7 @@ load scenario (yaml/json)
 sys = GrowthGrowthSystem(starttime, stoptime, dt)
 sys.load_and_validate_data()
 sys.build_model()
-sys.add_gateway_converters_for_all_materials()
+sys.add_gateway_converters_for_all_products()
 sys.register_anchor_agent_factories()
 apply_overrides(sys, scenario.overrides)
 
@@ -576,10 +578,10 @@ for each time step t from start to stop (inclusive of first, exclusive of last):
   for each agent a:
     a.act(t, round, step)
 
-  # aggregate agent demand by material m
-  for each material m:
-    agg[m] = sum(a.requirements[m] for all agents)
-    set_equation(sys, "Agent_Demand_Input_<m>", agg[m])
+  # aggregate agent demand by product p
+  for each product p:
+    agg[p] = sum(a.requirements[p] for all agents)
+    set_equation(sys, "Agent_Demand_Input_<p>", agg[p])
 
   # advance SD one step and collect outputs for time index t
   advance_one_step(sys)
@@ -594,19 +596,19 @@ Notes:
 
 ## KPI Mapping (Elements → Output Rows)
 - Revenue total: `Total_Revenue` → row: `Revenue`
-- Revenue by sector s: `Anchor_Revenue_<s>` (sum over materials of sector anchor revenue only) → row: `Revenue <s>`
-- Revenue by material m: `Anchor_Revenue_<m> + Client_Revenue_<m>` → row: `Revenue <m>`
+- Revenue by sector s: `Anchor_Revenue_<s>` (sum over products of sector anchor revenue only) → row: `Revenue <s>`
+- Revenue by product p: `Anchor_Revenue_<p> + Client_Revenue_<p>` → row: `Revenue <p>`
 - Anchor Leads total: sum of `CPC_<s>` changes per quarter → row: `Anchor Leads`
 - Anchor Leads by sector s: `CPC_<s>` → row: `Anchor Leads <s>`
 - Active Projects total: proxy or agent-state count; default proxy = sum over s `(Agent_Creation_Trigger_<s> * max_projects_per_pc_<s>)` → row: `Active Projects`
 - Active Projects by sector s: zero rows (as per expected format) or extend later.
 - Anchor Clients total: `Total_Active_Anchor_Clients` (proxy or agent-state count) → row: `Anchor Clients`
 - Anchor Clients by sector s: `Active_Anchor_Clients_<s>` → row: `Anchor Clients <s>`
-- Other Leads total: sum over materials of `CL_<m>` increments, reported per quarter (divide SD evaluation by 4) → row: `Other Leads`
+- Other Leads total: sum over products of `CL_<p>` increments, reported per quarter (divide SD evaluation by 4) → row: `Other Leads`
   
-- Other Clients by material m: `C_<m>` → row: `Other Clients <m>`
-- Order Basket by material m: `Total_Demand_<m>` → row: `Order Basket <m>`
-- Order Delivery by material m: `Anchor_Delivery_Flow_<m> + Client_Delivery_Flow_<m>` → row: `Order Delivery <m>`
+- Other Clients by product p: `C_<p>` → row: `Other Clients <p>`
+- Order Basket by product p: `Total_Demand_<p>` → row: `Order Basket <p>`
+- Order Delivery by product p: `Anchor_Delivery_Flow_<p> + Client_Delivery_Flow_<p>` → row: `Order Delivery <p>`
 
 ## Quarter Labeling & Time Grid (Phase 15)
 - Time grid: `[starttime + i*dt for i in 0..num_steps-1]` with arbitrary positive `dt`.
@@ -614,13 +616,13 @@ Notes:
 - No fixed 28-step padding or truncation.
 
 ## Validation & Acceptance Checklist
-- Data load: all required sectors/materials present across JSON sections; fail on missing coverage.
+- Data load: all required sectors/products present across JSON sections; fail on missing coverage.
 - Lists contain `'US'` market (US-only scope in this phase).
 - Root contains `'lists'` key.
 - Equations: delays use quarters directly (no dt scaling); lookups accept 0 values without NaN.
 - Agent creation: per-step `Agents_To_Create_<s>` non-negative integer; accumulator drains via outflow.
 - Gateways: non-negative values; logged snapshots for first and mid/last steps.
-- Capacity utilization: `Fulfillment_Ratio_<m> ∈ [0,1]`.
+- Capacity utilization: `Fulfillment_Ratio_<p> ∈ [0,1]`.
 - Revenue identity: `Total_Revenue ≈ Anchor_Revenue + Client_Revenue` within numerical tolerance each step.
 - Outputs: exact column count (29 including label or 28 data columns), correct row labels, deterministic across runs with same inputs.
 

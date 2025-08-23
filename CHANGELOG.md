@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to the Growth System v2 project will be documented in this file.
+All notable changes to the Product Growth System project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -9,8 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - **Hybrid SD+ABM Architecture**: Combined System Dynamics and Agent-Based Modeling
-- **Multi-Sector Support**: Defense, Nuclear, Semiconductors, Aviation sectors
-- **Multi-Material Support**: Silicon Carbide, Boron Fiber, UHT, and other materials
+- **Industry Agnostic Design**: Models any sectors and products you define - Defense, Nuclear, Semiconductors, Aviation, or any custom industry
+- **Multi-Product Support**: Handles any product types with configurable parameters and market dynamics
 - **Interactive Streamlit UI**: Scenario editor and runner with real-time validation
 - **YAML Scenario System**: Flexible configuration with runtime overrides
 - **Comprehensive KPI Extraction**: Revenue, capacity utilization, lead metrics
@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Phase 1**: JSON-based input ingestion and validation
 - **Phase 2**: Canonical naming system for SD/ABM elements
 - **Phase 3**: Scenario loader with strict validation
-- **Phase 4**: Core SD model for direct clients and material flows
+- **Phase 4**: Core SD model for direct clients and product flows
 - **Phase 5**: ABM anchor client agents with lifecycle management
 - **Phase 6**: ABM→SD gateways and anchor deliveries
 - **Phase 7**: Stepwise runner with scheduler integration
@@ -32,11 +32,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Phase 10**: Regression testing and baseline validation
 - **Phase 11**: Preset scenario management and validation
 - **Phase 12**: Visualization and plotting capabilities
-- **Phase 13**: Multi-material anchor support
+- **Phase 13**: Multi-product anchor support
 - **Phase 14**: Scenario-based seeding system
 - **Phase 15**: Variable horizon simulation support
-- **Phase 16**: Per-(sector, material) parameter targeting
-- **Phase 17**: SM-mode for strict per-(s,m) modeling
+- **Phase 16**: Per-(sector, product) parameter targeting
+- **Phase 17**: SM-mode for strict per-(s,p) modeling
 
 ### Removed
 - Deprecated material-based naming helpers and list accessors; use product terminology exclusively.
@@ -47,12 +47,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Error Handling**: Robust validation and error reporting
 - **Performance**: Optimized simulation loops and data structures
 - **Cross-Platform**: Support for macOS, Linux, and Windows
+- **Industry Flexibility**: No hard-coded industry assumptions - everything is configurable
 
 ## [1.0.0] - Legacy Version
 
 - Initial prototype implementation
 - Basic System Dynamics model
-- Limited sector and material support
+- Limited sector and product support
 
 ---
 
@@ -65,7 +66,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Future Roadmap
 
 ### Planned for v2.1.0
-- [ ] Additional material types
+- [ ] Additional product types and market dynamics
 - [ ] Enhanced visualization options
 - [ ] Performance optimization
 - [ ] Cloud deployment support
@@ -81,3 +82,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [ ] Advanced agent behaviors
 - [ ] Monte Carlo simulation
 - [ ] Sensitivity analysis tools
+- [ ] Industry-specific templates and examples
