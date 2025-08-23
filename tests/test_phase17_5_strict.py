@@ -134,7 +134,7 @@ def test_sm_mode_rejects_sector_seeds_in_loader(tmp_path: Path):
           anchor_mode: sm
         seeds:
           active_anchor_clients:
-            Defense: 3
+            Sector_One: 3
         """,
     )
     with pytest.raises(ValueError) as exc:

@@ -44,7 +44,7 @@ def _write_temp_inputs_json(tmp_path: Path, data: dict) -> Path:
 @pytest.mark.parametrize(
     "sector,prod_a,prod_b",
     [
-        ("Semiconductors", "Silicon Carbide Powder", "UHT"),
+        ("Sector_One", "Product_One", "Product_Two"),
     ],
 )
 def test_multi_product_anchor_sector(tmp_path: Path, sector: str, prod_a: str, prod_b: str) -> None:

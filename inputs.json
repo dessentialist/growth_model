@@ -2,173 +2,348 @@
   "lists": [
     {
       "Market": [
+        "Global"
       ]
     },
     {
       "Sector": [
-        
+        "Sector_One",
+        "Sector_Two"
       ]
     },
     {
       "Product": [
-
+        "Product_One",
+        "Product_Two"
       ]
     }
   ],
   "anchor_params": {
     "anchor_start_year": {
-
+      "Sector_One": 2025.0,
+      "Sector_Two": 2026.0
     },
     "anchor_client_activation_delay": {
-
+      "Sector_One": 2.0,
+      "Sector_Two": 1.5
     },
     "anchor_lead_generation_rate": {
-
+      "Sector_One": 10.0,
+      "Sector_Two": 8.0
     },
     "lead_to_pc_conversion_rate": {
-
+      "Sector_One": 0.3,
+      "Sector_Two": 0.25
     },
     "project_generation_rate": {
-
+      "Sector_One": 2.0,
+      "Sector_Two": 1.8
     },
     "max_projects_per_pc": {
-
+      "Sector_One": 3,
+      "Sector_Two": 2
     },
     "project_duration": {
-
+      "Sector_One": 4.0,
+      "Sector_Two": 3.5
     },
     "projects_to_client_conversion": {
-
+      "Sector_One": 0.4,
+      "Sector_Two": 0.35
     },
     "initial_phase_duration": {
-
+      "Sector_One": 2.0,
+      "Sector_Two": 1.5
     },
     "ramp_phase_duration": {
-
+      "Sector_One": 3.0,
+      "Sector_Two": 2.5
     },
     "initial_requirement_rate": {
-
+      "Sector_One": 100.0,
+      "Sector_Two": 80.0
     },
     "initial_req_growth": {
-
+      "Sector_One": 0.2,
+      "Sector_Two": 0.15
     },
     "ramp_requirement_rate": {
-
+      "Sector_One": 200.0,
+      "Sector_Two": 160.0
     },
     "ramp_req_growth": {
-
+      "Sector_One": 0.15,
+      "Sector_Two": 0.12
     },
     "steady_requirement_rate": {
-
+      "Sector_One": 300.0,
+      "Sector_Two": 240.0
     },
     "steady_req_growth": {
-
+      "Sector_One": 0.1,
+      "Sector_Two": 0.08
     },
     "requirement_to_order_lag": {
-
+      "Sector_One": 1.0,
+      "Sector_Two": 0.75
     },
     "ATAM": {
-
+      "Sector_One": 50,
+      "Sector_Two": 40
     }
   },
   "other_params": {
     "lead_start_year": {
-
+      "Product_One": 2025.0,
+      "Product_Two": 2026.0
     },
     "inbound_lead_generation_rate": {
-
+      "Product_One": 5.0,
+      "Product_Two": 4.0
     },
     "outbound_lead_generation_rate": {
-
+      "Product_One": 3.0,
+      "Product_Two": 2.5
     },
     "lead_to_c_conversion_rate": {
-
+      "Product_One": 0.2,
+      "Product_Two": 0.18
     },
     "lead_to_requirement_delay": {
-
+      "Product_One": 1.0,
+      "Product_Two": 0.8
     },
     "requirement_to_fulfilment_delay": {
-
+      "Product_One": 0.5,
+      "Product_Two": 0.4
     },
     "avg_order_quantity_initial": {
-
+      "Product_One": 50.0,
+      "Product_Two": 40.0
     },
     "client_requirement_growth": {
-
+      "Product_One": 0.1,
+      "Product_Two": 0.08
     },
     "TAM": {
-
+      "Product_One": 1000,
+      "Product_Two": 800
     }
   },
   "production": {
-    
+    "Product_One": [
+      {"year": 2025.0, "capacity": 1000.0},
+      {"year": 2026.0, "capacity": 1200.0},
+      {"year": 2027.0, "capacity": 1400.0},
+      {"year": 2028.0, "capacity": 1600.0},
+      {"year": 2029.0, "capacity": 1800.0},
+      {"year": 2030.0, "capacity": 2000.0},
+      {"year": 2031.0, "capacity": 2200.0},
+      {"year": 2032.0, "capacity": 2400.0}
+    ],
+    "Product_Two": [
+      {"year": 2025.0, "capacity": 800.0},
+      {"year": 2026.0, "capacity": 960.0},
+      {"year": 2027.0, "capacity": 1120.0},
+      {"year": 2028.0, "capacity": 1280.0},
+      {"year": 2029.0, "capacity": 1440.0},
+      {"year": 2030.0, "capacity": 1600.0},
+      {"year": 2031.0, "capacity": 1760.0},
+      {"year": 2032.0, "capacity": 1920.0}
+    ]
   },
   "pricing": {
-    
+    "Product_One": [
+      {"year": 2025.0, "price": 100.0},
+      {"year": 2026.0, "price": 105.0},
+      {"year": 2027.0, "price": 110.0},
+      {"year": 2028.0, "price": 115.0},
+      {"year": 2029.0, "price": 120.0},
+      {"year": 2030.0, "price": 125.0},
+      {"year": 2031.0, "price": 130.0},
+      {"year": 2032.0, "price": 135.0}
+    ],
+    "Product_Two": [
+      {"year": 2025.0, "price": 80.0},
+      {"year": 2026.0, "price": 84.0},
+      {"year": 2027.0, "price": 88.0},
+      {"year": 2028.0, "price": 92.0},
+      {"year": 2029.0, "price": 96.0},
+      {"year": 2030.0, "price": 100.0},
+      {"year": 2031.0, "price": 104.0},
+      {"year": 2032.0, "price": 108.0}
     ]
   },
   "primary_map": {
-    "Defense": [
-
+    "Sector_One": [
+      {
+        "product": "Product_One",
+        "start_year": 2025.0
+      }
     ],
-
+    "Sector_Two": [
+      {
+        "product": "Product_Two",
+        "start_year": 2026.0
+      }
     ]
   },
-  "lists_sm": [],
+  "lists_sm": [
+    {
+      "Sector": "Sector_One",
+      "Material": "Product_One"
+    },
+    {
+      "Sector": "Sector_Two", 
+      "Material": "Product_Two"
+    }
+  ],
   "anchor_params_sm": {
-
+    "anchor_start_year": {
+      "Sector_One": {
+        "Product_One": 2025.0
+      },
+      "Sector_Two": {
+        "Product_Two": 2026.0
+      }
     },
     "anchor_client_activation_delay": {
-
+      "Sector_One": {
+        "Product_One": 2.0
+      },
+      "Sector_Two": {
+        "Product_Two": 1.5
+      }
     },
     "anchor_lead_generation_rate": {
-
+      "Sector_One": {
+        "Product_One": 10.0
+      },
+      "Sector_Two": {
+        "Product_Two": 8.0
+      }
     },
     "lead_to_pc_conversion_rate": {
-
+      "Sector_One": {
+        "Product_One": 0.3
+      },
+      "Sector_Two": {
+        "Product_Two": 0.25
+      }
     },
     "project_generation_rate": {
-
+      "Sector_One": {
+        "Product_One": 2.0
+      },
+      "Sector_Two": {
+        "Product_Two": 1.8
+      }
     },
     "max_projects_per_pc": {
-
+      "Sector_One": {
+        "Product_One": 3
+      },
+      "Sector_Two": {
+        "Product_Two": 2
+      }
     },
     "project_duration": {
-
+      "Sector_One": {
+        "Product_One": 4.0
+      },
+      "Sector_Two": {
+        "Product_Two": 3.5
+      }
     },
     "projects_to_client_conversion": {
-
+      "Sector_One": {
+        "Product_One": 0.4
+      },
+      "Sector_Two": {
+        "Product_Two": 0.35
+      }
     },
     "initial_phase_duration": {
-
+      "Sector_One": {
+        "Product_One": 2.0
+      },
+      "Sector_Two": {
+        "Product_Two": 1.5
+      }
     },
     "ramp_phase_duration": {
-
-    },
-    "ATAM": {
-
+      "Sector_One": {
+        "Product_One": 3.0
+      },
+      "Sector_Two": {
+        "Product_Two": 2.5
+      }
     },
     "initial_requirement_rate": {
-
+      "Sector_One": {
+        "Product_One": 100.0
+      },
+      "Sector_Two": {
+        "Product_Two": 80.0
+      }
     },
     "initial_req_growth": {
-
+      "Sector_One": {
+        "Product_One": 0.2
+      },
+      "Sector_Two": {
+        "Product_Two": 0.15
+      }
     },
     "ramp_requirement_rate": {
-
+      "Sector_One": {
+        "Product_One": 200.0
+      },
+      "Sector_Two": {
+        "Product_Two": 160.0
+      }
     },
     "ramp_req_growth": {
-
+      "Sector_One": {
+        "Product_One": 0.15
+      },
+      "Sector_Two": {
+        "Product_Two": 0.12
+      }
     },
     "steady_requirement_rate": {
-
+      "Sector_One": {
+        "Product_One": 300.0
+      },
+      "Sector_Two": {
+        "Product_Two": 240.0
+      }
     },
     "steady_req_growth": {
-
+      "Sector_One": {
+        "Product_One": 0.1
+      },
+      "Sector_Two": {
+        "Product_Two": 0.08
+      }
     },
     "requirement_to_order_lag": {
-
+      "Sector_One": {
+        "Product_One": 1.0
+      },
+      "Sector_Two": {
+        "Product_Two": 0.75
+      }
+    },
+    "ATAM": {
+      "Sector_One": {
+        "Product_One": 50
+      },
+      "Sector_Two": {
+        "Product_Two": 40
+      }
     }
   }
+}
 
 

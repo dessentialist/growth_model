@@ -27,9 +27,9 @@ def test_phase14_seeding_active_clients_and_requirements(tmp_path: Path) -> None
         overrides: {}
         seeds:
           active_anchor_clients:
-            Defense: 2
+            Sector_One: 2
           direct_clients:
-            Silicon Carbide Fiber: 3
+            Product_One: 3
         """
     ).strip()
     scenario_file = tmp_path / "seed_test.yaml"

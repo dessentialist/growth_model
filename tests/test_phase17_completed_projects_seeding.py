@@ -43,10 +43,10 @@ def test_completed_projects_sector_mode(tmp_path: Path) -> None:
           dt: 0.25
         overrides:
           constants:
-            projects_to_client_conversion_Defense: 3
+            projects_to_client_conversion_Sector_One: 3
         seeds:
           completed_projects:
-            Defense: 7
+            Sector_One: 7
         """
     ).strip()
     scenario_file = tmp_path / "completed_sector.yaml"
@@ -60,7 +60,7 @@ def test_completed_projects_sector_mode(tmp_path: Path) -> None:
     assert out_csv.exists()
 
     # floor(7 / 3) = 2 ACTIVE anchors at t0
-    val = _read_kpi_csv_value(out_csv, "Anchor Clients Defense")
+    val = _read_kpi_csv_value(out_csv, "Anchor Clients Sector_One")
     assert int(val) == 2
 
 
@@ -75,14 +75,14 @@ def test_completed_projects_sm_mode(tmp_path: Path) -> None:
           dt: 0.25
           anchor_mode: sm
         lists_sm:
-          - { Sector: Defense, Material: Silicon Carbide Fiber }
+          - { Sector: Sector_One, Material: Product_One }
         overrides:
           constants:
-            projects_to_client_conversion_Defense_Silicon_Carbide_Fiber: 2
+            projects_to_client_conversion_Sector_One_Product_One: 2
         seeds:
           completed_projects_sm:
-            Defense:
-              Silicon Carbide Fiber: 5
+            Sector_One:
+              Product_One: 5
         """
     ).strip()
     scenario_file = tmp_path / "completed_sm.yaml"
@@ -98,5 +98,5 @@ def test_completed_projects_sm_mode(tmp_path: Path) -> None:
     assert out_csv.exists()
 
     # floor(5 / 2) = 2 ACTIVE anchors at t0
-    val = _read_kpi_csv_value(out_csv, "Anchor Clients Defense")
+    val = _read_kpi_csv_value(out_csv, "Anchor Clients Sector_One")
     assert int(val) == 2

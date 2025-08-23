@@ -5,11 +5,11 @@ from src.kpi_extractor import build_row_order
 
 class TestPhase176RowOrder(unittest.TestCase):
     def test_build_row_order_defaults_and_granular(self):
-        sectors = ["Defense", "Aviation"]
-        products = ["Silicon Carbide Fiber", "Boron_fiber"]
+        sectors = ["Sector_One", "Sector_Two"]
+        products = ["Product_One", "Product_Two"]
         sector_to_products = {
-            "Defense": ["Silicon Carbide Fiber"],
-            "Aviation": ["Boron_fiber"],
+            "Sector_One": ["Product_One"],
+            "Sector_Two": ["Product_Two"],
         }
 
         # Default: no granular rows
@@ -20,10 +20,10 @@ class TestPhase176RowOrder(unittest.TestCase):
             include_sm_client_rows=False,
             sector_to_products=sector_to_products,
         )
-        self.assertTrue("Revenue Defense" in rows_default)
-        self.assertTrue("Revenue Silicon Carbide Fiber" in rows_default)
-        self.assertFalse("Revenue Defense Silicon Carbide Fiber" in rows_default)
-        self.assertFalse("Anchor Clients Defense Silicon Carbide Fiber" in rows_default)
+        self.assertTrue("Revenue Sector_One" in rows_default)
+        self.assertTrue("Revenue Product_One" in rows_default)
+        self.assertFalse("Revenue Sector_One Product_One" in rows_default)
+        self.assertFalse("Anchor Clients Sector_One Product_One" in rows_default)
 
         # With granular flags
         rows_gran = build_row_order(
@@ -33,8 +33,8 @@ class TestPhase176RowOrder(unittest.TestCase):
             include_sm_client_rows=True,
             sector_to_products=sector_to_products,
         )
-        self.assertTrue("Revenue Defense Silicon Carbide Fiber" in rows_gran)
-        self.assertTrue("Anchor Clients Aviation Boron_fiber" in rows_gran)
+        self.assertTrue("Revenue Sector_One Product_One" in rows_gran)
+        self.assertTrue("Anchor Clients Sector_Two Product_Two" in rows_gran)
 
 
 if __name__ == "__main__":

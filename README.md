@@ -5,7 +5,7 @@ A hybrid System Dynamics + Agent-Based Modeling (SD+ABM) simulation system for a
 ## 🚀 Features
 
 - **Hybrid Modeling**: Combines System Dynamics (SD) for aggregate flows with Agent-Based Modeling (ABM) for individual client behavior
-- **Industry Agnostic**: Models any sectors and products you define - Defense, Nuclear, Semiconductors, Aviation, or any custom industry
+- **Industry Agnostic**: Models any sectors and products you define. 
 - **Multi-Product Support**: Handles any product types with configurable parameters and market dynamics
 - **Flexible Scenarios**: YAML-based scenario configuration with runtime overrides
 - **Interactive UI**: Streamlit-based scenario editor and runner

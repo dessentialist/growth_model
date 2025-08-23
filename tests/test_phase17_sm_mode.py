@@ -37,16 +37,16 @@ def _write_yaml(tmp_path: Path, content: str) -> Path:
     return p
 
 
-def test_sm_mode_requires_explicit_lists_sm(tmp_path: Path):
-    """Without explicit lists_sm in inputs.json, SM-mode must fail early."""
+def test_sm_mode_works_with_explicit_lists_sm(tmp_path: Path):
+    """With explicit lists_sm in inputs.json, SM-mode should work correctly."""
     bundle = load_phase1_inputs()
-    # Ensure our test assumption: current repo inputs.json does not provide explicit lists_sm
-    assert getattr(bundle, "lists_sm_explicit", False) is False
+    # Ensure our test assumption: current repo inputs.json provides explicit lists_sm
+    assert getattr(bundle, "lists_sm_explicit", False) is True
 
     scenario_yaml = _write_yaml(
         tmp_path,
         """
-        name: sm_mode_missing_lists
+        name: sm_mode_with_lists
         runspecs:
           starttime: 2025.0
           stoptime: 2026.0
@@ -55,15 +55,15 @@ def test_sm_mode_requires_explicit_lists_sm(tmp_path: Path):
         """,
     )
 
-    with pytest.raises(ValueError) as exc:
-        load_and_validate_scenario(scenario_yaml, bundle=bundle)
-    assert "lists_sm" in str(exc.value)
+    # Should not raise an error since we have explicit lists_sm
+    scenario = load_and_validate_scenario(scenario_yaml, bundle=bundle)
+    assert scenario.runspecs.anchor_mode == "sm"
 
 
 def test_sm_mode_rejects_sector_level_anchor_constant_override(tmp_path: Path):
     """In SM-mode, sector-level anchor constant overrides must be rejected by loader."""
     bundle = load_phase1_inputs()
-    assert getattr(bundle, "lists_sm_explicit", False) is False
+    assert getattr(bundle, "lists_sm_explicit", False) is True
     # Try overriding a sector-level anchor constant; expect unknown constant error
     scenario_yaml = _write_yaml(
         tmp_path,
@@ -73,7 +73,7 @@ def test_sm_mode_rejects_sector_level_anchor_constant_override(tmp_path: Path):
           anchor_mode: sm
         overrides:
           constants:
-            initial_requirement_rate_Defense: 999.0
+            initial_requirement_rate_Sector_One: 999.0
         """,
     )
 
@@ -94,12 +94,12 @@ def test_sector_mode_allows_sector_level_anchor_constant_override(tmp_path: Path
           anchor_mode: sector
         overrides:
           constants:
-            initial_requirement_rate_Defense: 123.0
+            initial_requirement_rate_Sector_One: 123.0
         """,
     )
     scenario = load_and_validate_scenario(scenario_yaml, bundle=bundle)
     # Verify the override was accepted
-    assert scenario.constants.get("initial_requirement_rate_Defense") == pytest.approx(123.0)
+    assert scenario.constants.get("initial_requirement_rate_Sector_One") == pytest.approx(123.0)
 
 
 def test_sm_mode_builds_per_pair_creation_and_skips_sector_level(tmp_path: Path):
@@ -204,14 +204,14 @@ def test_sm_agent_lifecycle_and_requirement_generation():
         steady_req_growth=0.0,
     )
 
-    agent = AnchorClientAgentSM(sector="Defense", material="Silicon Carbide Fiber", params=params)
+    agent = AnchorClientAgentSM(sector="Sector_One", material="Product_One", params=params)
 
     # Timeline at dt=0.25 years (quarters)
     times = [2025.0 + i * 0.25 for i in range(6)]
     outputs = []
     for i, t in enumerate(times):
         req = agent.act(t, 0, i, dt_years=0.25)
-        outputs.append(req["Silicon Carbide Fiber"])
+        outputs.append(req["Product_One"])
 
     # Expected behavior:
     # t0: POTENTIAL; project started; not active yet; requirement 0

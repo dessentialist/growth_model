@@ -17,14 +17,14 @@ class TestNamingUtilities(unittest.TestCase):
     def test_basic_normalization(self):
         # Verifies that spaces and punctuation collapse to single underscores
         # and that case is preserved to match canonical names.
-        name = create_element_name("Anchor Lead Generation", "Defense & Space")
-        self.assertEqual(name, "Anchor_Lead_Generation_Defense_Space")
+        name = create_element_name("Anchor Lead Generation", "Sector One & Two")
+        self.assertEqual(name, "Anchor_Lead_Generation_Sector_One_Two")
 
     def test_material_component(self):
         # Verifies that material-only components are appended in third position
         # and formatted with underscores.
-        name = create_element_name("Price", material="Silicon Carbide Fiber")
-        self.assertEqual(name, "Price_Silicon_Carbide_Fiber")
+        name = create_element_name("Price", material="Product One")
+        self.assertEqual(name, "Price_Product_One")
 
     def test_collision_safe_truncation(self):
         # Builds a very long sector to trigger truncation and ensures the
@@ -51,10 +51,10 @@ class TestNamingUtilities(unittest.TestCase):
     def test_helper_alignment(self):
         # Ensures that helper functions produce the exact canonical names
         # enumerated in the technical architecture document.
-        self.assertEqual(anchor_constant("anchor_lead_generation_rate", "Defense"), "anchor_lead_generation_rate_Defense")
-        self.assertEqual(product_constant("price", "Silicon Carbide"), "price_Silicon_Carbide")
-        self.assertEqual(price_lookup_name_product("Silicon Carbide Fiber"), "price_Silicon_Carbide_Fiber")
-        self.assertEqual(anchor_lead_generation("Aviation"), "Anchor_Lead_Generation_Aviation")
+        self.assertEqual(anchor_constant("anchor_lead_generation_rate", "Sector_One"), "anchor_lead_generation_rate_Sector_One")
+        self.assertEqual(product_constant("price", "Product_One"), "price_Product_One")
+        self.assertEqual(price_lookup_name_product("Product_One"), "price_Product_One")
+        self.assertEqual(anchor_lead_generation("Sector_Two"), "Anchor_Lead_Generation_Sector_Two")
 
 
 if __name__ == "__main__":

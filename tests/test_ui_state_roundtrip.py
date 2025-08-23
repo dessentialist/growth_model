@@ -12,10 +12,10 @@ def test_ui_state_roundtrip_primary_map_and_points():
     state.name = "curious-bunny"
     state.runspecs.starttime = 2025.0
     state.runspecs.stoptime = 2026.0
-    state.overrides.constants["anchor_lead_generation_rate_Defense"] = 0.5
-    state.overrides.points["price_Silicon_Carbide_Fiber"] = [(2025.0, 10.0), (2025.5, 10.0)]
-    state.primary_map.by_sector["Defense"] = [PrimaryMapEntry(product="Silicon Carbide Fiber", start_year=2025.0)]
-    state.seeds.active_anchor_clients["Defense"] = 1
+    state.overrides.constants["anchor_lead_generation_rate_Sector_One"] = 0.5
+    state.overrides.points["price_Product_One"] = [(2025.0, 10.0), (2025.5, 10.0)]
+    state.primary_map.by_sector["Sector_One"] = [PrimaryMapEntry(product="Product_One", start_year=2025.0)]
+    state.seeds.active_anchor_clients["Sector_One"] = 1
 
     scenario_dict = state.to_scenario_dict_normalized()
 
@@ -24,7 +24,7 @@ def test_ui_state_roundtrip_primary_map_and_points():
     loaded.load_from_scenario_dict(scenario_dict)
     assert loaded.name == state.name
     assert loaded.runspecs.starttime == state.runspecs.starttime
-    assert loaded.overrides.constants["anchor_lead_generation_rate_Defense"] == 0.5
-    assert "price_Silicon_Carbide_Fiber" in loaded.overrides.points
-    assert loaded.primary_map.by_sector["Defense"][0].product == "Silicon Carbide Fiber"
-    assert loaded.seeds.active_anchor_clients["Defense"] == 1
+    assert loaded.overrides.constants["anchor_lead_generation_rate_Sector_One"] == 0.5
+    assert "price_Product_One" in loaded.overrides.points
+    assert loaded.primary_map.by_sector["Sector_One"][0].product == "Product_One"
+    assert loaded.seeds.active_anchor_clients["Sector_One"] == 1

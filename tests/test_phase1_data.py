@@ -50,7 +50,7 @@ class TestPhase1JSONLoading(unittest.TestCase):
         data = {
             "lists": [
                 {"Market": ["US"]},
-                {"Sector": ["Defense"]},
+                {"Sector": ["Sector_One"]},
                 {"Product": ["Foo", "Foo"]},
             ],
             "anchor_params": {},
