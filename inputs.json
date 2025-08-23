@@ -15,7 +15,7 @@
       ]
     },
     {
-      "Material": [
+      "Product": [
         "Silicon Carbide Fiber",
         "Silicon Carbide Powder",
         "Silicon Nitride Fiber",
@@ -340,13 +340,13 @@
   },
   "primary_map": {
     "Defense": [
-      {"material": "Silicon Carbide Fiber", "start_year": 2025},
-      {"material": "Silicon Nitride Fiber", "start_year": 2027}
+      {"product": "Silicon Carbide Fiber", "start_year": 2025},
+      {"product": "Silicon Nitride Fiber", "start_year": 2027}
     ],
-    "Nuclear": [{"material": "Silicon Carbide Fiber", "start_year": 2025}],
-    "Semiconductors": [{"material": "Silicon Carbide Powder", "start_year": 2025}],
+    "Nuclear": [{"product": "Silicon Carbide Fiber", "start_year": 2025}],
+    "Semiconductors": [{"product": "Silicon Carbide Powder", "start_year": 2025}],
     "Aviation": [
-      {"material": "UHT", "start_year": 2026}
+      {"product": "UHT", "start_year": 2026}
     ]
   },
   "lists_sm": [],

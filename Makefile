@@ -20,7 +20,7 @@ run_ui: install
 	$(STREAMLIT) run ui/app.py
 
 run_baseline: install
-	$(PYTHON) simulate_fff_growth.py --preset baseline
+	$(PYTHON) simulate_growth.py --preset baseline
 
 test: install
 	$(PYTEST) -q

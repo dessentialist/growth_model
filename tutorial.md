@@ -1,4 +1,4 @@
-## FFF Growth System – Business User Tutorial
+## Growth System – Business User Tutorial
 
 Audience: Business stakeholders who want to install the tool, use the UI to build scenarios, run the model, and read outputs/plots. No coding required.
 
@@ -15,8 +15,8 @@ Prerequisites:
 
 Clone and set up a virtual environment (recommended):
 ```bash
-git clone https://github.com/dessentialist/FFF_Growth_System_v2.git
-cd FFF_Growth_System_v2
+git clone https://github.com/dessentialist/Growth_Growth_System_v2.git
+cd Growth_Growth_System_v2
 
 python3 -m venv venv
 source venv/bin/activate   # Windows: venv\Scripts\activate
@@ -37,12 +37,12 @@ make run_ui    # open the UI at http://localhost:8501
 
 Optional – Docker (no Python needed):
 ```bash
-docker build -f Dockerfile.ui -t fff-ui .
+docker build -f Dockerfile.ui -t growth-ui .
 docker run --rm -p 8501:8501 \
   -v "$PWD/scenarios:/app/scenarios" \
   -v "$PWD/logs:/app/logs" \
   -v "$PWD/output:/app/output" \
-  fff-ui
+  growth-ui
 ```
 
 ### 3) UI layout (what each tab does)
@@ -110,8 +110,8 @@ Run toggles:
 
 ### 10) Outputs & where to find them
 - Logs: `logs/run.log` (also streamed in UI)
-- KPI CSV: `output/FFF_Growth_System_Complete_Results.csv`
-- Scenario‑suffixed copy: `output/FFF_Growth_System_Complete_Results_<scenario>.csv`
+- KPI CSV: `output/Growth_System_Complete_Results.csv`
+- Scenario‑suffixed copy: `output/Growth_System_Complete_Results_<scenario>.csv`
 - Plots: `output/plots/*.png` (rendered inline and downloadable when “Generate plots” is enabled)
 
 ### 11) Typical workflows
@@ -141,11 +141,11 @@ Workflow D – Change a material’s price or capacity shape
 ### 12) Command‑line (optional, without the UI)
 Run a preset:
 ```bash
-python simulate_fff_growth.py --preset baseline --debug --visualize
+python simulate_growth.py --preset baseline --debug --visualize
 ```
 Run a specific scenario file:
 ```bash
-python simulate_fff_growth.py --scenario scenarios/your_case.yaml --visualize
+python simulate_growth.py --scenario scenarios/your_case.yaml --visualize
 ```
 Flags:
 - `--kpi-sm-revenue-rows` and `--kpi-sm-client-rows` append optional per‑(s,m) rows to the CSV

@@ -3,7 +3,7 @@ from __future__ import annotations
 """
 Time-series (points) editor component for Streamlit.
 
-Allows adding/editing lookup point series (price_*, max_capacity_*) for materials.
+Allows adding/editing lookup point series (price_*, max_capacity_*) for products.
 We constrain to permissible lookup names and enforce strictly increasing times
 with numeric values on the UI side; backend validation will run on save.
 """

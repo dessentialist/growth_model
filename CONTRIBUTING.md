@@ -1,6 +1,6 @@
-# Contributing to FFF Growth System v2
+# Contributing to Growth System v2
 
-Thank you for your interest in contributing to the FFF Growth System! This document provides guidelines and information for contributors.
+Thank you for your interest in contributing to the Growth System! This document provides guidelines and information for contributors.
 
 ## 🚀 Getting Started
 
@@ -148,4 +148,4 @@ By contributing, you agree that your contributions will be licensed under the sa
 
 ---
 
-Thank you for contributing to the FFF Growth System! 🎉
+Thank you for contributing to the Growth System! 🎉

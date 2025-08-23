@@ -12,7 +12,7 @@ class TestPhase1JSONLoading(unittest.TestCase):
         self.assertIsInstance(bundle, Phase1Bundle)
         # Basic invariants from JSON fixture
         self.assertGreaterEqual(len(bundle.lists.sectors), 1)
-        self.assertGreaterEqual(len(bundle.lists.materials), 1)
+        self.assertGreaterEqual(len(bundle.lists.products), 1)
 
     def test_parse_json_to_bundle_direct(self):
         data = json.loads(Path("inputs.json").read_text(encoding="utf-8"))
@@ -45,6 +45,22 @@ class TestPhase1JSONLoading(unittest.TestCase):
         finally:
             if tmp.exists():
                 tmp.unlink()
+
+    def test_duplicate_product_names_rejected(self):
+        data = {
+            "lists": [
+                {"Market": ["US"]},
+                {"Sector": ["Defense"]},
+                {"Product": ["Foo", "Foo"]},
+            ],
+            "anchor_params": {},
+            "other_params": {},
+            "production": {},
+            "pricing": {},
+            "primary_map": {},
+        }
+        with self.assertRaises(ValueError):
+            parse_json_to_bundle(data)
 
 
 if __name__ == "__main__":

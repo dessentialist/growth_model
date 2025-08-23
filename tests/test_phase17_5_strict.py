@@ -16,7 +16,7 @@ import textwrap
 
 from src.phase1_data import load_phase1_inputs, Phase1Bundle
 from src.scenario_loader import load_and_validate_scenario, RunSpecs
-from src.fff_growth_model import build_phase4_model
+from src.growth_model import build_phase4_model
 
 
 def _write_yaml(tmp_path: Path, content: str) -> Path:

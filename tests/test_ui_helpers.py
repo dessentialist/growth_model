@@ -13,7 +13,7 @@ from src.scenario_loader import (
     list_permissible_override_keys,
     validate_scenario_dict,
 )
-from src.naming import price_lookup_name, max_capacity_lookup_name
+from src.naming import price_lookup_name_product, max_capacity_lookup_name_product
 from ui.state import UIState, PrimaryMapEntry
 from ui.services.builder import write_scenario_yaml
 
@@ -27,14 +27,14 @@ def test_permissible_keys_non_empty():
 
 def test_points_names_include_first_material():
     bundle = load_phase1_inputs()
-    mats = list(bundle.lists.materials)
+    mats = list(bundle.lists.products)
     if not mats:
         pytest.skip("No materials listed in inputs.json")
     m = mats[0]
     data = list_permissible_override_keys(bundle, anchor_mode="sector")
     points = data["points"]
-    assert price_lookup_name(m) in points
-    assert max_capacity_lookup_name(m) in points
+    assert price_lookup_name_product(m) in points
+    assert max_capacity_lookup_name_product(m) in points
 
 
 def test_validate_scenario_minimal_runspecs_only():
@@ -51,11 +51,11 @@ def test_validate_scenario_minimal_runspecs_only():
 
 def test_validate_scenario_with_points_override():
     bundle = load_phase1_inputs()
-    mats = list(bundle.lists.materials)
+    mats = list(bundle.lists.products)
     if not mats:
         pytest.skip("No materials to build a points override")
     m = mats[0]
-    pl = price_lookup_name(m)
+    pl = price_lookup_name_product(m)
     scenario_dict = {
         "name": "playful-puppy",
         "runspecs": {"starttime": 2025.0, "stoptime": 2026.0, "dt": 0.25},
@@ -67,7 +67,7 @@ def test_validate_scenario_with_points_override():
 
 def test_validate_with_primary_map_and_seeds(tmp_path):
     bundle = load_phase1_inputs()
-    mats = list(bundle.lists.materials)
+    mats = list(bundle.lists.products)
     secs = list(bundle.lists.sectors)
     if not mats or not secs:
         pytest.skip("Insufficient lists to construct primary map or seeds")
@@ -75,7 +75,7 @@ def test_validate_with_primary_map_and_seeds(tmp_path):
     sct = secs[0]
     # Build UI state
     ui_state = UIState()
-    ui_state.primary_map.by_sector[sct] = [PrimaryMapEntry(material=m, start_year=2026.0)]
+    ui_state.primary_map.by_sector[sct] = [PrimaryMapEntry(product=m, start_year=2026.0)]
     ui_state.seeds.active_anchor_clients[sct] = 2
     ui_state.seeds.elapsed_quarters[sct] = 4
     ui_state.seeds.direct_clients[m] = 3
@@ -92,11 +92,11 @@ def test_validate_with_primary_map_and_seeds(tmp_path):
 
 def test_validate_scenario_points_strictly_increasing_years():
     bundle = load_phase1_inputs()
-    mats = list(bundle.lists.materials)
+    mats = list(bundle.lists.products)
     if not mats:
         pytest.skip("No materials to build a points override")
     m = mats[0]
-    pl = price_lookup_name(m)
+    pl = price_lookup_name_product(m)
     scenario_dict = {
         "name": "grumpy-hamster",
         "runspecs": {"starttime": 2025.0, "stoptime": 2026.0, "dt": 0.25},

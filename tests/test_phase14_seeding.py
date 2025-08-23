@@ -5,7 +5,7 @@ from pathlib import Path
 
 from src.phase1_data import load_phase1_inputs, apply_primary_map_overrides
 from src.scenario_loader import load_and_validate_scenario
-from simulate_fff_growth import run_stepwise
+from simulate_growth import run_stepwise
 
 
 def test_phase14_seeding_active_clients_and_requirements(tmp_path: Path) -> None:

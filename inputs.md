@@ -1,6 +1,6 @@
 ## Model Inputs
 
-This document lists all inputs the FFF Growth System consumes. It is organized by where and how the model uses them, and annotated with whether each input is sector-specific or material-specific. Values live primarily in `inputs.json`; scenario files can override many of them.
+This document lists all inputs the Growth System consumes. It is organized by where and how the model uses them, and annotated with whether each input is sector-specific or material-specific. Values live primarily in `inputs.json`; scenario files can override many of them.
 
 ### Who updates it and where
 - **Run controls (start/stop/dt)**: edit in the scenario file under `scenarios/` (preferred for experiments)
@@ -20,8 +20,8 @@ This document lists all inputs the FFF Growth System consumes. It is organized b
   - `python -m pip install -r requirements.txt`
   - `streamlit run ui/app.py` (default port 8501)
 - Docker (optional):
-  - `docker build -f Dockerfile.ui -t fff-ui .`
-  - `docker run --rm -p 8501:8501 -v "$PWD/scenarios:/app/scenarios" -v "$PWD/logs:/app/logs" -v "$PWD/output:/app/output" fff-ui`
+  - `docker build -f Dockerfile.ui -t growth-ui .`
+  - `docker run --rm -p 8501:8501 -v "$PWD/scenarios:/app/scenarios" -v "$PWD/logs:/app/logs" -v "$PWD/output:/app/output" growth-ui`
 
 What the UI does:
 - Edit Runspecs, Constants, Points, Primary Map, and Seeds (tabs)
@@ -151,7 +151,7 @@ The following lists define the universe used elsewhere. In the current model onl
 8) (Optional) Seed initial clients in the scenario:
    - `seeds.direct_clients[<Material>]` to seed other (direct) clients
    - If anchor demand is needed immediately, ensure the sector is mapped in `primary_map` and consider `seeds.active_anchor_clients[<Sector>]`.
-9) **Run** `python simulate_fff_growth.py --preset <your_scenario>` and review logs/outputs. The loader will validate that all required tables cover the new material and that years are strictly increasing.
+9) **Run** `python simulate_growth.py --preset <your_scenario>` and review logs/outputs. The loader will validate that all required tables cover the new material and that years are strictly increasing.
 
 ## How to add a new sector (step-by-step)
 1) In `inputs.json` → `lists[1].Sector`, **append the sector name** (keep exact casing/spaces consistent everywhere).
@@ -241,7 +241,7 @@ Precedence in sector-mode (how values are chosen):
 Tips for business users:
 - To experiment without editing `inputs.json`, prefer scenario files under `scenarios/` and set per-(s,m) constants in `overrides.constants` using the exact element names shown above.
 - Names must match exactly; the loader will show “nearest matches” on typos but will not apply unknown keys.
-- After a run, compare `output/FFF_Growth_System_Complete_Results_<scenario>.csv` to the baseline to see the timing (lag), magnitude, and growth-rate impacts.
+- After a run, compare `output/Growth_System_Complete_Results_<scenario>.csv` to the baseline to see the timing (lag), magnitude, and growth-rate impacts.
 
 SM-mode quickstart (Phase 17.7 example scenarios):
 - `scenarios/sm_minimal.yaml`: minimal SM run; relies on full `anchor_params_sm` and `lists_sm` in `inputs.json`; seeds one Defense–Silicon Carbide Fiber agent.

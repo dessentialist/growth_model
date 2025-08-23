@@ -1,8 +1,8 @@
 @echo off
-REM FFF Growth System v2 Installation Script for Windows
+REM Growth System v2 Installation Script for Windows
 REM This script sets up the development environment
 
-echo 🚀 Setting up FFF Growth System v2...
+echo 🚀 Setting up Growth System v2...
 
 REM Check Python version
 python --version >nul 2>&1
@@ -55,6 +55,6 @@ echo To run the UI:
 echo   streamlit run ui/app.py
 echo.
 echo To run a simulation:
-echo   python simulate_fff_growth.py --preset baseline
+echo   python simulate_growth.py --preset baseline
 echo.
 pause

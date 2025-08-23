@@ -10,8 +10,8 @@ from src.scenario_loader import load_and_validate_scenario
 class TestScenarioLoader(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        # Load real Phase 1 bundle from provided CSVs so that permissible keys
-        # reflect the actual sectors/materials in the Inputs directory.
+        # Load real Phase 1 bundle from provided inputs so that permissible keys
+        # reflect the actual sectors/products in the Inputs directory.
         cls.bundle = load_phase1_inputs()
 
     def _write_temp(self, text: str, suffix: str) -> Path:
@@ -76,10 +76,10 @@ overrides:
             p.unlink(missing_ok=True)
 
     def test_points_validation_and_sorting(self):
-        # Use an actual material from Lists.csv to ensure the lookup name is permissible
-        material = self.bundle.lists.materials[0]
-        # price_<material> must be accepted and sorted
-        lookup_name = f"price_{material.replace(' ', '_')}"
+        # Use an actual product from lists to ensure the lookup name is permissible
+        product = self.bundle.lists.products[0]
+        # price_<product> must be accepted and sorted
+        lookup_name = f"price_{product.replace(' ', '_')}"
         text = {
             "name": "points-test",
             "overrides": {
@@ -97,8 +97,8 @@ overrides:
             p.unlink(missing_ok=True)
 
     def test_non_increasing_points_rejected(self):
-        material = self.bundle.lists.materials[0]
-        lookup_name = f"max_capacity_{material.replace(' ', '_')}"
+        product = self.bundle.lists.products[0]
+        lookup_name = f"max_capacity_{product.replace(' ', '_')}"
         text = {
             "name": "points-bad",
             "overrides": {

@@ -45,9 +45,9 @@ _PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(_PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(_PROJECT_ROOT))
 
-st.set_page_config(page_title="FFF Growth System – Scenario Runner", layout="wide")
+st.set_page_config(page_title="Growth System – Scenario Runner", layout="wide")
 
-st.title("FFF Growth System – Scenario Editor & Runner")
+st.title("Growth System – Scenario Editor & Runner")
 
 
 # Lazy-load and cache Phase1 bundle and permissible keys based on mode
@@ -72,23 +72,23 @@ with tabs[0]:
         for e in errs:
             st.error(e)
     # Show quick context for lists
-    st.caption("Sectors and materials come from inputs.json and are read-only here.")
+    st.caption("Sectors and products come from inputs.json and are read-only here.")
     st.write(
         {
             "sectors": bundle.lists.sectors[:8],
-            "materials": bundle.lists.materials[:8],
+            "products": bundle.lists.products[:8],
         }
     )
 
 with tabs[1]:
-    # If the user has proposed new sector→material mappings in the Primary Map
+    # If the user has proposed new sector→product mappings in the Primary Map
     # tab, include those pairs so the permissible constants surface expands to
-    # cover per-(sector, material) parameters for the new pairs.
+    # cover per-(sector, product) parameters for the new pairs.
     extra_pairs = []
     if ui_state.primary_map.by_sector:
         for s, entries in ui_state.primary_map.by_sector.items():
             for e in entries:
-                extra_pairs.append((str(s), str(e.material)))
+                extra_pairs.append((str(s), str(e.product)))
         # Deduplicate to keep API calls lean
         extra_pairs = sorted(set(extra_pairs))
     perms = get_permissible_keys(

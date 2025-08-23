@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to the FFF Growth System v2 project will be documented in this file.
+All notable changes to the Growth System v2 project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -37,6 +37,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Phase 15**: Variable horizon simulation support
 - **Phase 16**: Per-(sector, material) parameter targeting
 - **Phase 17**: SM-mode for strict per-(s,m) modeling
+
+### Removed
+- Deprecated material-based naming helpers and list accessors; use product terminology exclusively.
 
 ### Technical Improvements
 - **Modular Architecture**: Clean separation of concerns

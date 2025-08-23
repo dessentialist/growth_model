@@ -4,7 +4,7 @@ from pathlib import Path
 
 from src.phase1_data import load_phase1_inputs
 from src.scenario_loader import load_and_validate_scenario
-from src.fff_growth_model import build_phase4_model, apply_scenario_overrides
+from src.growth_model import build_phase4_model, apply_scenario_overrides
 
 
 class TestPhase4Model(unittest.TestCase):
@@ -18,10 +18,10 @@ class TestPhase4Model(unittest.TestCase):
         result = build_phase4_model(self.bundle, self.scenario.runspecs)
         model = result.model
 
-        # Sanity: key converters exist for one typical material (access via model registries)
-        material = self.bundle.lists.materials[0]
-        price_name = f"Price_{material.replace(' ', '_')}"
-        cap_name = f"max_capacity_lookup_{material.replace(' ', '_')}"
+        # Sanity: key converters exist for one typical product (access via model registries)
+        product = self.bundle.lists.products[0]
+        price_name = f"Price_{product.replace(' ', '_')}"
+        cap_name = f"max_capacity_lookup_{product.replace(' ', '_')}"
 
         self.assertIn(price_name, getattr(model, "converters", {}))
         self.assertIn(cap_name, getattr(model, "converters", {}))

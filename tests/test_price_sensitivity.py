@@ -3,8 +3,8 @@ from pathlib import Path
 
 from src.phase1_data import load_phase1_inputs
 from src.scenario_loader import load_and_validate_scenario
-from src.fff_growth_model import build_phase4_model, apply_scenario_overrides
-from src.naming import price_converter, client_delivery_flow
+from src.growth_model import build_phase4_model, apply_scenario_overrides
+from src.naming import price_converter_product, client_delivery_flow
 from BPTK_Py.sddsl import functions as F
 
 
@@ -33,9 +33,9 @@ class TestPriceSensitivity(unittest.TestCase):
             model = res.model
             apply_scenario_overrides(model, scenario)
 
-            # Choose first material and override its price points upward
-            material = self.bundle.lists.materials[0]
-            name_price = price_converter(material)
+            # Choose first product and override its price points upward
+            material = self.bundle.lists.products[0]
+            name_price = price_converter_product(material)
             self.assertIn(name_price, getattr(model, "converters", {}))
 
             # New simple price points

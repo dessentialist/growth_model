@@ -1,21 +1,21 @@
-"""FFF Growth System source package.
+"""Growth System source package.
 
 Exports Phase 2 naming utilities for convenient imports.
 
 Note: Phase 12 introduces a `viz` subpackage used only by the CLI runner
 with the `--visualize` flag. The visualization components are imported
-at runtime by `simulate_fff_growth.py` to avoid adding optional
+at runtime by `simulate_growth.py` to avoid adding optional
 dependencies to module import time.
 """
 
 from .naming import (
     anchor_constant,
     anchor_constant_sm,
-    max_capacity_lookup_name,
-    other_constant,
-    price_lookup_name,
-    price_converter,
-    max_capacity_converter,
+    product_constant,
+    price_lookup_name_product,
+    max_capacity_lookup_name_product,
+    price_converter_product,
+    max_capacity_converter_product,
     agent_aggregated_demand,
     agent_demand_sector_input,
     total_demand,
@@ -23,8 +23,8 @@ from .naming import (
     delayed_client_demand,
     client_delivery_flow,
     client_revenue,
-    anchor_delivery_flow_material,
-    anchor_delivery_flow_sector_material,
+    anchor_delivery_flow_product,
+    anchor_delivery_flow_sector_product,
     anchor_lead_generation,
     cpc_stock,
     new_pc_flow,
@@ -43,17 +43,20 @@ from .naming import (
     agents_to_create_converter_sm,
     cumulative_agents_created_sm,
     cumulative_inflow_sm,
+    anchor_revenue_sector,
+    anchor_revenue_sector_product,
+    anchor_revenue_product,
 )
 
 # Explicitly expose the naming API when users do `from src import *`.
 __all__ = [
     "anchor_constant",
     "anchor_constant_sm",
-    "max_capacity_lookup_name",
-    "other_constant",
-    "price_lookup_name",
-    "price_converter",
-    "max_capacity_converter",
+    "product_constant",
+    "price_lookup_name_product",
+    "max_capacity_lookup_name_product",
+    "price_converter_product",
+    "max_capacity_converter_product",
     "agent_aggregated_demand",
     "agent_demand_sector_input",
     "total_demand",
@@ -61,8 +64,8 @@ __all__ = [
     "delayed_client_demand",
     "client_delivery_flow",
     "client_revenue",
-    "anchor_delivery_flow_material",
-    "anchor_delivery_flow_sector_material",
+    "anchor_delivery_flow_product",
+    "anchor_delivery_flow_sector_product",
     "anchor_lead_generation",
     "cpc_stock",
     "new_pc_flow",
@@ -81,6 +84,9 @@ __all__ = [
     "agents_to_create_converter_sm",
     "cumulative_agents_created_sm",
     "cumulative_inflow_sm",
+    "anchor_revenue_sector",
+    "anchor_revenue_sector_product",
+    "anchor_revenue_product",
 ]
 
 # Phase 5 ABM agents

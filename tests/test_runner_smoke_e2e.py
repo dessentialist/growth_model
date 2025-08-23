@@ -5,7 +5,7 @@ import logging
 
 from src.phase1_data import load_phase1_inputs
 from src.scenario_loader import load_and_validate_scenario
-from simulate_fff_growth import run_stepwise
+from simulate_growth import run_stepwise
 
 
 class TestRunnerSmokeE2E(unittest.TestCase):

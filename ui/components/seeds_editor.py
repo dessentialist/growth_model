@@ -26,8 +26,8 @@ def render_seeds_editor(state: SeedsState, bundle: Phase1Bundle, anchor_mode: st
 
     Tabs:
       - Anchor (sector) — hidden in SM-mode to avoid confusion
-      - Anchor SM (sector, material) — visible only in SM-mode
-      - Direct clients (per material)
+      - Anchor SM (sector, product) — visible only in SM-mode
+      - Direct clients (per product)
     """
     st.subheader("Seeds")
     st.caption(
@@ -35,7 +35,7 @@ def render_seeds_editor(state: SeedsState, bundle: Phase1Bundle, anchor_mode: st
         "ACTIVE anchors at t0; the remainder is discarded (per-agent progress is not fungible)."
     )
     sectors = list(map(str, bundle.lists.sectors))
-    materials = list(map(str, bundle.lists.materials))
+    products = list(map(str, bundle.lists.products))
 
     tabs = []
     tab_labels = []
@@ -69,14 +69,14 @@ def render_seeds_editor(state: SeedsState, bundle: Phase1Bundle, anchor_mode: st
 
     if anchor_mode == "sm":
         with tabs[tab_idx]:
-            st.caption("SM-mode seeds: ACTIVE anchors and completed projects per (sector, material)")
+            st.caption("SM-mode seeds: ACTIVE anchors and completed projects per (sector, product)")
             for s in sectors:
                 st.markdown(f"##### {s}")
                 # Active anchors per pair
                 row_active: Dict[str, int] = dict(state.active_anchor_clients_sm.get(s, {}))
                 # Completed projects per pair
                 row_cp: Dict[str, int] = dict(state.completed_projects_sm.get(s, {}))
-                for m in materials:
+                for m in products:
                     c1, c2 = st.columns([1, 1])
                     with c1:
                         cur_a = int(row_active.get(m, 0))
@@ -102,8 +102,8 @@ def render_seeds_editor(state: SeedsState, bundle: Phase1Bundle, anchor_mode: st
         tab_idx += 1
 
     with tabs[tab_idx]:
-        st.caption("Direct clients @ t0 per material")
-        for m in materials:
+        st.caption("Direct clients @ t0 per product")
+        for m in products:
             cur = state.direct_clients.get(m, 0)
             state.direct_clients[m] = _non_negative_int_input(f"Direct clients — {m}", cur, key=f"seed_dc_{m}")
 

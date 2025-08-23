@@ -1,12 +1,12 @@
-# FFF Growth System v2
+# Growth System v2
 
-A hybrid System Dynamics + Agent-Based Modeling (SD+ABM) simulation system for analyzing growth patterns in the FFF (Fiber, Fabric, and Film) industry. The system models anchor client behavior, direct client dynamics, and material supply-demand interactions across multiple sectors.
+A hybrid System Dynamics + Agent-Based Modeling (SD+ABM) simulation system for analyzing growth patterns across multiple industries. The system models anchor client behavior, direct client dynamics, and product supply-demand interactions across multiple sectors.
 
 ## 🚀 Features
 
 - **Hybrid Modeling**: Combines System Dynamics (SD) for aggregate flows with Agent-Based Modeling (ABM) for individual client behavior
 - **Multi-Sector Support**: Models Defense, Nuclear, Semiconductors, Aviation, and other sectors
-- **Multi-Material Support**: Handles Silicon Carbide, Boron Fiber, UHT, and other advanced materials
+- **Multi-Product Support**: Handles Silicon Carbide, Boron Fiber, UHT, and other advanced products
 - **Flexible Scenarios**: YAML-based scenario configuration with runtime overrides
 - **Interactive UI**: Streamlit-based scenario editor and runner
 - **Comprehensive KPIs**: Revenue, capacity utilization, lead generation, and client metrics
@@ -78,13 +78,13 @@ This runs the default baseline scenario and generates output files.
 
 ```bash
 # Using a preset scenario
-python simulate_fff_growth.py --preset price_shock
+python simulate_growth.py --preset price_shock
 
 # Using a custom scenario file
-python simulate_fff_growth.py --scenario scenarios/my_scenario.yaml
+python simulate_growth.py --scenario scenarios/my_scenario.yaml
 
 # Generate plots
-python simulate_fff_growth.py --preset baseline --visualize
+python simulate_growth.py --preset baseline --visualize
 ```
 
 ## 📁 Project Structure
@@ -92,7 +92,7 @@ python simulate_fff_growth.py --preset baseline --visualize
 ```
 Growth-Model/
 ├── src/                    # Core simulation engine
-│   ├── fff_growth_model.py    # SD model builder
+│   ├── growth_model.py        # SD model builder
 │   ├── abm_anchor.py          # Anchor client agents
 │   ├── scenario_loader.py     # Scenario validation
 │   └── kpi_extractor.py       # Results processing
@@ -106,7 +106,7 @@ Growth-Model/
 ├── tests/                   # Test suite
 ├── viz/                     # Visualization utilities
 ├── inputs.json             # Default model parameters
-├── simulate_fff_growth.py  # Main simulation runner
+├── simulate_growth.py      # Main simulation runner
 └── Makefile                # Build automation
 ```
 
@@ -117,9 +117,9 @@ Growth-Model/
 The system uses `inputs.json` for default parameters:
 
 - **Anchor Parameters**: Sector-specific client behavior (activation delays, lead generation, requirement phases)
-- **Material Parameters**: Direct client behavior and market dynamics
-- **Capacity & Pricing**: Time-series data for production capacity and material pricing
-- **Primary Material Map**: Sector-to-material assignments with start years
+- **Product Parameters**: Direct client behavior and market dynamics
+- **Capacity & Pricing**: Time-series data for production capacity and product pricing
+- **Primary Product Map**: Sector-to-product assignments with start years
 
 ### Scenario Overrides
 
@@ -152,19 +152,19 @@ seeds:
 ### System Dynamics Components
 
 - **Client Flows**: Lead generation → conversion → activation → requirements
-- **Material Flows**: Capacity constraints → fulfillment ratios → delivery delays
-- **Revenue Calculation**: Per-material pricing × delivered quantities
+- **Product Flows**: Capacity constraints → fulfillment ratios → delivery delays
+- **Revenue Calculation**: Per-product pricing × delivered quantities
 
 ### Agent-Based Components
 
 - **Anchor Clients**: Multi-phase requirement patterns with project lifecycles
 - **Direct Clients**: Continuous demand generation with growth patterns
-- **Material Allocation**: Capacity-constrained fulfillment with delays
+- **Product Allocation**: Capacity-constrained fulfillment with delays
 
 ### Key Metrics
 
 - **Revenue**: Total and by-sector breakdowns
-- **Capacity Utilization**: Material production efficiency
+- **Capacity Utilization**: Product production efficiency
 - **Lead Generation**: Anchor and direct client acquisition
 - **Client Evolution**: Potential → Pending → Active transitions
 
@@ -186,14 +186,14 @@ python -m pytest --cov=src tests/
 
 ```bash
 # Build UI container
-docker build -f Dockerfile.ui -t fff-ui .
+docker build -f Dockerfile.ui -t growth-ui .
 
 # Run with volume mounts
 docker run --rm -p 8501:8501 \
   -v "$PWD/scenarios:/app/scenarios" \
   -v "$PWD/logs:/app/logs" \
   -v "$PWD/output:/app/output" \
-  fff-ui
+  growth-ui
 ```
 
 ## 📚 Documentation
@@ -234,7 +234,7 @@ For questions or issues:
 
 ## 🎯 Roadmap
 
-- [ ] Additional material types
+- [ ] Additional product types
 - [ ] Enhanced visualization options
 - [ ] Performance optimization
 - [ ] Cloud deployment support

@@ -1,4 +1,4 @@
-## FFF Growth System – Implementation Plan (BPTK_Py SD + ABM, Stepwise Runner)
+## Growth System – Implementation Plan (BPTK_Py SD + ABM, Stepwise Runner)
 
 ### Purpose
 - Build a deterministic, hybrid System Dynamics (SD) + Agent-Based (ABM) model using BPTK_Py’s simple Python SD-DSL with a stepwise runner that updates ABM→SD gateway converters each simulation step.
@@ -214,7 +214,7 @@
 - Tasks
   - Map model elements to output rows exactly as specified (e.g., `Revenue`, `Revenue <sector>` where sector revenue is anchor-only, `Revenue <material>` which is anchor+direct, `Anchor Leads`, `Other Clients <material>`, `Order Basket <material>`, `Order Delivery <material>`).
   - Generate 28-quarter labels `YYYYQn` starting from starttime.
-  - Write `output/FFF_Growth_System_Complete_Results.csv` with strict ordering and complete coverage; fill truly missing series with zeros only if the corresponding element is not applicable, otherwise treat as error.
+  - Write `output/Growth_System_Complete_Results.csv` with strict ordering and complete coverage; fill truly missing series with zeros only if the corresponding element is not applicable, otherwise treat as error.
   - Provide per-step ABM metrics (`agent_metrics_by_step`) to the extractor to compute agent-based KPI rows (Anchor Clients, Active Projects). This is mandatory; there is no fallback. If you cannot compute ABM metrics, construct and pass a zero-initialized list of length equal to emitted steps so ABM rows emit as zeros.
 - Success Criteria
   - CSV matches expected shape: 1 label + 28 periods; deterministic across runs with same inputs.
@@ -290,9 +290,9 @@ This section specifies the incremental delivery of the five requested capabiliti
   - Enhance scenario handling to make parameter toggling first‑class: constants and lookup points for all sectors/materials.
   - Add CLI ergonomics for selecting scenario files and optional presets that resolve to explicit YAML/JSON files. Presets are not implicit defaults; they are concrete files in `scenarios/`.
 - Tasks
-  - `simulate_fff_growth.py`:
+  - `simulate_growth.py`:
     - Support `--preset <name>` mapping to files under `scenarios/` (mutually exclusive with `--scenario <path>`). Default remains `scenarios/baseline.yaml`.
-    - After writing the default KPI CSV, also write a suffixed copy `FFF_Growth_System_Complete_Results_<scenario>.csv` to enable side‑by‑side comparisons. This does not change KPIs or model behavior.
+    - After writing the default KPI CSV, also write a suffixed copy `Growth_System_Complete_Results_<scenario>.csv` to enable side‑by‑side comparisons. This does not change KPIs or model behavior.
   - `src/scenario_loader.py`:
     - Strengthen validation: every override key must match an existing element name created by the model. Unknown keys ⇒ hard error with nearest‑name suggestions; do not apply partials.
     - Enforce strictly numeric constants and points; sort points by time and fail on non‑numeric or unsorted when ambiguous.
@@ -311,7 +311,7 @@ This section specifies the incremental delivery of the five requested capabiliti
 
 ### Phase 12 — Visualization (Read‑only; post‑processing of CSV) and Packaging
 - Scope
-  - Create a plotting module that reads `output/FFF_Growth_System_Complete_Results.csv` and generates static PNGs (optionally HTML later) without touching SD/ABM logic.
+  - Create a plotting module that reads `output/Growth_System_Complete_Results.csv` and generates static PNGs (optionally HTML later) without touching SD/ABM logic.
 - Tasks
   - Add `viz/plots.py` with functions:
     - `plot_revenue_total_and_by_sector(df)` (total + sector-only)
@@ -319,7 +319,7 @@ This section specifies the incremental delivery of the five requested capabiliti
     - `plot_leads_and_clients(df)` (Anchor Leads, Other Leads, Other Clients)
     - `plot_order_basket_vs_delivery(df)` per material and totals
     - `plot_capacity_utilization(df)` if utilization is present or derivable
-  - `simulate_fff_growth.py`: optional `--visualize` flag to invoke plots after a run; images saved under `output/plots/` with deterministic filenames.
+  - `simulate_growth.py`: optional `--visualize` flag to invoke plots after a run; images saved under `output/plots/` with deterministic filenames.
   - Handle dynamic quarter labels directly from CSV header; no assumptions about 28 quarters (future‑proofing for Phase 15).
   - Packaging: add `Makefile` targets (`install`, `test`, `run_ui`, `run_baseline`) and optional `Dockerfile.ui` to containerize the UI only (mount `scenarios/`, `logs/`, `output/`).
 - Success criteria
@@ -337,7 +337,7 @@ This section specifies the incremental delivery of the five requested capabiliti
 - Tasks
   - `inputs.json`: extend `primary_map` entries to include multiple materials per sector with `StartYear` per mapping.
   - `src/phase1_data.py`: validate that for every (sector, material) mapping, the material exists in other tables and `StartYear` is numeric (warn only if ≤ 0 per current policy).
-  - `src/fff_growth_model.py`:
+  - `src/growth_model.py`:
     - Ensure creation of `Agent_Demand_Sector_Input_<s>_<m>` for every mapped pair.
     - Ensure `Anchor_Delivery_Flow_<s>_<m>` contributes to `Anchor_Delivery_Flow_<m>` and sector revenue aggregation.
   - `src/kpi_extractor.py`:
@@ -359,7 +359,7 @@ This section specifies the incremental delivery of the five requested capabiliti
 - Tasks
   - Scenario schema: add `seeds.active_anchor_clients: { <sector>: <int> }` and (optional) `seeds.elapsed_quarters: { <sector>: <int> }` if advanced phase seeding is desired later.
   - `src/scenario_loader.py`: validate integers ≥ 0; sectors must exist; store seeds in scenario object (`seeds_active_anchor_clients`, optional `seeds_elapsed_quarters`).
-  - Runner (`simulate_fff_growth.py`):
+  - Runner (`simulate_growth.py`):
     - Instantiate the exact number of ACTIVE agents per sector before the first step. If `elapsed_quarters` is provided, set `activation_time_years = starttime - elapsed_quarters*dt` so phase logic ages accordingly at step 0.
     - Ensure seeded agents generate requirements at step 0 but respect sector–material start years.
     - Initialize SD stocks for gating/monitoring: `CPC_<sector> = seeds` (conservative mapping to include seeds in ATAM gating) and `Cumulative_Agents_Created_<sector> = seeds`. Log any elements that cannot be initialized (non-fatal).
@@ -377,7 +377,7 @@ This section specifies the incremental delivery of the five requested capabiliti
   - Make start/end/dt fully scenario‑driven, and propagate to labeling and extraction. Remove any fixed 2025–2031 assumptions from output.
 - Tasks
 - `src/scenario_loader.py`: already supports arbitrary numeric `starttime`, `stoptime`, `dt` with strict validation (`stoptime > starttime`, `dt > 0`).
-- `simulate_fff_growth.py`: uses the runspecs grid to construct `num_steps` and iterate; captures KPIs in real time and scales per‑year lead signals to per‑step units by multiplying by `dt`.
+- `simulate_growth.py`: uses the runspecs grid to construct `num_steps` and iterate; captures KPIs in real time and scales per‑year lead signals to per‑step units by multiplying by `dt`.
 - `src/kpi_extractor.py`:
   - Labels are generated from the time grid (`starttime`, `dt`, `num_steps`); exactly one column per simulated step is emitted.
   - Fallback evaluation path remains for testing, but production uses runner‑captured values for gateway‑dependent KPIs; no fixed 28 logic remains.
@@ -437,7 +437,7 @@ This section specifies the incremental delivery of the five requested capabiliti
 - Scenario loader (`src/scenario_loader.py`)
   - Expand permissible constants to include per‑(s,m) names generated via `anchor_constant_sm` for targeted params across the SM universe (from `lists_sm` or `primary_map`).
   - Maintain strict key validation and nearest‑match hints.
-- SD model build (`src/fff_growth_model.py`)
+- SD model build (`src/growth_model.py`)
   - Create constants per (s,m) for targeted params with precedence: (s,m) value if provided, else sector-level.
   - Use `requirement_to_order_lag_<s>_<m>` in anchor deliveries; it always exists after build (value from (s,m) or sector fallback).
   - No changes to capacity/price (material‑level) or direct‑client SD structure.
@@ -590,7 +590,7 @@ Implementation status
 - Scope
   - Guarantee strict inputs‑only policy in SM‑mode.
 - Tasks
-  - Loader/model: require full per‑(s,m) coverage; raise on any missing (s,m,param). Implemented in `src/scenario_loader.py` (SM completeness + explicit `lists_sm`) and `src/fff_growth_model.py` (strict `_require_anchor_sm_value` paths when `runspecs.anchor_mode == "sm"`).
+  - Loader/model: require full per‑(s,m) coverage; raise on any missing (s,m,param). Implemented in `src/scenario_loader.py` (SM completeness + explicit `lists_sm`) and `src/growth_model.py` (strict `_require_anchor_sm_value` paths when `runspecs.anchor_mode == "sm"`).
   - Scenario overrides: accept only per‑(s,m) anchor constants in SM‑mode. Implemented by mode-specific permissible constants surface in `src/scenario_loader.py`.
   - Mode exclusivity: deny sector‑level creation and seeding in SM‑mode. Implemented: sector-level creation not built in SM-mode; sector seeds rejected early in loader.
 - Success Criteria

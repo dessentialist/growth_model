@@ -11,7 +11,7 @@ def test_build_runner_command_defaults_to_baseline():
     UI can trigger a simple run without extra inputs."""
     rc = build_runner_command()
     cmd = rc.cmd
-    assert "simulate_fff_growth.py" in cmd[1]
+    assert "simulate_growth.py" in cmd[1]
     # Defaults to preset baseline when neither scenario_path nor preset provided
     assert "--preset" in cmd and "baseline" in cmd
 

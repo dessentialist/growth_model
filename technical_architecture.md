@@ -1,4 +1,4 @@
-## FFF Growth System – Technical Architecture (BPTK_Py Hybrid, Pattern 1)
+## Growth System – Technical Architecture (BPTK_Py Hybrid, Pattern 1)
 
 ### Purpose
 Enable robust scenario planning for revenue and KPIs by aligning the model and runner with BPTK_Py’s hybrid SD+ABM capabilities. This architecture treats each Anchor Client as an agent, couples agent behavior to SD via a stepwise ABM→SD gateway, and externalizes scenario inputs in JSON/YAML. Single-scenario execution per run is prioritized for simplicity and reliability.
@@ -53,7 +53,7 @@ Enable robust scenario planning for revenue and KPIs by aligning the model and r
   - One scenario file per run; provides constants and lookup overrides using exact model element names.
   - Runner supports `--preset <name>` to select files under `scenarios/`. Unknown override keys are strict errors with nearest-name suggestions; overrides are validated against built model elements before application (no partials). In SM‑mode (17.5 strictness), only per‑(s,m) anchor constants are permissible override keys for anchor parameters.
   - UI (Phases 3–11) builds an in‑memory scenario via tabs for runspecs, constants, points, primary map, and seeds; validates using `src.scenario_loader.validate_scenario_dict`; can write YAML to `scenarios/`; can load/duplicate scenarios; and can run either a named preset or the current scenario from the sidebar. The UI does not alter model logic; it is an isolated layer under `ui/`.
-  - After a run, the runner writes the default CSV and an additional suffixed CSV `FFF_Growth_System_Complete_Results_<scenario>.csv` for cross-scenario comparisons. This does not change KPI logic or model state.
+  - After a run, the runner writes the default CSV and an additional suffixed CSV `Growth_System_Complete_Results_<scenario>.csv` for cross-scenario comparisons. This does not change KPI logic or model state.
 
 - **Stepwise Simulation Runner**
   - Initializes model, registers agent factories, builds SD structure, creates gateways, applies scenario overrides.
@@ -299,7 +299,7 @@ Direct clients seeding:
 - Runner initializes `C_<material>` to the seeded count and clears `Potential_Clients_<material>` to 0. This ensures discrete conversion integrity while enabling seeded demand from direct clients immediately.
 
 ## Stepwise Simulation Lifecycle
-1. **Initialize**: Read scenario file; create `FFFGrowthSystem` with `runspecs`.
+1. **Initialize**: Read scenario file; create `GrowthGrowthSystem` with `runspecs`.
 2. **Load & Validate Data**: Load CSVs; build mappings and check coverage.
 3. **Build SD Model**: Create constants, lookups, lead-gen, discrete conversions, delays, capacity, deliveries, revenue.
 4. **Create Gateways**: For each material, create `Agent_Demand_Input_<material>` and wire `Total_Demand_<material>` to include it.
@@ -341,7 +341,7 @@ Implementation notes:
   - **Anchor Clients**: total + per sector (from active-agent proxy or agent counts if enabled in-loop).
   - **Other Leads/Clients**: Other Leads total only (material-driven aggregation); per-sector Other Leads rows are not emitted. Other Clients remain per material.
   - **Order Basket/Delivery**: per material using `Total_Demand` and delivery flows.
-- Output: CSV named `FFF_Growth_System_Complete_Results.csv`, columns `[Output Stocks, labels...]` where labels are derived from the runspecs grid.
+- Output: CSV named `Growth_System_Complete_Results.csv`, columns `[Output Stocks, labels...]` where labels are derived from the runspecs grid.
  - Phase 17.6 (optional granularity): When run with flags `--kpi-sm-revenue-rows` and/or `--kpi-sm-client-rows`, the runner appends diagnostic rows `Revenue <sector> <material>` and/or `Anchor Clients <sector> <material>` to the CSV. Defaults leave the CSV surface unchanged.
 - ABM metrics requirement (no fallback): The KPI extractor (`extract_and_write_kpis`) requires a per-step ABM metrics list (`agent_metrics_by_step`) with at least as many entries as emitted steps (typically 28). Each entry must include: `t` (float), `active_by_sector` (dict[str,int]), `inprogress_by_sector` (dict[str,int]), `active_total` (int), `inprogress_total` (int). If you do not track ABM state externally, supply a zero-initialized list to emit agent-based KPI rows as zeros. The lower-level collector `collect_kpis_for_step` mandates `step_idx` and `agent_metrics_by_step` and will raise if metrics are missing or out-of-range.
 
@@ -370,13 +370,13 @@ Implementation notes:
 Suggested layout:
 
 ```
-FFF_growth_system_v2/
+Growth_growth_system_v2/
   scenarios/
   logs/
   output/
   ui/
-  simulate_fff_growth.py        # stepwise runner
-  fff_growth_model.py           # SD+ABM model
+  simulate_growth.py        # stepwise runner
+  growth_model.py           # SD+ABM model
   technical_architecture.md
   make_lint.py
   requirements.txt
@@ -558,7 +558,7 @@ Sample JSON:
 
 ```text
 load scenario (yaml/json)
-sys = FFFGrowthSystem(starttime, stoptime, dt)
+sys = GrowthGrowthSystem(starttime, stoptime, dt)
 sys.load_and_validate_data()
 sys.build_model()
 sys.add_gateway_converters_for_all_materials()

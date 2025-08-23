@@ -18,8 +18,8 @@ def test_find_latest_results_csv_empty(tmp_path: Path, monkeypatch):
     out_dir = tmp_path / "output"
     out_dir.mkdir(parents=True, exist_ok=True)
     # Create two dummy files
-    p1 = out_dir / "FFF_Growth_System_Complete_Results.csv"
-    p2 = out_dir / "FFF_Growth_System_Complete_Results_baseline.csv"
+    p1 = out_dir / "Growth_System_Complete_Results.csv"
+    p2 = out_dir / "Growth_System_Complete_Results_baseline.csv"
     p1.write_text("Output Stocks,2025Q1\nRevenue,0\n")
     p2.write_text("Output Stocks,2025Q1\nRevenue,1\n")
     # Use function directly by temporarily changing CWD so OUTPUT_DIR resolves

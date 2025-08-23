@@ -43,13 +43,13 @@ class ScenarioOverridesState:
 
 @dataclass
 class PrimaryMapEntry:
-    """Represents a proposed mapping of a single material to a sector with a start year.
+    """Represents a proposed mapping of a single product to a sector with a start year.
 
-    The UI captures proposed replacements to the primary material map on a per-sector basis.
-    Each entry pairs a `material` with its `start_year`.
+    The UI captures proposed replacements to the primary product map on a per-sector basis.
+    Each entry pairs a `product` with its `start_year`.
     """
 
-    material: str
+    product: str
     start_year: float
 
 
@@ -58,7 +58,7 @@ class PrimaryMapState:
     """Holds proposed primary map replacements per sector.
 
     Structure mirrors the scenario schema expected by the backend validator:
-    overrides.primary_map: { <sector>: [ { material: <str>, start_year: <float> }, ... ] }
+    overrides.primary_map: { <sector>: [ { product: <str>, start_year: <float> }, ... ] }
     """
 
     by_sector: Dict[str, List[PrimaryMapEntry]] = field(default_factory=dict)
@@ -70,10 +70,10 @@ class SeedsState:
 
     - active_anchor_clients: number of ACTIVE anchor agents at t0 per sector
     - elapsed_quarters: optional aging per sector in quarters
-    - direct_clients: number of direct clients per material at t0
-    - active_anchor_clients_sm: SM-mode seeds per (sector, material)
+    - direct_clients: number of direct clients per product at t0
+    - active_anchor_clients_sm: SM-mode seeds per (sector, product)
     - completed_projects: sector-mode backlog of completed projects at t0
-    - completed_projects_sm: SM-mode backlog per (sector, material)
+    - completed_projects_sm: SM-mode backlog per (sector, product)
     """
 
     active_anchor_clients: Dict[str, int] = field(default_factory=dict)
@@ -105,7 +105,7 @@ class UIState:
         if self.primary_map.by_sector:
             pm_block = {}
             for sector, entries in self.primary_map.by_sector.items():
-                pm_block[sector] = [{"material": e.material, "start_year": float(e.start_year)} for e in entries]
+                pm_block[sector] = [{"product": e.product, "start_year": float(e.start_year)} for e in entries]
 
         seeds_block: Optional[dict] = None
         if (
@@ -213,16 +213,16 @@ class UIState:
                     ll: List[PrimaryMapEntry] = []
                     for e in entries:
                         if isinstance(e, dict):
-                            mat = str(e.get("material", "")).strip()
+                            prod = str(e.get("product", "")).strip()
                             sy = e.get("start_year", 2025.0)
                             try:
                                 syf = float(sy)
                             except Exception:
                                 syf = 2025.0
-                            if mat:
-                                ll.append(PrimaryMapEntry(material=mat, start_year=syf))
+                            if prod:
+                                ll.append(PrimaryMapEntry(product=prod, start_year=syf))
                     if ll:
-                        by_sector[str(s)] = sorted(ll, key=lambda x: x.material)
+                        by_sector[str(s)] = sorted(ll, key=lambda x: x.product)
             self.primary_map.by_sector = by_sector
         # Seeds
         seeds = data.get("seeds") or {}
