@@ -1,3 +1,5 @@
+test 
+
 # Product Growth System
 
 A hybrid System Dynamics + Agent-Based Modeling (SD+ABM) simulation system for analyzing growth patterns across any industry or sector. The system models anchor client behavior, direct client dynamics, and product supply-demand interactions with fully customizable sectors and products.
