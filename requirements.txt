@@ -4,8 +4,8 @@ numpy>=2.3.1
 matplotlib>=3.10.3
 scipy>=1.15.3
 
-# BPTK framework
-bptk_py>=2.1.1
+# BPTK framework (note: package name uses hyphen, not underscore)
+bptk-py>=2.1.1
 
 # Configuration and data handling
 PyYAML>=6.0.2
@@ -18,6 +18,7 @@ pillow>=11.3.0
 pytest>=8.4.1
 
 # Additional dependencies (installed via BPTK_Py)
+# These are automatically installed when bptk-py is installed
 # ipywidgets==8.1.7
 # xlsxwriter==3.2.5
 # parsimonious==0.10.0
