@@ -1,7 +1,31 @@
-pandas
+# Core data science packages (Python 3.13 compatible)
+pandas>=2.3.0
+numpy>=2.3.1
+matplotlib>=3.10.3
+scipy>=1.15.3
+
+# BPTK framework
 bptk_py>=2.1.1
-PyYAML
-matplotlib>=3.7
-Pillow>=10.0
-streamlit>=1.32
-pytest>=7.0
+
+# Configuration and data handling
+PyYAML>=6.0.2
+
+# Visualization and UI
+streamlit>=1.48.1
+pillow>=11.3.0
+
+# Testing and development
+pytest>=8.4.1
+
+# Additional dependencies (installed via BPTK_Py)
+# ipywidgets==8.1.7
+# xlsxwriter==3.2.5
+# parsimonious==0.10.0
+# xmltodict==0.12.0
+# jinja2==3.1.6
+# sympy==1.14.0
+# distlib==0.3.9
+# cachetools==6.1.0
+# requests==2.32.4
+# flask==3.1.1
+# jsonpickle==4.1.1
