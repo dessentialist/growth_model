@@ -345,12 +345,12 @@ def render_client_revenue_summary(state: ClientRevenueState, sector_product_comb
         st.metric("Orders Parameters", total_orders)
         st.caption("Phase durations, rates, and growth")
     
-    # Show some sample values
+    # Show data status
     if sector_product_combinations:
-        sample_sp = sector_product_combinations[0]
-        st.markdown(f"**Sample Values for {sample_sp}:**")
-        
-        if sample_sp in state.market_activation_params:
-            sample_atam = state.market_activation_params[sample_sp].get("ATAM", 0)
-            sample_start_year = state.market_activation_params[sample_sp].get("anchor_start_year", 0)
-            st.caption(f"ATAM: {sample_atam}, Start Year: {sample_start_year}")
+        configured_combinations = sum(1 for sp in sector_product_combinations 
+                                    if sp in state.market_activation_params or 
+                                       sp in state.orders_params or 
+                                       sp in state.seeds_params)
+        st.info(f"📊 {configured_combinations} of {len(sector_product_combinations)} sector-product combinations have configured parameters")
+    else:
+        st.info("📊 No sector-product combinations available. Configure primary mapping first.")

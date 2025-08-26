@@ -36,7 +36,6 @@ from ui.components.runner_tab import (
     get_execution_config_for_backend
 )
 from ui.components.logs_tab import (
-    _generate_sample_logs,
     get_logs_config_for_backend
 )
 
@@ -171,22 +170,40 @@ class TestRunnerTab:
 class TestLogsTab:
     """Test the Logs Tab component."""
     
-    def test_generate_sample_logs(self):
-        """Test sample log generation."""
-        logs = _generate_sample_logs("INFO", 10)
+    def test_log_parsing_functionality(self):
+        """Test log parsing functionality."""
+        from ui.components.logs_tab import _parse_log_line, _should_include_log
         
-        assert len(logs) <= 10
-        assert all(log["level"] in ["INFO", "WARNING", "ERROR"] for log in logs)
-        assert all("timestamp" in log for log in logs)
-        assert all("message" in log for log in logs)
-        assert all("source" in log for log in logs)
+        # Test log line parsing
+        sample_log_line = "2025-08-27 01:51:17,158 | INFO | src.phase1_data | Loading Phase 1 inputs from JSON: inputs.json"
+        parsed = _parse_log_line(sample_log_line)
+        
+        assert parsed is not None
+        assert parsed["level"] == "INFO"
+        assert parsed["source"] == "src.phase1_data"
+        assert "Loading Phase 1 inputs" in parsed["message"]
+        
+        # Test log level filtering
+        assert _should_include_log(parsed, "ALL") == True
+        assert _should_include_log(parsed, "INFO") == True
+        assert _should_include_log(parsed, "WARNING") == False
+        assert _should_include_log(parsed, "ERROR") == False
     
-    def test_generate_sample_logs_with_debug(self):
-        """Test sample log generation with DEBUG level."""
-        logs = _generate_sample_logs("DEBUG", 10)
+    def test_log_level_filtering(self):
+        """Test log level filtering functionality."""
+        from ui.components.logs_tab import _should_include_log
         
-        assert len(logs) <= 10
-        assert all(log["level"] in ["DEBUG", "INFO", "WARNING", "ERROR"] for log in logs)
+        # Test different log levels
+        error_log = {"level": "ERROR", "timestamp": None, "source": "", "message": ""}
+        warning_log = {"level": "WARNING", "timestamp": None, "source": "", "message": ""}
+        info_log = {"level": "INFO", "timestamp": None, "source": "", "message": ""}
+        debug_log = {"level": "DEBUG", "timestamp": None, "source": "", "message": ""}
+        
+        # Test INFO level filtering
+        assert _should_include_log(error_log, "INFO") == True
+        assert _should_include_log(warning_log, "INFO") == True
+        assert _should_include_log(info_log, "INFO") == True
+        assert _should_include_log(debug_log, "INFO") == False
     
     def test_get_logs_config_for_backend(self):
         """Test conversion to backend-compatible configuration."""

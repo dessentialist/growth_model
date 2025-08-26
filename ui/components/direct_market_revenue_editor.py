@@ -201,12 +201,10 @@ def render_direct_market_revenue_summary(state: DirectMarketRevenueState, sector
     
     with col3:
         if sector_product_combinations:
-            sample_sp = sector_product_combinations[0]
-            if sample_sp in state.direct_market_params:
-                sample_tam = state.direct_market_params[sample_sp].get("TAM", 0)
-                sample_leads = state.direct_market_params[sample_sp].get("inbound_lead_generation_rate", 0)
-                st.metric("Sample TAM", f"{sample_tam:.0f}")
-                st.caption(f"Sample leads: {sample_leads:.1f}/quarter")
+            configured_combinations = sum(1 for sp in sector_product_combinations 
+                                        if sp in state.direct_market_params)
+            st.metric("Configured", f"{configured_combinations}/{len(sector_product_combinations)}")
+            st.caption("Sector-product combinations with parameters")
     
     # Show parameter categories
     st.markdown("**Parameter Categories:**")
@@ -225,20 +223,12 @@ def render_direct_market_revenue_summary(state: DirectMarketRevenueState, sector
         st.markdown("**Orders & Growth**")
         st.caption("• avg_order_quantity_initial\n• client_requirement_growth\n• TAM")
     
-    # Show some sample values
+    # Show data coverage information
     if sector_product_combinations:
-        sample_sp = sector_product_combinations[0]
-        st.markdown(f"**Sample Values for {sample_sp}:**")
-        
-        if sample_sp in state.direct_market_params:
-            sample_tam = state.direct_market_params[sample_sp].get("TAM", 0)
-            sample_leads = state.direct_market_params[sample_sp].get(
-                "inbound_lead_generation_rate", 0
-            )
-            sample_conversion = state.direct_market_params[sample_sp].get(
-                "lead_to_c_conversion_rate", 0
-            )
-            st.caption(
-                f"TAM: {sample_tam:.0f}, Inbound Leads: {sample_leads:.1f}/quarter, "
-                f"Conversion: {sample_conversion:.1%}"
-            )
+        total_params = 9  # Total direct market revenue parameters
+        avg_params_per_sp = sum(len(state.direct_market_params.get(sp, {})) 
+                               for sp in sector_product_combinations) / len(sector_product_combinations)
+        st.info(f"📊 Average parameters per sector-product: {avg_params_per_sp:.1f}/{total_params}")
+        st.caption("Configure all parameters for complete direct market revenue modeling")
+    else:
+        st.info("📊 No sector-product combinations available. Configure primary mapping first.")

@@ -258,29 +258,18 @@ def render_lookup_points_summary(state: LookupPointsState, products: List[str], 
         st.metric("Data Points", total_capacity_points + total_pricing_points)
         st.caption("Capacity + Pricing")
     
-    # Show some sample values
+    # Show data coverage information
     if products and years:
-        sample_product = products[0]
-        sample_year = years[0]
+        total_capacity_points = sum(len(state.production_capacity.get(p, {})) for p in products)
+        total_pricing_points = sum(len(state.pricing.get(p, {})) for p in products)
+        total_possible_points = len(products) * len(years) * 2  # 2 types: capacity + pricing
         
-        st.markdown(f"**Sample Values for {sample_product} in {sample_year}:**")
+        coverage_percentage = (total_capacity_points + total_pricing_points) / total_possible_points * 100 if total_possible_points > 0 else 0
         
-        capacity = state.production_capacity.get(sample_product, {}).get(sample_year, 0)
-        price = state.pricing.get(sample_product, {}).get(sample_year, 0)
-        
-        st.caption(f"Capacity: {capacity:.0f} units, Price: ${price:.2f}/unit")
-        
-        # Show trends
-        if len(years) > 1:
-            first_capacity = state.production_capacity.get(sample_product, {}).get(years[0], 0)
-            last_capacity = state.production_capacity.get(sample_product, {}).get(years[-1], 0)
-            capacity_growth = ((last_capacity - first_capacity) / first_capacity * 100) if first_capacity > 0 else 0
-            
-            first_price = state.pricing.get(sample_product, {}).get(years[0], 0)
-            last_price = state.pricing.get(sample_product, {}).get(years[-1], 0)
-            price_growth = ((last_price - first_price) / first_price * 100) if first_price > 0 else 0
-            
-            st.caption(f"Capacity growth: {capacity_growth:+.1f}%, Price growth: {price_growth:+.1f}%")
+        st.info(f"📊 Data Coverage: {coverage_percentage:.1f}% ({total_capacity_points + total_pricing_points}/{total_possible_points} points)")
+        st.caption("Configure all time-series points for complete production and pricing modeling")
+    else:
+        st.info("📊 No products or years available. Configure simulation definitions and runspecs first.")
 
 
 def get_lookup_points_for_yaml(state: LookupPointsState) -> Dict:

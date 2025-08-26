@@ -14,6 +14,7 @@ from pathlib import Path
 
 from ui.state import RunspecsState
 from ui.services.builder import list_available_scenarios, read_scenario_yaml
+from src.io_paths import SCENARIOS_DIR
 
 
 def render_runspecs_form(
@@ -109,13 +110,76 @@ def render_runspecs_form(
     # Scenario Management Section
     st.markdown("**Scenario Management**")
     
+    # Track the currently loaded scenario (separate from input field)
+    if not hasattr(editing_state, 'loaded_scenario_name'):
+        editing_state.loaded_scenario_name = "working_scenario"
+    
     # Scenario Name Input
     scenario_name = st.text_input(
         "Scenario Name",
-        value="working_scenario",
+        value=editing_state.loaded_scenario_name,
         placeholder="Enter scenario name",
         help="Name for the current scenario configuration"
     )
+    
+    # Check if user entered a different scenario name
+    scenario_name_changed = scenario_name != editing_state.loaded_scenario_name
+    
+    # Current Scenario Status Display
+    st.markdown("**📋 Current Scenario Status**")
+    if editing_state.loaded_scenario_name != "working_scenario":
+        st.success(f"📁 **Loaded Scenario**: {editing_state.loaded_scenario_name}")
+        st.caption("This scenario is currently loaded and active. Changes will be applied to this scenario.")
+    else:
+        st.info("📝 **Default Scenario**: working_scenario")
+        st.caption("Using the default scenario name. You can change this to create a new scenario.")
+    
+    # Save New Scenario Button (only shown when scenario name changes)
+    if scenario_name_changed:
+        st.markdown("**🆕 Create New Scenario**")
+        st.caption("You've entered a new scenario name. Click below to create and save this new scenario.")
+        
+        col1, col2 = st.columns([1, 3])
+        with col1:
+            if st.button("💾 Save New Scenario", type="primary", key="save_new_scenario_btn"):
+                try:
+                    # Create the new scenario file
+                    from ui.services.builder import write_scenario_yaml
+                    
+                    # Build scenario data from current state
+                    new_scenario_data = {
+                        "name": scenario_name,
+                        "runspecs": {
+                            "starttime": editing_state.starttime,
+                            "stoptime": editing_state.stoptime,
+                            "dt": editing_state.dt,
+                            "anchor_mode": editing_state.anchor_mode
+                        },
+                        "overrides": {
+                            "constants": {},
+                            "points": {},
+                            "primary_map": {}
+                        }
+                    }
+                    
+                    # Save the new scenario
+                    scenario_filename = f"{scenario_name}.yaml"
+                    saved_path = write_scenario_yaml(new_scenario_data, scenario_filename)
+                    
+                    st.success(f"✅ New scenario '{scenario_name}' created successfully!")
+                    st.info(f"📁 Saved to: {saved_path.name}")
+                    
+                    # Update the loaded scenario name to reflect the new scenario
+                    editing_state.loaded_scenario_name = scenario_name
+                    
+                    # Refresh the page to show the new scenario in the list
+                    st.rerun()
+                    
+                except Exception as e:
+                    st.error(f"❌ Error creating new scenario: {e}")
+        
+        with col2:
+            st.caption("This will create a new YAML file with the current configuration.")
     
     # Load Scenario Functionality
     st.markdown("**Load Existing Scenario**")
@@ -133,7 +197,7 @@ def render_runspecs_form(
         if selected_scenario != "Select a scenario...":
             if st.button(f"Load {selected_scenario}"):
                 try:
-                    scenario_path = Path("scenarios") / f"{selected_scenario}.yaml"
+                    scenario_path = SCENARIOS_DIR / f"{selected_scenario}.yaml"
                     scenario_data = read_scenario_yaml(scenario_path)
                     
                     # Load runspecs from scenario
@@ -145,6 +209,9 @@ def render_runspecs_form(
                         mode = str(rs.get("anchor_mode", editing_state.anchor_mode)).strip().lower()
                         if mode in {"sector", "sm"}:
                             editing_state.anchor_mode = mode
+                    
+                    # Update the loaded scenario name to reflect what's loaded
+                    editing_state.loaded_scenario_name = selected_scenario
                     
                     st.success(f"✅ Scenario '{selected_scenario}' loaded successfully!")
                     changes_made = True
@@ -161,7 +228,7 @@ def render_runspecs_form(
     if st.button("Reset to Baseline", type="secondary"):
         try:
             # Load baseline scenario if it exists
-            baseline_path = Path("scenarios") / "baseline.yaml"
+            baseline_path = SCENARIOS_DIR / "baseline.yaml"
             if baseline_path.exists():
                 baseline_data = read_scenario_yaml(baseline_path)
                 if "runspecs" in baseline_data:
@@ -172,6 +239,7 @@ def render_runspecs_form(
                     editing_state.anchor_mode = str(rs.get("anchor_mode", "sector"))
                 
                 st.success("✅ Reset to baseline configuration!")
+                editing_state.loaded_scenario_name = "baseline"
                 changes_made = True
             else:
                 # Use default values if no baseline exists
@@ -179,6 +247,10 @@ def render_runspecs_form(
                 editing_state.stoptime = 2032.0
                 editing_state.dt = 0.25
                 editing_state.anchor_mode = "sector"
+                
+                # Update scenario name to reflect default
+                editing_state.loaded_scenario_name = "default"
+                
                 st.success("✅ Reset to default configuration!")
                 changes_made = True
                 
@@ -234,13 +306,14 @@ def render_runspecs_form(
             state.stoptime = editing_state.stoptime
             state.dt = editing_state.dt
             state.anchor_mode = editing_state.anchor_mode
+            state.loaded_scenario_name = editing_state.loaded_scenario_name
             
             # Call save callback if provided
             if on_save_callback:
                 on_save_callback(state)
             
             st.success("✅ Configuration saved successfully!")
-            changes_made = False
+            editing_state.changes_made = False
             
         except Exception as e:
             st.error(f"❌ Error saving configuration: {e}")

@@ -25,8 +25,8 @@ This document provides a concise overview of the repository layout, the purpose 
     - `client_revenue_editor.py`: **NEW** - Phase 5: Tab 4 component for comprehensive client revenue parameters (19 parameters) with table-based input and save protection.
     - `direct_market_revenue_editor.py`: **NEW** - Phase 6: Tab 5 component for direct market revenue parameters (9 parameters) with table-based input and save protection.
     - `lookup_points_editor.py`: **NEW** - Phase 7: Tab 6 component for time-series production capacity and pricing with year-based tables and save protection.
-    - `runner_tab.py`: **NEW** - Phase 8: Tab 7 component for scenario execution controls, monitoring, and progress tracking with save protection.
-    - `logs_tab.py`: **NEW** - Phase 8: Tab 8 component for simulation logs display, filtering, and export functionality with save protection.
+    - `runner_tab.py`: **NEW** - Phase 8: Tab 7 component for scenario execution controls, monitoring, and progress tracking with save protection. **ENHANCED**: Now includes full backend integration with the simulation engine, real-time results display (CSV data and generated plots), execution history tracking, and comprehensive file management.
+    - `logs_tab.py`: **NEW** - Phase 8: Tab 8 component for simulation logs display, filtering, and export functionality with save protection. **ENHANCED**: Now reads real simulation logs from the simulation engine instead of showing fake data, providing comprehensive log parsing, filtering, and export capabilities.
 - `implementation_plan.md`: Executable plan for phased delivery (Phase 0 → Phase 11). **Phases 1-8 COMPLETED**: Complete 8-tab structure with all functionality implemented including table-based input, save protection, dynamic content management, scenario execution controls, and simulation monitoring.
 - `technical_architecture.md`: System design and canonical naming/equations for SD+ABM integration; scenario schema and KPIs.
 - `system logic.txt`: Plain-language system logic capturing business intent and discrete-conversion behavior.
@@ -150,13 +150,17 @@ The UI has been restructured to use a new 8-tab system as specified in the imple
 - Time-series production capacity and pricing
 - Year-based structure with products as rows
 
-**Tab 7: Runner** 🚧 **PLACEHOLDER (Phase 8)**
-- Scenario execution and monitoring
-- Save, validate, and run controls
+**Tab 7: Runner** ✅ **COMPLETED (Phase 8 - Enhanced)**
+- Scenario execution and monitoring with full backend integration
+- Real-time results display (CSV data and generated plots)
+- Execution history tracking and file management
+- Save, validate, and run controls with comprehensive feedback
 
-**Tab 8: Logs** 🚧 **PLACEHOLDER (Phase 8)**
-- Simulation logs and monitoring
-- Log filtering and export functionality
+**Tab 8: Logs** ✅ **COMPLETED (Phase 8 - Enhanced)**
+- **Real simulation logs** from the simulation engine
+- Comprehensive log parsing, filtering, and export
+- Log level filtering (DEBUG, INFO, WARNING, ERROR)
+- Real-time log statistics and file information
 
 **Legacy Functions**: Successfully integrated into the new 8-tab structure. All functionality now available through the modern tab-based interface.
 

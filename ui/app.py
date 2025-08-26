@@ -240,7 +240,7 @@ def main():
     # Tab 7: Runner (Phase 8 - Implemented)
     with tabs[6]:
         st.header("Runner")
-        st.caption("Scenario execution and monitoring with execution controls.")
+        st.caption("Scenario execution and monitoring with full backend integration, real-time results display, and comprehensive file management.")
         
         # Render the runner tab
         updated_runner = render_runner_tab(
@@ -254,7 +254,7 @@ def main():
     # Tab 8: Logs (Phase 8 - Implemented)
     with tabs[7]:
         st.header("Logs")
-        st.caption("Simulation logs display, filtering, and export functionality.")
+        st.caption("Real simulation logs from the simulation engine with comprehensive parsing, filtering, and export capabilities.")
         
         # Render the logs tab
         updated_logs = render_logs_tab(
@@ -271,8 +271,12 @@ def main():
         "🎯 **New UI Structure**: This interface has been restructured with 8 tabs for better "
         "organization. **All Phases 1-8 are now complete** with enhanced functionality including "
         "save protection, change tracking, dynamic table generation, comprehensive parameter "
-        "management, scenario execution controls, and simulation monitoring. The UI now provides "
-        "a complete, integrated experience for scenario management and execution."
+        "management, scenario execution controls, and simulation monitoring. **NEW**: The Runner tab "
+        "now provides full backend integration with real-time results display (CSV data and plots), "
+        "execution history tracking, and comprehensive file management. **ENHANCED**: The Logs tab "
+        "now reads real simulation logs instead of showing fake data. **CLEANED**: All fake/sample "
+        "data has been completely removed from UI components. The UI now provides a complete, "
+        "integrated experience for scenario management, execution, results analysis, and real-time monitoring."
     )
 
 if __name__ == "__main__":
