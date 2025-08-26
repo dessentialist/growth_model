@@ -18,7 +18,7 @@ The system is designed to be industry-agnostic, allowing you to model any sector
 - Structure under `ui/`:
   - `ui/app.py`: Streamlit entrypoint with tabs for Runspecs, Constants, Points, Primary Map, Seeds, Validate & Save, and Run. Loads a cached `Phase1Bundle` once and delegates to components/services.
   - `ui/state.py`: Typed dataclasses for UI state and helpers to assemble/load scenario dicts.
-  - `ui/components/`: Page fragments to edit specific sections and update `UIState`.
+  - `ui/components/`: Page fragments to edit specific sections and update state objects. Editor functions follow consistent patterns: `render_*_editor(state: StateType, ...) -> StateType` for consistency across all components.
   - `ui/services/validation_client.py`: Calls `src.scenario_loader` helpers to list permissible keys and validate scenarios in-memory.
   - `ui/services/runner.py`: Runner integration (command build, spawn/terminate, efficient log tail, find latest CSV, optional plot generation). Pure process/IO, no Streamlit imports.
   - `ui/services/builder.py`: Scenario assembly and YAML IO. Backward-compatible re‑exports for runner helpers are provided but new code should import from `ui.services.runner`.

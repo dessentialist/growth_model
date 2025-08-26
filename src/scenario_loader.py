@@ -27,7 +27,6 @@ import difflib
 import json
 from pathlib import Path
 from typing import Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
-import warnings
 import pandas as pd
 
 import yaml
