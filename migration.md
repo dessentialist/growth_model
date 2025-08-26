@@ -1,221 +1,98 @@
-# Product Growth System – Migration Plan
+# New Tables Based Inputs UI set up
 
-## Overview
-This document outlines the migration strategy for converting the Growth System UI from form-based input to table-based input format, improving user experience while maintaining all existing functionality.
+Tab 1:Simulation Definitions Set Up
+//add, edit, delete values for these lists// 
 
-## Current State
-The system currently uses a hybrid approach:
-- **Constants Editor**: Individual input boxes with summary table view
-- **Points Editor**: Already uses `st.data_editor()` for time-series data (excellent!)
-- **Primary Map Editor**: Form-based with individual inputs per product
-- **Seeds Editor**: Form-based inputs
+Market
+Market 1
+Market 2
+..
 
-## Migration Phase 18: Table Input Conversion
+Sectors
+Sector 1
+Sector 2
+..
 
-### Objective
-Convert all model input editors from form-based to table-based input format using Streamlit's `st.data_editor()` component, excluding scenario control parameters (runspecs).
+Products
+Product 1
+Product 2
+..
 
-### Scope
-**In Scope:**
-- Constants Editor (per-sector, per-product, per-(sector,product) parameters)
-- Primary Map Editor (sector→product mappings with start years)
-- Seeds Editor (anchor clients, direct clients, completed projects)
+Tab 2: Simulation Specs 
 
-**Out of Scope:**
-- Runspecs (starttime, stoptime, dt, anchor_mode) - keep as form inputs
-- Points Editor - already converted, maintain current implementation
+Runtime
+Time steps
+Sector-Product Mapping mode or Sector mode
+Scenario Name
+Load Scenario
+Scenario 
+Reset To Baseline (where baseline is a 'special' scenario that is considered the baseline scenairo of the model)
 
-### Implementation Plan
+Tab 3:
+Primary Mapping 
+//Sector-wise product selection //
+//Mapping insights and summary//
 
-#### Phase 18.1: Constants Editor Conversion
-**Tasks:**
-1. **Data Structure Transformation**
-   - Convert `ScenarioOverridesState.constants` from `Dict[str, float]` to DataFrame format
-   - Create DataFrame with columns: `Parameter | Value | Category | Description`
-   - Group parameters by category (Anchor, Other Clients, SM-specific)
 
-2. **UI Component Refactor**
-   - Replace individual `st.number_input()` components with `st.data_editor()`
-   - Add inline editing capabilities for parameter values
-   - Maintain filtering and search functionality
-   - Add bulk import/export (CSV) capabilities
+Tab 4: Client Revenue
 
-3. **State Management Updates**
-   - Update `render_constants_editor()` to handle DataFrame input/output
-   - Ensure real-time validation works with table edits
-   - Maintain callback pattern for state updates
+Client Revenue Stream (y axis to be sector_product values, dynamically filled in when combinations are added to the primary mapping)
+Group	Comments	Parameter (per‑(s,m))
+Market Activation	The total number of anchor clients for a material sector combination. 	ATAM
+Market Activation	The year the market is activated for a particular sector material combination. 	anchor_start_year
+Market Activation	The rate of generating leads per quarter for anchor clients for the sector material combination, where each sector material may draw from a common client name. We do not divide between particular clients, but only by client numbers. 	anchor_lead_generation_rate
+Market Activation	A bracket conversion rate to show how many potential clients we believe we can get from a particular set of leads for the sector material combination. 	lead_to_pc_conversion_rate
+Market Activation	The rate per quarter of generating projects from a potential client. 	project_generation_rate
+Market Activation	The number of quarters that the average project lasts once started by a particular anchor client. 	project_duration
+Market Activation	The number of projects it takes for a potential client to become a client that will then start placing commercial orders. 	projects_to_client_conversion
+Market Activation	The maximum number of projects a potential client generates. This is meant only as a binary on-off switch for a sector material combination, since it is assumed that the project conversion number will be lower than the maximum projects. 	max_projects_per_pc
+Market Activation	The number of quarters before which an active client starts placing a commercial order after it becomes an active client. 	anchor_client_activation_delay
+Orders 	The number of quarters of the initial testing phase. 	initial_phase_duration
+Orders 	The starting rate of kilograms ordered per quarter per client for each sector material combination. 	initial_requirement_rate
+Orders 	Percentage growth of orders per quarter in the initial testing phase. 	initial_req_growth
+Orders 	The number of quarters during which requirement may grow at a significant rate. 	ramp_phase_duration
+Orders 	The starting rate of order of kgs per quarter for each sector material combination during the ramp-up phase. 	ramp_requirement_rate
+Orders 	Percentage growth of rate of order per kg per material during the ramp-up phase. 	ramp_req_growth
+Orders 	The starting rate of order of kilograms per material per quarter for each sector-material pair when the client enters a steady order phase that is assumed to grow in perpetuity. 	steady_requirement_rate
+Orders 	The percentage rate of growth of orders per quarter in the steady state. 	steady_req_growth
+Orders 	The number of quarters between receiving a requirement and fulfilling the delivery for that requirement. 	requirement_to_order_lag
+Seeds	The total number of projects that are already completed for a material sector combination. 	completed_projects_sm
+Seeds	The total number of active clients already present in the material sector combination at time T0. 	active_anchor_clients_sm
+Seeds	The number of quarters that have elapsed since a client became active for the material sector combination at time T0. 	elapsed_quarters
 
-**Success Criteria:**
-- Constants editor displays as editable table
-- All existing validation logic preserved
-- CSV import/export functionality working
-- Performance comparable to current implementation
+Tab 4: Direct Market Revenue
 
-#### Phase 18.2: Primary Map Editor Conversion
-**Tasks:**
-1. **Data Structure Transformation**
-   - Convert `PrimaryMapState.by_sector` to DataFrame format
-   - Create DataFrame with columns: `Sector | Product | StartYear | Current_StartYear`
-   - Show current vs. proposed mapping side-by-side
+Direct Market Revenue Stream (y axis to be sector_product values, dynamically filled in when combinations are added to the primary mapping)
+Comments	Parameters
+year the material begins receiving other-client leads	lead_start_year
+per quarter inbound leads for the material	inbound_lead_generation_rate (per quarter)
+per quarter outbound leads for the material	outbound_lead_generation_rate (per quarter)
+lead to client conversion	lead_to_c_conversion_rate (fraction)
+lead-to-requirement delay for first order by a lead	lead_to_requirement_delay (quarters)
+requirement-to-delivery delay for running requirements	requirement_to_fulfilment_delay (quarters)
+starting order quantity	avg_order_quantity_initial (units per client)
+percentage growth of order quantity per quarter	client_requirement_growth (per quarter growth)
+total addressable market for other clients	TAM (clients)
 
-2. **UI Component Refactor**
-   - Replace form-based inputs with `st.data_editor()`
-   - Enable inline editing of start years
-   - Add row-level add/remove functionality
-   - Maintain sector-based grouping
+Tab 5: Lookup Points
 
-3. **Validation Integration**
-   - Ensure start year validation works with table edits
-   - Maintain product existence validation
-   - Add visual indicators for invalid entries
+Lookup Points Table (y-axis to be years)
 
-**Success Criteria:**
-- Primary map editor displays as editable table
-- Current vs. proposed mapping clearly visible
-- All validation rules enforced
-- Row-level operations working
+Production Capacity in Units
+Product 1
+Product 2
+.
+.
 
-#### Phase 18.3: Seeds Editor Conversion
-**Tasks:**
-1. **Data Structure Transformation**
-   - Convert `SeedsState` to DataFrame format
-   - Create separate tables for different seed types:
-     - Anchor seeds: `Sector | Product | Active_Clients | Elapsed_Quarters | Completed_Projects`
-     - Direct client seeds: `Product | Initial_Clients`
-   - Handle both sector-mode and SM-mode structures
+Price Per Unit
+Product 1
+Product 2
+.
+.
 
-2. **UI Component Refactor**
-   - Replace form inputs with `st.data_editor()`
-   - Enable inline editing of seed values
-   - Add conditional columns based on anchor_mode
-   - Maintain validation for non-negative integers
+Tab 6: Runner
+//Scenario save, validate, and run controls//
 
-3. **Mode-Specific Handling**
-   - Ensure SM-mode seeds require valid (sector, product) pairs
-   - Maintain sector-mode vs. SM-mode exclusivity
-   - Add visual indicators for mode-specific requirements
 
-**Success Criteria:**
-- Seeds editor displays as editable table(s)
-- Mode-specific validation enforced
-- All seed types properly handled
-- Integer validation working
-
-### Technical Implementation Details
-
-#### Data Transformation Functions
-```python
-def constants_dict_to_dataframe(constants: Dict[str, float], permissible_keys: List[str]) -> pd.DataFrame:
-    """Convert constants dictionary to DataFrame for table editing."""
-    # Implementation details...
-
-def constants_dataframe_to_dict(df: pd.DataFrame) -> Dict[str, float]:
-    """Convert edited DataFrame back to constants dictionary."""
-    # Implementation details...
-
-def primary_map_state_to_dataframe(state: PrimaryMapState, bundle: Phase1Bundle) -> pd.DataFrame:
-    """Convert primary map state to DataFrame for table editing."""
-    # Implementation details...
-
-def seeds_state_to_dataframes(state: SeedsState, anchor_mode: str) -> Dict[str, pd.DataFrame]:
-    """Convert seeds state to DataFrames for table editing."""
-    # Implementation details...
-```
-
-#### Validation Integration
-- Maintain all existing validation logic
-- Add real-time validation feedback in table cells
-- Ensure validation errors are clearly visible
-- Maintain callback pattern for state updates
-
-#### Performance Considerations
-- Use `st.cache_data` for expensive transformations
-- Minimize DataFrame recreations
-- Optimize for typical scenario sizes (10-50 parameters)
-
-### Testing Strategy
-
-#### Unit Tests
-- **Data Transformation Tests**: Verify dict↔DataFrame conversions
-- **Validation Tests**: Ensure all validation rules work with table input
-- **State Management Tests**: Verify state updates work correctly
-
-#### Integration Tests
-- **End-to-End Editor Tests**: Verify complete edit→validate→save flow
-- **Performance Tests**: Ensure acceptable performance with large datasets
-- **Cross-Editor Tests**: Verify interactions between different editors
-
-#### User Acceptance Tests
-- **Usability Tests**: Verify table editing is intuitive
-- **Validation Tests**: Ensure error messages are clear
-- **Workflow Tests**: Verify complete scenario creation process
-
-### Migration Timeline
-
-**Week 1-2: Phase 18.1 (Constants Editor)**
-- Implement data transformation functions
-- Refactor UI component
-- Add tests and validation
-
-**Week 3-4: Phase 18.2 (Primary Map Editor)**
-- Implement data transformation functions
-- Refactor UI component
-- Add tests and validation
-
-**Week 5-6: Phase 18.3 (Seeds Editor)**
-- Implement data transformation functions
-- Refactor UI component
-- Add tests and validation
-
-**Week 7: Integration and Testing**
-- End-to-end testing
-- Performance optimization
-- User acceptance testing
-
-### Risk Mitigation
-
-#### Technical Risks
-- **Data Loss**: Implement robust validation and backup mechanisms
-- **Performance**: Monitor and optimize DataFrame operations
-- **State Synchronization**: Ensure consistent state management
-
-#### User Experience Risks
-- **Learning Curve**: Provide clear documentation and help text
-- **Data Entry Errors**: Implement comprehensive validation and error messages
-- **Workflow Disruption**: Maintain all existing functionality during transition
-
-### Success Metrics
-
-#### Technical Metrics
-- All editors successfully converted to table format
-- Performance within 10% of current implementation
-- Zero data loss during conversion
-- All validation rules preserved
-
-#### User Experience Metrics
-- Reduced time to create scenarios (target: 30% improvement)
-- Reduced user errors in parameter entry (target: 50% reduction)
-- Positive user feedback on new interface
-- Successful completion of user acceptance tests
-
-### Future Enhancements
-
-#### Phase 18.4: Advanced Table Features
-- **Bulk Operations**: Copy/paste from Excel, bulk value updates
-- **Templates**: Save/load parameter sets as templates
-- **Versioning**: Track changes to parameter values
-- **Collaboration**: Multi-user editing capabilities
-
-#### Phase 18.5: Integration Improvements
-- **Real-time Validation**: Immediate feedback on parameter changes
-- **Auto-save**: Automatic saving of work-in-progress
-- **Undo/Redo**: Parameter change history and rollback
-- **Export Formats**: Additional export options (Excel, JSON)
-
-## Conclusion
-
-The migration to table-based input format represents a significant improvement in user experience while maintaining all existing functionality. The phased approach minimizes risk and allows for iterative improvement based on user feedback.
-
-The use of Streamlit's `st.data_editor()` component provides a robust foundation for the new interface, with built-in support for inline editing, validation, and data manipulation. The existing points editor implementation serves as a proven pattern for the conversion.
-
-By excluding scenario control parameters from this conversion, we maintain the simplicity of the runspecs interface while focusing on the more complex parameter editing tasks that will benefit most from table-based input.
+Tab 7: Logs
+//Simualation logs//

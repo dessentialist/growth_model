@@ -55,6 +55,7 @@ The system is designed to be industry-agnostic, allowing you to model any sector
   - One scenario file per run; provides constants and lookup overrides using exact model element names.
   - Runner supports `--preset <name>` to select files under `scenarios/`. Unknown override keys are strict errors with nearest-name suggestions; overrides are validated against built model elements before application (no partials). In SM‑mode (17.5 strictness), only per‑(s,p) anchor constants are permissible override keys for anchor parameters.
   - UI (Phases 3–11) builds an in‑memory scenario via tabs for runspecs, constants, points, primary map, and seeds; validates using `src.scenario_loader.validate_scenario_dict`; can write YAML to `scenarios/`; can load/duplicate scenarios; and can run either a named preset or the current scenario from the sidebar. The UI does not alter model logic; it is an isolated layer under `ui/`.
+- **PLANNED UI RESTRUCTURING**: The UI will be restructured to use table-based input for improved user experience while maintaining the same backend integration and YAML compatibility. New tabs will include Simulation Definitions, Client Revenue, and Direct Market Revenue, with save button protection to prevent accidental parameter changes.
   - After a run, the runner writes the default CSV and an additional suffixed CSV `Product_Growth_System_Complete_Results_<scenario>.csv` for cross-scenario comparisons. This does not change KPI logic or model state.
 
 - **Stepwise Simulation Runner**
