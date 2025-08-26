@@ -1,183 +1,313 @@
-## Product Growth System – Business User Tutorial
+# Product Growth System – Business User Tutorial
 
-Audience: Business stakeholders who want to install the tool, use the UI to build scenarios, run the model, and read outputs/plots. No coding required.
+**Audience**: Business stakeholders who want to install the tool, use the UI to build scenarios, run the model, and read outputs/plots. No coding required.
 
-### 1) What you'll get
-- A browser UI to edit scenarios (time horizon, constants, time‑series, sector→product mappings, seeding) and run the model
-- Live logs, a KPI CSV preview, and downloadable static plots
-- Preset scenarios you can run as-is or load into the editor to tweak
-- A flexible, industry-agnostic system that can model any sectors and products you define
+## 🎯 What You'll Get
 
-### 2) Quick install from GitHub
+- **8-Tab Browser UI** to edit scenarios, manage parameters, and run simulations
+- **Live logs and real-time monitoring** during simulation execution
+- **KPI CSV exports** with comprehensive business metrics
+- **Downloadable static plots** for presentations and reports
+- **Preset scenarios** you can run as-is or load into the editor to customize
+- **Flexible, industry-agnostic system** that can model any sectors and products you define
 
-Prerequisites:
-- macOS or Windows/Linux
-- Python 3.12+ and Git
+## 🚀 Quick Installation Guide
 
-Clone and set up a virtual environment (recommended):
+### Prerequisites
+- **macOS** (recommended), **Windows**, or **Linux**
+- **Python 3.12+** and **Git**
+- **4GB+ RAM** for smooth operation
+
+### Method 1: Single Command Setup (Recommended)
+
+**For All Platforms (Windows, macOS, Linux):**
 ```bash
+# Clone the repository
 git clone https://github.com/dessentialist/Growth_Model.git
 cd Growth_Model
 
-python3 -m venv venv
-source venv/bin/activate   # Windows: venv\Scripts\activate
-python -m pip install -r requirements.txt
+# Single command to setup everything and launch UI
+python setup_cross_platform.py
 ```
 
-Launch the UI:
+This single command will:
+- ✅ Create virtual environment
+- ✅ Install all dependencies  
+- ✅ Run test suite (107 tests)
+- ✅ Launch the Streamlit UI automatically
+
+### Method 2: Using Make Commands (macOS/Linux Users)
+
 ```bash
+# Clone the repository
+git clone https://github.com/dessentialist/Growth_Model.git
+cd Growth_Model
+
+# Install dependencies and setup environment
+make install
+
+# Launch the UI
+make run_ui
+```
+
+### Method 3: Manual Setup (Advanced Users)
+
+```bash
+# Clone and set up virtual environment
+git clone https://github.com/dessentialist/Growth_Model.git
+cd Growth_Model
+
+# Create virtual environment
+python3 -m venv venv
+
+# Activate virtual environment
+# On macOS/Linux:
+source venv/bin/activate
+# On Windows:
+venv\Scripts\activate
+
+# Install dependencies
+python -m pip install -r requirements.txt
+
+# Launch the UI
 streamlit run ui/app.py
 ```
-By default your browser opens at http://localhost:8501
 
-Optional – Makefile helpers (if you use make):
+
+
+**By default, your browser opens at http://localhost:8501**
+
+## 🏗️ Understanding the 8-Tab UI Structure
+
+The UI is organized into 8 logical tabs that guide you through the complete simulation setup process:
+
+### Tab 1: Simulation Definitions
+**Purpose**: Define your simulation universe
+- **Markets**: Set global or regional market scope
+- **Sectors**: Define business sectors (e.g., Defense, Aerospace, Automotive)
+- **Products**: Define products (e.g., UHT, Silicon Carbide Fiber)
+
+**How to Use**: Start here to establish the foundation. Add or remove items as needed. Changes here automatically update related components in other tabs.
+
+### Tab 2: Simulation Specs
+**Purpose**: Configure runtime parameters
+- **Start Year**: When your simulation begins
+- **Stop Year**: When your simulation ends
+- **Time Step (dt)**: How frequently the model updates (e.g., quarterly, annually)
+- **Scenario Settings**: Save and manage different configurations
+
+**How to Use**: Set your timeline and save configurations. The form validates inputs and shows errors if values are invalid.
+
+### Tab 3: Primary Mapping
+**Purpose**: Map sectors to products
+- **Sector-Product Relationships**: Define which combinations are valid
+- **Mapping Insights**: See parameter coverage for each combination
+- **Dynamic Table Generation**: Automatically creates parameter tables
+
+**How to Use**: Use "Add Mapping" to create new sector-product relationships. This determines which combinations appear in the revenue tabs.
+
+### Tab 4: Client Revenue
+**Purpose**: Configure 19 client revenue parameters across three categories
+- **Market Activation (9 params)**: Lead generation, conversion rates, client activation
+- **Orders (9 params)**: Order behavior, project duration, fulfillment
+- **Seeds (3 params)**: Initial client base and project backlog
+
+**How to Use**: Configure parameters by sector-product combinations. Use the tabs to switch between parameter groups. Click "Save" after making changes.
+
+### Tab 5: Direct Market Revenue
+**Purpose**: Configure 9 product-specific parameters
+- **Pricing**: Product pricing strategies
+- **Capacity**: Production capacity constraints
+- **Market Dynamics**: Growth patterns and market behavior
+
+**How to Use**: Set parameters for each product. These control pricing, capacity, and market dynamics during simulation.
+
+### Tab 6: Lookup Points
+**Purpose**: Define time-series data
+- **Production Capacity**: Year-by-year capacity constraints per product
+- **Pricing**: Year-by-year pricing per product
+- **Timeline Management**: Extend or modify the simulation timeline
+
+**How to Use**: Set values for each product and year combination. Use "Add Year" to extend the timeline or "Add Product" for new products.
+
+### Tab 7: Runner
+**Purpose**: Execute scenarios and monitor progress
+- **Scenario Selection**: Choose from saved scenarios or run current configuration
+- **Execution Settings**: Debug mode, plot generation, KPI options
+- **Real-time Monitoring**: Watch simulation progress live
+- **Results Display**: View CSV data and generated plots
+- **Execution History**: Track previous runs and access outputs
+
+**How to Use**: Select a scenario, configure settings, then click "Run Simulation". Monitor progress and view results.
+
+### Tab 8: Logs
+**Purpose**: Analyze simulation execution
+- **Real-time Logs**: Live simulation engine output
+- **Filtering**: Search by log level, source, or content
+- **Export**: Download logs for external analysis
+- **Debugging**: Identify and troubleshoot issues
+
+**How to Use**: View execution logs, use filters to find specific information, and export for analysis.
+
+## 📋 Step-by-Step Workflow Examples
+
+### Workflow A: Quick Baseline Verification
+1. **Open UI** → Navigate to **Runner** tab
+2. **Select Scenario**: Choose "baseline" from the dropdown
+3. **Configure Settings**: Enable "Generate Plots" and "Debug Mode"
+4. **Run Simulation**: Click "Run Simulation"
+5. **Review Results**: Check logs, CSV preview, and plots
+
+### Workflow B: Create Custom Scenario
+1. **Simulation Definitions**: Set up your markets, sectors, and products
+2. **Simulation Specs**: Configure start/stop years and time step
+3. **Primary Mapping**: Map sectors to products
+4. **Client Revenue**: Configure client behavior parameters
+5. **Direct Market Revenue**: Set product-specific parameters
+6. **Lookup Points**: Define capacity and pricing over time
+7. **Validate & Save**: Save your scenario with a descriptive name
+8. **Run**: Execute your custom scenario
+
+### Workflow C: Modify Existing Scenario
+1. **Load Scenario**: Use "Load Scenario" in the Runner tab
+2. **Make Changes**: Navigate to relevant tabs and modify parameters
+3. **Save As**: Save with a new name to preserve the original
+4. **Run**: Execute the modified scenario
+5. **Compare**: Use the execution history to compare results
+
+## 🔧 Advanced Features
+
+### Scenario Management
+- **Save Multiple Versions**: Create variations of scenarios
+- **Version Control**: Track changes and iterations
+- **Export/Import**: Share scenarios with team members
+
+### Parameter Validation
+- **Real-time Validation**: UI prevents invalid configurations
+- **Error Messages**: Clear explanations of validation issues
+- **Auto-completion**: Smart suggestions for parameter names
+
+### Results Analysis
+- **KPI Extraction**: Comprehensive business metrics
+- **Visualization**: Multiple chart types and formats
+- **Data Export**: CSV, PNG, and other formats
+
+## 📊 Understanding Outputs
+
+### Where to Find Results
+- **Logs**: `logs/run.log` (also streamed in UI)
+- **KPI CSV**: `output/Growth_System_Complete_Results.csv`
+- **Scenario-specific CSV**: `output/Growth_System_Complete_Results_<scenario>.csv`
+- **Plots**: `output/plots/*.png` (rendered inline and downloadable)
+
+### Key Business Metrics
+- **Revenue**: Total and by-sector breakdowns
+- **Capacity Utilization**: Product production efficiency
+- **Lead Generation**: Client acquisition metrics
+- **Client Evolution**: Potential → Pending → Active transitions
+
+## 🚨 Troubleshooting Guide
+
+### Common Issues and Solutions
+
+#### "I can't see my parameters after adding a new mapping"
+- **Solution**: In Primary Mapping, click "Apply Mapping for Sector" first
+- **Why**: The UI needs to refresh the parameter tables
+
+#### "Validation errors about missing parameters"
+- **Solution**: Ensure all required parameters are set for your sector-product combinations
+- **Why**: The system validates completeness before running
+
+#### "No plots showing in the UI"
+- **Solution**: Check "Generate Plots" is enabled in the Runner tab before running
+- **Why**: Plot generation is optional and must be explicitly enabled
+
+#### "Simulation runs but produces no results"
+- **Solution**: Check the Logs tab for error messages
+- **Why**: The system logs all execution details for debugging
+
+#### "Can't save my scenario"
+- **Solution**: Ensure all required fields are filled and validation passes
+- **Why**: The system prevents saving invalid configurations
+
+### Performance Tips
+- **Close other applications** when running large simulations
+- **Use appropriate time steps** (quarterly for detailed analysis, annual for long-term planning)
+- **Limit the number of sectors/products** for faster execution
+- **Enable debug mode only when needed** (slows execution)
+
+## 🔄 Command-Line Alternatives (Advanced Users)
+
+If you prefer command-line operation:
+
 ```bash
-make install   # create venv + install deps
-make run_ui    # open the UI at http://localhost:8501
-```
-
-Optional – Docker (no Python needed):
-```bash
-docker build -f Dockerfile.ui -t product-growth-ui .
-docker run --rm -p 8501:8501 \
-  -v "$PWD/scenarios:/app/scenarios" \
-  -v "$PWD/logs:/app/logs" \
-  -v "$PWD/output:/app/output" \
-  product-growth-ui
-```
-
-### 3) UI layout (what each tab does)
-The UI has six main areas: Runspecs, Constants, Points, Primary Map, Seeds, Validate & Save, plus run controls in the sidebar.
-
-- Runspecs: choose start year, stop year, dt (step size), and Anchor Mode (sector or sm)
-- Constants: override numeric parameters (see section 4)
-- Points: override time series for price and capacity per product
-- Primary Map: replace a sector's products with a new list and start years
-- Seeds: seed pre-existing anchor/direct clients at t0
-- Validate & Save: validate your in‑memory scenario and save it to `scenarios/`
-- Sidebar Run Controls: run a preset by name or validate→save→run your current editor scenario; toggle debug & plots
-
-Tip: The UI only lists "permissible" names that the backend guarantees are valid—filter boxes never let you type a wrong name.
-
-### 4) Constants – which names appear and when
-You will see three kinds of constants:
-- Per‑sector (e.g., `anchor_lead_generation_rate_Defense`)
-- Per‑product (e.g., `lead_start_year_Silicon_Carbide_Fiber`)
-- Per‑(sector, product) targeted requirement family (both modes) and full per‑pair anchor set (SM mode only)
-
-Mode details (short version):
-- Sector mode (default): you can set per‑(s,p) requirement_* rates/growth and `requirement_to_order_lag` for any sector→product pair; the rest of the anchor parameters remain sector‑level.
-- SM mode: you can set the full per‑(s,p) anchor set (e.g., `anchor_start_year_Defense_UHT`, `project_duration_Defense_UHT`, etc.). SM mode is stricter and expects comprehensive per‑(s,p) coverage.
-
-Primary Map interplay:
-- In Primary Map, pick a sector, select products and start years, then click "Apply Mapping for Sector".
-- After that, the Constants tab immediately includes those new (sector, product) pairs in its permissible list so you can add per‑pair overrides.
-
-### 5) Points (time‑series)
-- Lookups per product: `price_<Product>` and `max_capacity_<Product>`
-- Add rows as [Year, Value], keep years strictly increasing; the UI warns if out of order
-- You can remove an override entirely with the "Apply Series" button after clearing rows
-
-### 6) Primary Map (sector→products)
-- Select sector, see its current mapping (read‑only)
-- Choose proposed products and assign `StartYear` per product
-- Click "Apply Mapping for Sector" to stage the replacement; it appears in the summary
-- This is an atomic replace per sector on save: you provide the full new list for that sector
-
-### 7) Seeds (optional)
-- Sector mode:
-  - `active_anchor_clients` and optional `elapsed_quarters` per sector
-  - `completed_projects` per sector to pre-load a backlog of completed projects at t0. The model converts this deterministically: `floor(completed / projects_to_client_conversion)` ACTIVE anchors at t0; the remainder is discarded.
-- SM mode:
-  - `active_anchor_clients_sm` per (sector, product)
-  - `completed_projects_sm` per (sector, product) to pre-load backlog. Same conversion applies pair-wise (remainder discarded). Optionally use `elapsed_quarters_sm` to age ACTIVE seeds.
-- Direct clients: set `direct_clients` per product
-
-### 8) Validate & Save
-- Click "Validate & Save Scenario" to run the full backend checks on your in‑memory edits
-- Name the scenario and save to `scenarios/<name>.yaml` (UI warns on overwrite; the Run Current flow auto‑suffixes)
-
-### 9) Running scenarios (two ways)
-- Sidebar → Run Preset: type a name (e.g., `baseline`) and click Run Preset
-  - This runs an existing file in `scenarios/` by name and ignores unsaved editor changes
-- Sidebar → Validate, Save, and Run:
-  - Validates your current editor state, writes it to `scenarios/<name>.yaml`, then runs it
-  - Safe save: if the filename already exists, the UI auto‑suffixes (e.g., `working_scenario_2.yaml`)
-
-Run toggles:
-- Debug logs: more detailed logs in `logs/run.log`
-- Generate plots: produce PNGs under `output/plots/` and render them in the UI
-- KPI extras (advanced): include granular per‑(s,m) KPI rows
-
-### 10) Outputs & where to find them
-- Logs: `logs/run.log` (also streamed in UI)
-- KPI CSV: `output/Growth_System_Complete_Results.csv`
-- Scenario‑suffixed copy: `output/Growth_System_Complete_Results_<scenario>.csv`
-- Plots: `output/plots/*.png` (rendered inline and downloadable when “Generate plots” is enabled)
-
-### 11) Typical workflows
-
-Workflow A – Quick baseline verification
-1) Open UI → Sidebar → Run Preset: `baseline` → Run
-2) Review logs, CSV preview, and plots
-
-Workflow B – Change time horizon and run
-1) Runspecs: starttime/stoptime/dt
-2) Validate & Save → name the scenario
-3) Validate, Save, and Run → enable Generate plots
-
-Workflow C – Add a new sector→product and tune per‑pair constants
-1) Primary Map: sector = Defense → add `UHT` with StartYear
-2) Click “Apply Mapping for Sector”
-3) Constants:
-   - Sector mode: edit per‑(s,m) requirement_* and `requirement_to_order_lag`
-   - SM mode: switch anchor_mode to `sm` to access full per‑(s,m) anchor set
-4) Validate & Save → Run with plots
-
-Workflow D – Change a product’s price or capacity shape
-1) Points: select `price_<Product>` or `max_capacity_<Product>`
-2) Add rows (years strictly increasing)
-3) Apply Series → Validate & Save → Run
-
-### 12) Command‑line (optional, without the UI)
-Run a preset:
-```bash
+# Run a preset scenario
 python simulate_growth.py --preset baseline --debug --visualize
-```
-Run a specific scenario file:
-```bash
+
+# Run a specific scenario file
 python simulate_growth.py --scenario scenarios/your_case.yaml --visualize
+
+# Available flags
+--kpi-sm-revenue-rows    # Include per-sector-product revenue details
+--kpi-sm-client-rows     # Include per-sector-product client details
+--debug                  # Enable detailed logging
+--visualize              # Generate plots
 ```
-Flags:
-- `--kpi-sm-revenue-rows` and `--kpi-sm-client-rows` append optional per‑(s,m) rows to the CSV
 
-### 13) Troubleshooting
-- I don’t see my per‑(s,m) constants after adding a new mapping
-  - In Primary Map, click “Apply Mapping for Sector” first
-  - In Sector mode you’ll see the requirement_* family and the per‑pair lag; switch to SM mode to see the full per‑pair anchor set
+## 📚 Reference Materials
 
-- Validation error about lists_sm in SM mode
-  - SM mode is strict and requires an explicit `lists_sm` in `inputs.json` (or provide per‑pair constants comprehensively via the scenario as described in the docs)
+- **`inputs.md`**: Detailed input parameter documentation
+- **`technical_architecture.md`**: System design and data flow
+- **`index.md`**: Comprehensive codebase overview
+- **Example scenarios**: `scenarios/` folder with working examples
 
-- Lookup extrapolation warnings near the horizon
-  - Extend your price/capacity points so they cover your stop year; warnings are informational (hold‑last policy) but you can eliminate them with more points
+## 🎯 Best Practices for Business Users
 
-- Overwrites when saving
-  - The “Validate, Save, and Run” path auto‑suffixes filenames; the “Validate & Save” tab prompts before overwrite
+### Planning Your Simulation
+1. **Start Simple**: Begin with a few sectors and products
+2. **Define Clear Objectives**: What questions are you trying to answer?
+3. **Set Realistic Timeframes**: Consider data availability and business cycles
+4. **Document Assumptions**: Keep track of parameter choices and rationale
 
-- Nothing shows under Plots in the UI
-  - Check “Generate plots” in the sidebar before running; PNGs appear under `output/plots/`
+### Managing Scenarios
+1. **Use Descriptive Names**: Include date and purpose in scenario names
+2. **Version Control**: Save iterations to track changes
+3. **Document Changes**: Note what was modified and why
+4. **Share Results**: Export and share findings with stakeholders
 
-### 14) Reference materials
-- Inputs and naming rules: `inputs.md` (includes a per‑(sector, material) table by mode)
-- Technical architecture and flow: `technical_architecture.md` (includes a compact reference table and data‑flow diagrams)
-- Example scenarios: `scenarios/` (e.g., `baseline.yaml`, `pm_override_example.yaml`, SM demos)
+### Interpreting Results
+1. **Check Logs First**: Ensure simulation completed successfully
+2. **Validate Assumptions**: Do results align with expectations?
+3. **Sensitivity Analysis**: Test key parameters to understand impact
+4. **Document Insights**: Record findings and recommendations
 
-### 15) Safe changes checklist
-- Scenario changes live under `scenarios/` – version them in Git if needed
-- Always validate before saving/running; the UI mirrors backend rules
-- Prefer SM mode only when you intend full per‑(s,m) control; sector mode is simpler for targeted rate/lag experiments
+## 🆘 Getting Help
 
-You’re ready to go. If you want a 60‑second demo call‑out in the UI (tooltips or a side panel), let us know—we can add it next.
+### Self-Service Resources
+1. **Check this tutorial** for step-by-step guidance
+2. **Review example scenarios** in the `scenarios/` folder
+3. **Use the UI help text** (info boxes in each tab)
+4. **Check the logs** for detailed error information
+
+### When to Ask for Help
+- **System errors** that prevent operation
+- **Unexpected results** that can't be explained
+- **Performance issues** that significantly slow operation
+- **Feature requests** for new capabilities
+
+## 🚀 Ready to Start?
+
+You now have everything you need to:
+1. **Install and launch** the Growth Model UI
+2. **Navigate the 8-tab interface** confidently
+3. **Create and run scenarios** for your business needs
+4. **Analyze results** and generate insights
+5. **Troubleshoot common issues** independently
+
+**Start with Workflow A (Quick Baseline Verification) to get familiar with the system, then explore creating custom scenarios using the step-by-step workflow.**
+
+---
+
+**Note**: This is a research and analysis tool designed to be industry-agnostic. You can model any sector or product by configuring the inputs. Results should be validated against real-world data and used as part of a comprehensive analysis framework.
 
 

@@ -26,26 +26,48 @@ A hybrid System Dynamics + Agent-Based Modeling (SD+ABM) simulation system for a
 
 ## 🛠️ Installation
 
-### Option 1: Using Make (Recommended)
+### Single Command Setup (Recommended)
 
 ```bash
 # Clone the repository
 git clone <your-repo-url>
-cd Growth-Model
+cd growth_model_2
+
+# Single command to setup everything and launch UI
+python setup_cross_platform.py
+```
+
+This single command will:
+- ✅ Create virtual environment
+- ✅ Install all dependencies  
+- ✅ Run test suite (107 tests)
+- ✅ Launch the Streamlit UI automatically
+
+**No additional tools required** - just Python 3.12+ and Git!
+
+### Alternative: Using Make (Unix/Linux/macOS)
+
+```bash
+# Clone the repository
+git clone <your-repo-url>
+cd growth_model_2
 
 # Install dependencies and create virtual environment
 make install
 
 # Verify installation
 make test
+
+# Launch UI
+make run_ui
 ```
 
-### Option 2: Manual Setup
+### Manual Setup (Advanced Users)
 
 ```bash
 # Clone the repository
 git clone <your-repo-url>
-cd Growth-Model
+cd growth_model_2
 
 # Create virtual environment
 python3 -m venv venv
@@ -56,17 +78,26 @@ pip install -r requirements.txt
 
 # Run tests
 python -m pytest tests/
+
+# Launch UI
+streamlit run ui/app.py
 ```
 
 ## 🎯 Quick Start
 
 ### Run the Interactive UI
 
+**Option 1: Single Command (Recommended)**
+```bash
+python setup_cross_platform.py
+```
+
+**Option 2: Using Make (Unix/Linux/macOS)**
 ```bash
 make run_ui
 ```
 
-This opens a clean, modern 8-tab Streamlit interface at `http://localhost:8501` where you can:
+Both options open a clean, modern 8-tab Streamlit interface at `http://localhost:8501` where you can:
 
 **Tab 1: Simulation Definitions**
 - Manage market, sector, and product lists
@@ -255,19 +286,7 @@ python -m pytest tests/test_ui*.py
 python -m pytest --cov=src tests/
 ```
 
-## 🐳 Docker (Optional)
 
-```bash
-# Build UI container
-docker build -f Dockerfile.ui -t product-growth-ui .
-
-# Run with volume mounts
-docker run --rm -p 8501:8501 \
-  -v "$PWD/scenarios:/app/scenarios" \
-  -v "$PWD/logs:/app/logs" \
-  -v "$PWD/output:/app/output" \
-  product-growth-ui
-```
 
 ## 📚 Documentation
 

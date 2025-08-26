@@ -124,6 +124,9 @@ def main():
     with tabs[0]:
         st.header("Simulation Definitions")
         st.caption("Manage the market, sector, and product lists that define your simulation universe.")
+        
+        # User Guide
+        st.info("**📖 How to use this page:** Define your simulation universe by setting up markets, sectors, and products. Start with the basic lists - you can add or remove items as needed. These definitions will be used across all other tabs to create dynamic parameter tables and mappings. Changes here will automatically update related components in other tabs.")
 
         # Initialize simulation definitions from bundle if not already set
         if not ui_state.simulation_definitions.markets:
@@ -149,6 +152,9 @@ def main():
         st.header("Simulation Specs")
         st.caption("Runtime controls and scenario management with save protection.")
         
+        # User Guide
+        st.info("**📖 How to use this page:** Configure your simulation runtime parameters including start/stop years, time step, and scenario settings. Use the 'Save' button to persist your changes. The form validates inputs and shows errors if any values are invalid. These specs control how your simulation runs and what data is generated.")
+        
         # Render the enhanced runspecs form
         updated_runspecs, errors = render_runspecs_form(
             ui_state.runspecs,
@@ -165,6 +171,9 @@ def main():
         st.header("Primary Mapping")
         st.caption("Sector-product mapping with insights and dynamic table generation.")
         
+        # User Guide
+        st.info("**📖 How to use this page:** Map sectors to products to define which combinations are valid in your simulation. Use the 'Add Mapping' button to create new sector-product relationships. The table shows existing mappings with insights into parameter coverage. This mapping determines which combinations appear in the Client Revenue and Direct Market Revenue tabs.")
+        
         # Render the enhanced primary map editor
         updated_primary_map = render_primary_map_editor(
             ui_state.primary_map,
@@ -179,6 +188,9 @@ def main():
     with tabs[3]:
         st.header("Client Revenue")
         st.caption("Comprehensive parameter tables (19 parameters) organized by sector-product combinations.")
+        
+        # User Guide
+        st.info("**📖 How to use this page:** Configure 19 client revenue parameters across three categories: Market Activation (9 params), Orders (9 params), and Seeds (3 params). Each parameter is organized by sector-product combinations from your Primary Mapping. Use the tabs to switch between parameter groups. Click 'Save' after making changes. These parameters control client acquisition, order behavior, and initial seeding.")
         
         # Get sector-product combinations for dynamic content
         sector_product_combinations = get_sector_product_combinations(bundle)
@@ -198,6 +210,9 @@ def main():
         st.header("Direct Market Revenue")
         st.caption("Product-specific parameters (9 parameters) organized by sector-product combinations.")
         
+        # User Guide
+        st.info("**📖 How to use this page:** Configure 9 product-specific parameters for direct market revenue calculations. These parameters are organized by sector-product combinations and control pricing, capacity, and market dynamics. Use the 'Add Parameter' button to create new parameters or edit existing ones. Remember to save your changes after configuration.")
+        
         # Get sector-product combinations for dynamic content
         sector_product_combinations = get_sector_product_combinations(bundle)
         
@@ -215,6 +230,9 @@ def main():
     with tabs[5]:
         st.header("Lookup Points")
         st.caption("Time-series production capacity and pricing per product per year.")
+        
+        # User Guide
+        st.info("**📖 How to use this page:** Define time-series data for production capacity and pricing across your simulation timeline. Set values for each product and year combination. Use the 'Add Year' button to extend the timeline or 'Add Product' for new products. This data is used during simulation execution to determine capacity constraints and pricing dynamics over time.")
         
         # Get products from simulation definitions
         products = ui_state.simulation_definitions.products
@@ -242,6 +260,9 @@ def main():
         st.header("Runner")
         st.caption("Scenario execution and monitoring with full backend integration, real-time results display, and comprehensive file management.")
         
+        # User Guide
+        st.info("**📖 How to use this page:** Execute your configured scenarios and monitor simulation progress. Select a scenario name, configure execution settings (debug mode, plot generation, KPI options), then click 'Run Simulation'. Monitor real-time progress and view results including CSV data and generated plots. Use the execution history to track previous runs and access their outputs.")
+        
         # Render the runner tab
         updated_runner = render_runner_tab(
             ui_state.runner,
@@ -256,6 +277,9 @@ def main():
         st.header("Logs")
         st.caption("Real simulation logs from the simulation engine with comprehensive parsing, filtering, and export capabilities.")
         
+        # User Guide
+        st.info("**📖 How to use this page:** View and analyze real simulation logs from your executed scenarios. Use the filters to search for specific log entries by level, source, or text content. The logs show detailed execution information, errors, warnings, and performance metrics. Export logs for external analysis or troubleshooting. This is essential for debugging simulation issues and understanding execution behavior.")
+        
         # Render the logs tab
         updated_logs = render_logs_tab(
             ui_state.logs,
@@ -265,19 +289,7 @@ def main():
         # Update the state
         ui_state.logs = updated_logs
     
-    # Main content area info
-    st.markdown("---")
-    st.info(
-        "🎯 **New UI Structure**: This interface has been restructured with 8 tabs for better "
-        "organization. **All Phases 1-8 are now complete** with enhanced functionality including "
-        "save protection, change tracking, dynamic table generation, comprehensive parameter "
-        "management, scenario execution controls, and simulation monitoring. **NEW**: The Runner tab "
-        "now provides full backend integration with real-time results display (CSV data and plots), "
-        "execution history tracking, and comprehensive file management. **ENHANCED**: The Logs tab "
-        "now reads real simulation logs instead of showing fake data. **CLEANED**: All fake/sample "
-        "data has been completely removed from UI components. The UI now provides a complete, "
-        "integrated experience for scenario management, execution, results analysis, and real-time monitoring."
-    )
+
 
 if __name__ == "__main__":
     main()
