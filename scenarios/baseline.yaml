@@ -3,5 +3,122 @@ runspecs:
   starttime: 2025.0
   stoptime: 2032.0
   dt: 0.25
-overrides: {}
+  anchor_mode: "sm"  # Enable sector-material mode
+overrides:
+  constants:
+    # Product mode constants (direct market) - these are always allowed
+    lead_start_year_Product_One: 2025.0
+    lead_start_year_Product_Two: 2026.0
+    inbound_lead_generation_rate_Product_One: 5.0
+    inbound_lead_generation_rate_Product_Two: 4.0
+    outbound_lead_generation_rate_Product_One: 3.0
+    outbound_lead_generation_rate_Product_Two: 2.5
+    lead_to_c_conversion_rate_Product_One: 0.2
+    lead_to_c_conversion_rate_Product_Two: 0.18
+    lead_to_requirement_delay_Product_One: 1.0
+    lead_to_requirement_delay_Product_Two: 0.8
+    requirement_to_fulfilment_delay_Product_One: 0.5
+    requirement_to_fulfilment_delay_Product_Two: 0.4
+    avg_order_quantity_initial_Product_One: 50.0
+    avg_order_quantity_initial_Product_Two: 40.0
+    client_requirement_growth_Product_One: 0.1
+    client_requirement_growth_Product_Two: 0.08
+    TAM_Product_One: 1000.0
+    TAM_Product_Two: 800.0
+    
+    # Sector-Material mode constants (SM mode) - these are required in SM mode
+    anchor_start_year_Sector_One_Product_One: 2025.0
+    anchor_start_year_Sector_Two_Product_Two: 2026.0
+    anchor_client_activation_delay_Sector_One_Product_One: 2.0
+    anchor_client_activation_delay_Sector_Two_Product_Two: 1.5
+    anchor_lead_generation_rate_Sector_One_Product_One: 10.0
+    anchor_lead_generation_rate_Sector_Two_Product_Two: 8.0
+    lead_to_pc_conversion_rate_Sector_One_Product_One: 0.3
+    lead_to_pc_conversion_rate_Sector_Two_Product_Two: 0.25
+    project_generation_rate_Sector_One_Product_One: 2.0
+    project_generation_rate_Sector_Two_Product_Two: 1.8
+    max_projects_per_pc_Sector_One_Product_One: 3.0
+    max_projects_per_pc_Sector_Two_Product_Two: 2.0
+    project_duration_Sector_One_Product_One: 4.0
+    project_duration_Sector_Two_Product_Two: 3.5
+    projects_to_client_conversion_Sector_One_Product_One: 0.4
+    projects_to_client_conversion_Sector_Two_Product_Two: 0.35
+    initial_phase_duration_Sector_One_Product_One: 2.0
+    initial_phase_duration_Sector_Two_Product_Two: 1.5
+    ramp_phase_duration_Sector_One_Product_One: 3.0
+    ramp_phase_duration_Sector_Two_Product_Two: 2.5
+    initial_requirement_rate_Sector_One_Product_One: 100.0
+    initial_requirement_rate_Sector_Two_Product_Two: 80.0
+    initial_req_growth_Sector_One_Product_One: 0.2
+    initial_req_growth_Sector_Two_Product_Two: 0.15
+    ramp_requirement_rate_Sector_One_Product_One: 200.0
+    ramp_requirement_rate_Sector_Two_Product_Two: 160.0
+    ramp_req_growth_Sector_One_Product_One: 0.15
+    ramp_req_growth_Sector_Two_Product_Two: 0.12
+    steady_requirement_rate_Sector_One_Product_One: 300.0
+    steady_requirement_rate_Sector_Two_Product_Two: 240.0
+    steady_req_growth_Sector_One_Product_One: 0.1
+    steady_req_growth_Sector_Two_Product_Two: 0.08
+    requirement_to_order_lag_Sector_One_Product_One: 1.0
+    requirement_to_order_lag_Sector_Two_Product_Two: 0.75
+    ATAM_Sector_One_Product_One: 50.0
+    ATAM_Sector_Two_Product_Two: 40.0
+    
+  points:
+    # Production capacity lookup points
+    max_capacity_Product_One: [
+      [2025.0, 1000.0],
+      [2026.0, 1200.0],
+      [2027.0, 1400.0],
+      [2028.0, 1600.0],
+      [2029.0, 1800.0],
+      [2030.0, 2000.0],
+      [2031.0, 2200.0],
+      [2032.0, 2400.0]
+    ]
+    max_capacity_Product_Two: [
+      [2025.0, 800.0],
+      [2026.0, 960.0],
+      [2027.0, 1120.0],
+      [2028.0, 1280.0],
+      [2029.0, 1440.0],
+      [2030.0, 1600.0],
+      [2031.0, 1760.0],
+      [2032.0, 1920.0]
+    ]
+    
+    # Price lookup points
+    price_Product_One: [
+      [2025.0, 100.0],
+      [2026.0, 105.0],
+      [2027.0, 110.0],
+      [2028.0, 115.0],
+      [2029.0, 120.0],
+      [2030.0, 125.0],
+      [2031.0, 130.0],
+      [2032.0, 135.0]
+    ]
+    price_Product_Two: [
+      [2025.0, 80.0],
+      [2026.0, 84.0],
+      [2027.0, 88.0],
+      [2028.0, 92.0],
+      [2029.0, 96.0],
+      [2030.0, 100.0],
+      [2031.0, 104.0],
+      [2032.0, 108.0]
+    ]
+    
+  # Seed data for initial conditions
+  seeds_active_anchor_clients_sm:
+    Sector_One_Product_One: 2
+    Sector_Two_Product_Two: 1
+    
+  seeds_elapsed_quarters:
+    Sector_One_Product_One: 8
+    Sector_Two_Product_Two: 4
+    
+  seeds_direct_clients:
+    Product_One: 5
+    Product_Two: 3
 

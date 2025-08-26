@@ -122,7 +122,7 @@ def render_client_revenue_editor(
     
     col1, col2 = st.columns([1, 3])
     with col1:
-        if st.button("💾 Save Changes", type="primary", disabled=not has_changes):
+        if st.button("💾 Save Changes", type="primary", disabled=not has_changes, key="client_revenue_save_btn"):
             if on_save:
                 on_save(state)
             st.success("✅ Client revenue parameters saved successfully!")

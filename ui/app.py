@@ -15,25 +15,21 @@ import sys
 
 # Add the src directory to the Python path
 sys.path.append(str(Path(__file__).parent.parent / "src"))
+# Add the ui directory to the Python path for absolute imports
+sys.path.append(str(Path(__file__).parent.parent))
 
 # Import the bundle and UI components
 from phase1_data import load_phase1_inputs
-from ui.services.validation_client import get_permissible_keys, try_validate_scenario_dict
 
 # Import UI components
 from ui.components.simulation_definitions_editor import render_simulation_definitions_editor
-from ui.components.constants_editor import render_constants_editor
-from ui.components.points_editor import render_points_editor
-from ui.components.seeds_editor import render_seeds_editor
 from ui.components.runspecs_form import render_runspecs_form
 from ui.components.primary_map_editor import render_primary_map_editor
 from ui.components.client_revenue_editor import render_client_revenue_editor
 from ui.components.direct_market_revenue_editor import render_direct_market_revenue_editor
-
-# Import services
-from ui.services.builder import (
-    write_scenario_yaml,
-)
+from ui.components.lookup_points_editor import render_lookup_points_editor
+from ui.components.runner_tab import render_runner_tab
+from ui.components.logs_tab import render_logs_tab
 
 # Import state
 from ui.state import UIState
@@ -43,7 +39,7 @@ st.set_page_config(
     page_title="Growth Model UI",
     page_icon="📈",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
 # Initialize the bundle
@@ -79,6 +75,21 @@ def on_client_revenue_save(updated_client_revenue):
 def on_direct_market_revenue_save(updated_direct_market_revenue):
     """Callback when direct market revenue is saved."""
     ui_state.direct_market_revenue = updated_direct_market_revenue
+    st.session_state["ui_state"] = ui_state
+
+def on_lookup_points_save(updated_lookup_points):
+    """Callback when lookup points are saved."""
+    ui_state.lookup_points = updated_lookup_points
+    st.session_state["ui_state"] = ui_state
+
+def on_runner_save(updated_runner):
+    """Callback when runner settings are saved."""
+    ui_state.runner = updated_runner
+    st.session_state["ui_state"] = ui_state
+
+def on_logs_save(updated_logs):
+    """Callback when log settings are saved."""
+    ui_state.logs = updated_logs
     st.session_state["ui_state"] = ui_state
 
 # Helper function to extract sector-product combinations
@@ -200,117 +211,69 @@ def main():
         # Update the state
         ui_state.direct_market_revenue = updated_direct_market_revenue
     
-    # Tab 6: Lookup Points (placeholder for Phase 7)
+    # Tab 6: Lookup Points (Phase 7 - Implemented)
     with tabs[5]:
         st.header("Lookup Points")
-        st.caption("Time-series production capacity and pricing.")
-        st.info("🚧 This tab will be implemented in Phase 7.")
+        st.caption("Time-series production capacity and pricing per product per year.")
+        
+        # Get products from simulation definitions
+        products = ui_state.simulation_definitions.products
+        
+        # Get simulation time parameters from runspecs
+        start_year = ui_state.runspecs.starttime
+        stop_year = ui_state.runspecs.stoptime
+        dt = ui_state.runspecs.dt
+        
+        # Render the lookup points editor
+        updated_lookup_points = render_lookup_points_editor(
+            ui_state.lookup_points,
+            products=products,
+            start_year=start_year,
+            stop_year=stop_year,
+            dt=dt,
+            on_save=on_lookup_points_save
+        )
+        
+        # Update the state
+        ui_state.lookup_points = updated_lookup_points
     
-    # Tab 7: Runner (placeholder for Phase 8)
+    # Tab 7: Runner (Phase 8 - Implemented)
     with tabs[6]:
         st.header("Runner")
-        st.caption("Scenario execution and monitoring.")
-        st.info("🚧 This tab will be implemented in Phase 8.")
+        st.caption("Scenario execution and monitoring with execution controls.")
+        
+        # Render the runner tab
+        updated_runner = render_runner_tab(
+            ui_state.runner,
+            on_save=on_runner_save
+        )
+        
+        # Update the state
+        ui_state.runner = updated_runner
     
-    # Tab 8: Logs (placeholder for Phase 8)
+    # Tab 8: Logs (Phase 8 - Implemented)
     with tabs[7]:
         st.header("Logs")
-        st.caption("Simulation logs and monitoring.")
-        st.info("🚧 This tab will be implemented in Phase 8.")
-    
-    # Legacy Functions in Sidebar (temporarily moved here)
-    with st.sidebar:
-        st.header("Legacy Functions")
-        st.caption("These functions will be integrated into the new tab structure.")
+        st.caption("Simulation logs display, filtering, and export functionality.")
         
-        # Constants editor (moved from Tab 2)
-        st.subheader("Constants Overrides")
-        perms = get_permissible_keys(
-            bundle,
-            anchor_mode=ui_state.runspecs.anchor_mode,
-            extra_pairs=extra_pairs or None,
-        )
-        ui_state.overrides = render_constants_editor(ui_state.overrides, perms.constants)
-        
-        # Points editor (moved from Tab 3)
-        st.subheader("Points Overrides")
-        perms = get_permissible_keys(bundle, anchor_mode=ui_state.runspecs.anchor_mode)
-        ui_state.overrides = render_points_editor(ui_state.overrides, perms.points)
-        
-        # Seeds editor (moved from Tab 4)
-        st.subheader("Seeds Configuration")
-        ui_state.seeds = render_seeds_editor(ui_state.seeds, bundle, ui_state.runspecs.anchor_mode)
-        
-        # Validate & Save (moved from Tab 5)
-        st.subheader("Validate & Save")
-        scenario_dict = ui_state.to_scenario_dict_normalized()
-        ok, err = try_validate_scenario_dict(bundle, scenario_dict)
-        if ok:
-            st.success("✅ Scenario validates")
-        else:
-            st.error(f"❌ Validation error: {err}")
-        
-        # Run Controls
-        st.markdown("---")
-        st.header("Run Controls")
-        
-        # Run Preset
-        st.subheader("Run Preset")
-        preset_scenario = st.selectbox(
-            "Select Scenario",
-            ["baseline", "high_capacity", "price_shock", "working_scenario"],
-            key="preset_scenario"
+        # Render the logs tab
+        updated_logs = render_logs_tab(
+            ui_state.logs,
+            on_save=on_logs_save
         )
         
-        if st.button("Run Preset", key="run_preset_btn"):
-            with st.spinner(f"Running {preset_scenario}..."):
-                # Run the preset scenario
-                pass
-        
-        # Validate, Save, and Run Current
-        st.subheader("Current Scenario")
-        
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("Validate", key="validate_btn"):
-                scenario_dict = ui_state.to_scenario_dict_normalized()
-                ok, err = try_validate_scenario_dict(bundle, scenario_dict)
-                if ok:
-                    st.success("✅ Scenario validates")
-                else:
-                    st.error(f"❌ Validation error: {err}")
-        
-        with col2:
-            if st.button("Save", key="save_btn"):
-                scenario_dict = ui_state.to_scenario_dict_normalized()
-                scenario_name = ui_state.name
-                scenario_path = Path("scenarios") / f"{scenario_name}.yaml"
-                
-                try:
-                    write_scenario_yaml(scenario_dict, scenario_path)
-                    st.success(f"✅ Scenario saved to {scenario_path}")
-                except Exception as e:
-                    st.error(f"❌ Error saving scenario: {e}")
-        
-        if st.button("Run Current", key="run_current_btn", type="primary"):
-            with st.spinner("Running current scenario..."):
-                # Run the current scenario
-                pass
+        # Update the state
+        ui_state.logs = updated_logs
     
     # Main content area info
     st.markdown("---")
     st.info(
         "🎯 **New UI Structure**: This interface has been restructured with 8 tabs for better "
-        "organization. Phases 1-6 are now complete with enhanced functionality including "
-        "save protection, change tracking, dynamic table generation, and comprehensive "
-        "parameter management. Legacy functions are temporarily available in the sidebar "
-        "and will be integrated into their respective tabs in future phases."
+        "organization. **All Phases 1-8 are now complete** with enhanced functionality including "
+        "save protection, change tracking, dynamic table generation, comprehensive parameter "
+        "management, scenario execution controls, and simulation monitoring. The UI now provides "
+        "a complete, integrated experience for scenario management and execution."
     )
 
 if __name__ == "__main__":
-    # Get extra pairs for validation
-    extra_pairs = None
-    if hasattr(bundle, 'lists') and hasattr(bundle.lists, 'sectors') and hasattr(bundle.lists, 'products'):
-        extra_pairs = [(s, p) for s in bundle.lists.sectors for p in bundle.lists.products]
-    
     main()

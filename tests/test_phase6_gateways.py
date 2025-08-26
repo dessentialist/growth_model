@@ -12,7 +12,7 @@ from src.naming import (
     delayed_agent_demand,
     anchor_delivery_flow_sector_product,
     anchor_delivery_flow_product,
-    anchor_constant,
+    anchor_constant_sm,
 )
 
 
@@ -52,8 +52,8 @@ class TestPhase6Gateways(unittest.TestCase):
         name_adf_m = anchor_delivery_flow_product(product)
         self.assertIn(name_adf_m, getattr(model, "converters", {}))
 
-        # requirement_to_order_lag constant (sector-level) must exist
-        name_rtol = anchor_constant("requirement_to_order_lag", sector)
+        # requirement_to_order_lag constant (per-sector-product) must exist
+        name_rtol = anchor_constant_sm("requirement_to_order_lag", sector, product)
         self.assertIn(name_rtol, getattr(model, "constants", {}))
 
         # Numeric update should be accepted for gateway inputs (no compile-time error)

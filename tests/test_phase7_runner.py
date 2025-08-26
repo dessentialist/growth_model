@@ -4,7 +4,7 @@ from pathlib import Path
 from src.phase1_data import load_phase1_inputs
 from src.scenario_loader import load_and_validate_scenario
 from src.growth_model import build_phase4_model, apply_scenario_overrides
-from src.naming import agents_to_create_converter, agent_demand_sector_input
+from src.naming import agents_to_create_converter_sm, agent_demand_sector_input
 
 
 class TestPhase7RunnerScaffolding(unittest.TestCase):
@@ -24,8 +24,8 @@ class TestPhase7RunnerScaffolding(unittest.TestCase):
         sector = str(row.Sector)
         material = str(row.Material)
 
-        # Agent creation signal should be present and evaluable at start time
-        name_to_create = agents_to_create_converter(sector)
+        # Agent creation signal should be present and evaluable at start time (SM-mode)
+        name_to_create = agents_to_create_converter_sm(sector, material)
         k0 = int(model.evaluate_equation(name_to_create, self.scenario.runspecs.starttime))
         self.assertGreaterEqual(k0, 0)
 

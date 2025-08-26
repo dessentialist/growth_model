@@ -21,7 +21,7 @@ from src.scenario_loader import load_and_validate_scenario
 from src.growth_model import build_phase4_model, apply_scenario_overrides
 from src.validation import (
     echo_scenario_overrides,
-    validate_agents_to_create_signals,
+    validate_agents_to_create_sm_signals,
     validate_fulfillment_ratio_bounds,
     validate_revenue_identity,
 )
@@ -44,8 +44,12 @@ class TestPhase9Validation(unittest.TestCase):
     def test_agents_to_create_integer(self):
         # Evaluate at t=starttime without advancing scheduler
         t = float(self.scenario.runspecs.starttime)
+        # Build sector-product pairs for SM-mode validation
+        pairs = []
+        for _, row in self.bundle.primary_map.long.iterrows():
+            pairs.append((str(row.Sector), str(row.Material)))
         # Should not raise for baseline
-        validate_agents_to_create_signals(model=self.model, sectors=self.bundle.lists.sectors, t=t)
+        validate_agents_to_create_sm_signals(model=self.model, pairs=pairs, t=t)
 
     def test_fulfillment_ratio_bounds(self):
         t = float(self.scenario.runspecs.starttime)
