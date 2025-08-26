@@ -8,10 +8,12 @@ allow keys from the permissible set to avoid name drift. Values are coerced to
 float by Streamlit inputs; backend will re-validate on save.
 
 This component is now framework-agnostic and works with the new state management system.
+Phase 2: Enhanced with table-based input using st.data_editor() for improved UX.
 """
 
 from typing import List, Dict
 import streamlit as st
+import pandas as pd
 
 # Import from the new framework-agnostic business logic
 from ui.state import ScenarioOverridesState
@@ -62,36 +64,68 @@ def render_constants_editor(
         if on_constants_update:
             on_constants_update(current_constants)
 
-    # Existing overrides table with inline editing
+    # Existing overrides table with inline editing using st.data_editor()
     if current_constants:
         st.markdown("**Current Constants Overrides:**")
         
-        # Create a more organized table layout
+        # Convert to DataFrame for st.data_editor()
+        constants_data = []
+        for k, v in sorted(current_constants.items()):
+            constants_data.append({
+                "Constant Name": k,
+                "Current Value": float(v),
+                "Actions": f"actions_{k}"
+            })
+        
+        constants_df = pd.DataFrame(constants_data)
+        
+        # Use st.data_editor for table-based editing
+        edited_df = st.data_editor(
+            constants_df,
+            column_config={
+                "Constant Name": st.column_config.TextColumn(
+                    "Constant Name",
+                    help="Name of the constant parameter",
+                    disabled=True  # Names cannot be edited
+                ),
+                "Current Value": st.column_config.NumberColumn(
+                    "Current Value",
+                    help="Numeric value for the constant",
+                    min_value=None,
+                    max_value=None,
+                    step=0.01,
+                    format="%.4f"
+                ),
+                "Actions": st.column_config.Column(
+                    "Actions",
+                    help="Actions available for this constant"
+                )
+            },
+            hide_index=True,
+            key="constants_data_editor"
+        )
+        
+        # Process changes from the data editor
+        if not edited_df.equals(constants_df):
+            # Update values based on edited data
+            for idx, row in edited_df.iterrows():
+                constant_name = row["Constant Name"]
+                new_value = row["Current Value"]
+                if constant_name in current_constants and new_value != current_constants[constant_name]:
+                    current_constants[constant_name] = float(new_value)
+                    if on_constants_update:
+                        on_constants_update(current_constants)
+        
+        # Add delete buttons below the table for each constant
+        st.markdown("**Delete Constants:**")
+        delete_cols = st.columns(min(4, len(current_constants)))
         for i, (k, v) in enumerate(sorted(current_constants.items())):
-            with st.container():
-                col1, col2, col3, col4 = st.columns([3, 2, 1, 1])
-                with col1:
-                    st.text(f"**{k}**")
-                with col2:
-                    new_val = st.number_input(
-                        f"Value for {k}", 
-                        value=float(v), 
-                        key=f"const_edit_{k}_{i}",
-                        step=0.01
-                    )
-                    # Update value if changed
-                    if new_val != v:
-                        current_constants[k] = float(new_val)
-                        if on_constants_update:
-                            on_constants_update(current_constants)
-                with col3:
-                    st.text(f"Current: {v}")
-                with col4:
-                    if st.button("Remove", key=f"rm_{k}_{i}", type="secondary"):
-                        current_constants.pop(k, None)
-                        if on_constants_update:
-                            on_constants_update(current_constants)
-                        st.rerun()
+            with delete_cols[i % len(delete_cols)]:
+                if st.button(f"🗑️ {k}", key=f"rm_{k}_{i}", type="secondary"):
+                    current_constants.pop(k, None)
+                    if on_constants_update:
+                        on_constants_update(current_constants)
+                    st.rerun()
     else:
         st.info("No constants overridden yet.")
 

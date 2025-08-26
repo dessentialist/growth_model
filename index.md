@@ -10,13 +10,19 @@ This document provides a concise overview of the repository layout, the purpose 
   - NEW (Quarter semantics debugging): Emits optional DEBUG snapshots for early, midpoint, and last steps showing CPC vs ATAM per sector, CL vs TAM per product, and per-product `Potential_Clients`, `C`, and `Client_Creation` to verify per-quarter pacing.
   - Phase 15: Variable horizon. The runner and extractor emit one column per simulated step using labels derived from the time grid (`starttime`, `dt`, `num_steps`). Lead KPIs are reported per-step by scaling per-year SD converters by `dt`. Lookup tail policy is hold-last-value, with WARN logs when the grid is outside the defined points.
   - Phase 16: Anchor per-(sector, product) parameters. Scenarios and inputs can set per-(s,p) requirement phase parameters and lag. The model builds per-(s,p) constants with precedence (use per-(s,p) if provided else sector-level). Scenario overrides accept per-(s,p) constant names.
-- `ui/`: Streamlit GUI scaffolding and services.
-  - `ui/app.py`: Scenario Editor & Runner. Tabs for Runspecs, Constants, Points, Primary Map, Seeds, Validate & Save, and Run (Phases 3–9). In‑memory validation against backend helpers, YAML writer, preset manager (load/duplicate), run‑current functionality, log rendering during runs, and CSV preview.
-  - `ui/state.py`: Typed UI state (`UIState`, `RunspecsState`, `ScenarioOverridesState`, `PrimaryMapState`, `SeedsState`) with helpers to assemble a scenario dict including `overrides.primary_map` and `seeds`, and `load_from_scenario_dict` to populate the editor from existing scenarios.
+- `ui/`: Streamlit GUI scaffolding and services with new 8-tab structure (Phases 1-2 completed).
+  - `ui/app.py`: **NEW 8-TAB STRUCTURE** - Scenario Editor & Runner with tabs for Simulation Definitions, Simulation Specs, Primary Mapping, Client Revenue, Direct Market Revenue, Lookup Points, Runner, and Logs. **Phases 1-4 COMPLETED**: New tab structure implemented with Simulation Definitions tab for market/sector/product list management, enhanced Simulation Specs tab with save protection and scenario management, and enhanced Primary Mapping tab with dynamic table generation and insights. Legacy functionality temporarily moved to sidebar for integration into new structure in future phases.
+  - `ui/state.py`: **ENHANCED** - Extended UI state classes for new 8-tab structure. Added `SimulationDefinitionsState`, `ClientRevenueState`, `DirectMarketRevenueState`, `LookupPointsState`, `RunnerState`, and `LogsState` with unsaved changes tracking for save button protection. Maintains existing `UIState`, `RunspecsState`, `ScenarioOverridesState`, `PrimaryMapState`, and `SeedsState` for backward compatibility.
   - `ui/services/builder.py`: Runner integration helpers (build command, run, start/terminate process, file‑tail, find latest results, optional plot generation), scenario file utilities (`write_scenario_yaml`, `read_scenario_yaml`, `list_available_scenarios`).
   - `ui/services/validation_client.py`: Thin client to list permissible override keys and validate in‑memory scenarios.
-  - `ui/components/`: UI widgets (`runspecs_form.py`, `constants_editor.py`, `points_editor.py`, `primary_map_editor.py`, `seeds_editor.py`).
-- `implementation_plan.md`: Executable plan for phased delivery (Phase 0 → Phase 11). Follow this for scope, success criteria, tests, and acceptance.
+  - `ui/components/`: **ENHANCED** - UI widgets with new components and enhanced existing ones.
+    - `simulation_definitions_editor.py`: **NEW** - Tab 1 component for market/sector/product list management with save button protection and table-based input.
+    - `constants_editor.py`: **ENHANCED** - Phase 2: Converted to table-based input using `st.data_editor()` for improved UX while preserving existing functionality.
+    - `runspecs_form.py`: Runspecs form for runtime controls and scenario management.
+    - `points_editor.py`: Points editor for time-series lookup overrides.
+    - `primary_map_editor.py`: Primary map editor for sector-product mapping with insights.
+    - `seeds_editor.py`: Seeds editor for seeding configuration.
+- `implementation_plan.md`: Executable plan for phased delivery (Phase 0 → Phase 11). **Phases 1-2 COMPLETED**: New tab structure and Simulation Definitions tab with table-based input implemented.
 - `technical_architecture.md`: System design and canonical naming/equations for SD+ABM integration; scenario schema and KPIs.
 - `system logic.txt`: Plain-language system logic capturing business intent and discrete-conversion behavior.
 - `requirements.txt`: Python dependencies (now pinned). Installed in `venv/` in development. BPTK_Py pinned to `2.1.1` to match the runner's API usage (`evaluate_equation`, `run_step`, `SimultaneousScheduler`).
@@ -97,5 +103,56 @@ This document provides a concise overview of the repository layout, the purpose 
 - `output/`:
   - Generated CSV outputs. Phase 8 writes `Product_Growth_System_Complete_Results.csv`.
   - `plots/`: Phase 12 image outputs when `--visualize` is used.
+
+### **NEW UI STRUCTURE (Phases 1-2 Completed)**
+
+The UI has been restructured to use a new 8-tab system as specified in the implementation plan:
+
+**Tab 1: Simulation Definitions** ✅ **COMPLETED**
+- Market, sector, and product list management
+- Table-based input with add/edit/delete functionality
+- Save button protection to prevent accidental changes
+- Dynamic content management
+
+**Tab 2: Simulation Specs** ✅ **COMPLETED (Phase 3)**
+- Runtime controls (start time, stop time, dt)
+- Anchor mode selection (Sector vs Sector+Product mode)
+- Enhanced with save protection and change tracking
+- Scenario management (load, reset to baseline)
+- Comprehensive validation and state management
+
+**Tab 3: Primary Mapping** ✅ **COMPLETED (Phase 4)**
+- Sector-wise product selection
+- Mapping insights and summary
+- Dynamic table generation
+- Save protection and change tracking
+- Enhanced visual organization and feedback
+
+**Tab 4: Client Revenue** ✅ **COMPLETED (Phase 5)**
+- Comprehensive parameter tables (19 parameters)
+- Market Activation, Orders, and Seeds groups
+- Dynamic content based on primary mapping
+- Table-based input with save button protection
+- Organized in three logical groups with descriptions
+
+**Tab 5: Direct Market Revenue** ✅ **COMPLETED (Phase 6)**
+- Product-specific parameters (9 parameters)
+- Dynamic content based on primary mapping
+- Table-based input with save button protection
+- Comprehensive parameter coverage for direct market revenue
+
+**Tab 6: Lookup Points** 🚧 **PLACEHOLDER (Phase 7)**
+- Time-series production capacity and pricing
+- Year-based structure with products as rows
+
+**Tab 7: Runner** 🚧 **PLACEHOLDER (Phase 8)**
+- Scenario execution and monitoring
+- Save, validate, and run controls
+
+**Tab 8: Logs** 🚧 **PLACEHOLDER (Phase 8)**
+- Simulation logs and monitoring
+- Log filtering and export functionality
+
+**Legacy Functions**: Temporarily moved to sidebar for integration into new structure in future phases.
 
 

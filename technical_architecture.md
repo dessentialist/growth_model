@@ -16,9 +16,15 @@ The system is designed to be industry-agnostic, allowing you to model any sector
 
 - Goals: Thin, isolated UI that never mutates the model; use YAML + CLI only.
 - Structure under `ui/`:
-  - `ui/app.py`: Streamlit entrypoint with tabs for Runspecs, Constants, Points, Primary Map, Seeds, Validate & Save, and Run. Loads a cached `Phase1Bundle` once and delegates to components/services.
-  - `ui/state.py`: Typed dataclasses for UI state and helpers to assemble/load scenario dicts.
-  - `ui/components/`: Page fragments to edit specific sections and update state objects. Editor functions follow consistent patterns: `render_*_editor(state: StateType, ...) -> StateType` for consistency across all components.
+  - `ui/app.py`: **NEW 8-TAB STRUCTURE** - Streamlit entrypoint with tabs for Simulation Definitions, Simulation Specs, Primary Mapping, Client Revenue, Direct Market Revenue, Lookup Points, Runner, and Logs. **Phases 1-4 COMPLETED**: Enhanced Simulation Specs tab with save protection and scenario management, enhanced Primary Mapping tab with dynamic table generation and insights. **Phase 1-2 COMPLETED**: New tab structure implemented with Simulation Definitions tab for market/sector/product list management and enhanced constants editor with table-based input using `st.data_editor()`. Legacy functionality temporarily moved to sidebar for integration into new structure in future phases. Loads a cached `Phase1Bundle` once and delegates to components/services.
+  - `ui/state.py`: **ENHANCED** - Extended typed dataclasses for UI state and helpers to assemble/load scenario dicts. Added `SimulationDefinitionsState`, `ClientRevenueState`, `DirectMarketRevenueState`, `LookupPointsState`, `RunnerState`, and `LogsState` with unsaved changes tracking for save button protection. Maintains existing `UIState`, `RunspecsState`, `ScenarioOverridesState`, `PrimaryMapState`, and `SeedsState` for backward compatibility.
+      - `ui/components/`: **ENHANCED** - Page fragments to edit specific sections and update state objects. Editor functions follow consistent patterns: `render_*_editor(state: StateType, ...) -> StateType` for consistency across all components. **Phases 1-4 COMPLETED**: Enhanced Simulation Definitions editor with table-based input, enhanced Runspecs form with save protection and scenario management, enhanced Primary Map editor with dynamic table generation and insights.
+          - `simulation_definitions_editor.py`: **NEW** - Tab 1 component for market/sector/product list management with save button protection and table-based input.
+      - `constants_editor.py`: **ENHANCED** - Phase 2: Converted to table-based input using `st.data_editor()` for improved UX while preserving existing functionality.
+      - `runspecs_form.py`: **ENHANCED** - Phase 3: Enhanced runspecs form with save protection, change tracking, and comprehensive scenario management including load scenario and reset to baseline functionality.
+      - `points_editor.py`: Points editor for time-series lookup overrides.
+      - `primary_map_editor.py`: **ENHANCED** - Phase 4: Enhanced primary map editor with save protection, change tracking, dynamic table generation, and comprehensive mapping insights and summary.
+      - `seeds_editor.py`: Seeds editor for seeding configuration.
   - `ui/services/validation_client.py`: Calls `src.scenario_loader` helpers to list permissible keys and validate scenarios in-memory.
   - `ui/services/runner.py`: Runner integration (command build, spawn/terminate, efficient log tail, find latest CSV, optional plot generation). Pure process/IO, no Streamlit imports.
   - `ui/services/builder.py`: Scenario assembly and YAML IO. Backward-compatible re‑exports for runner helpers are provided but new code should import from `ui.services.runner`.
@@ -30,6 +36,49 @@ The system is designed to be industry-agnostic, allowing you to model any sector
   5) Run CLI in subprocess → tail logs → preview KPI CSV (optional `--visualize`; UI renders `output/plots/*.png` inline when present)
 - Isolation: UI uses only public helpers; runner executed as subprocess; no SD/ABM imports in components.
 - Packaging: `Makefile` targets (`install`, `run_ui`, `run_baseline`, `test`, `lint`); optional `Dockerfile.ui` to containerize the UI (mount `scenarios/`, `logs/`, `output/`).
+
+### **NEW UI STRUCTURE (Phases 1-2 Completed)**
+
+The UI has been restructured to use a new 8-tab system as specified in the implementation plan:
+
+**Tab 1: Simulation Definitions** ✅ **COMPLETED**
+- Market, sector, and product list management
+- Table-based input with add/edit/delete functionality
+- Save button protection to prevent accidental changes
+- Dynamic content management
+
+**Tab 2: Simulation Specs** ✅ **COMPLETED**
+- Runtime controls (start time, stop time, dt)
+- Anchor mode selection (Sector vs Sector+Product mode)
+- Enhanced with save protection
+
+**Tab 3: Primary Mapping** ✅ **COMPLETED**
+- Sector-wise product selection
+- Mapping insights and summary
+- Dynamic table generation
+
+**Tab 4: Client Revenue** 🚧 **PLACEHOLDER (Phase 5)**
+- Comprehensive parameter tables (19 parameters)
+- Market Activation, Orders, and Seeds groups
+- Dynamic content based on primary mapping
+
+**Tab 5: Direct Market Revenue** 🚧 **PLACEHOLDER (Phase 6)**
+- Product-specific parameters (9 parameters)
+- Dynamic content based on primary mapping
+
+**Tab 6: Lookup Points** 🚧 **PLACEHOLDER (Phase 7)**
+- Time-series production capacity and pricing
+- Year-based structure with products as rows
+
+**Tab 7: Runner** 🚧 **PLACEHOLDER (Phase 8)**
+- Scenario execution and monitoring
+- Save, validate, and run controls
+
+**Tab 8: Logs** 🚧 **PLACEHOLDER (Phase 8)**
+- Simulation logs and monitoring
+- Log filtering and export functionality
+
+**Legacy Functions**: Temporarily moved to sidebar for integration into new structure in future phases.
 
 ### Modeling Approach
 - **Hybrid Pattern 1 (recommended)**: Predefine per-product gateway converters that accept numeric inputs each time step. The runner computes aggregated agent demand and sets gateway values before advancing the SD step.

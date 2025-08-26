@@ -30,6 +30,127 @@ class RunspecsState:
 
 
 @dataclass
+class SimulationDefinitionsState:
+    """Holds the market, sector, and product lists for simulation configuration.
+    
+    These lists define the universe of markets, sectors, and products that can
+    be used in the simulation. They are editable through the UI and must be
+    saved before changes take effect.
+    """
+    
+    markets: List[str] = field(default_factory=lambda: ["Global"])
+    sectors: List[str] = field(default_factory=lambda: ["Sector_One", "Sector_Two"])
+    products: List[str] = field(default_factory=lambda: ["Product_One", "Product_Two"])
+    
+    # Track unsaved changes for save button functionality
+    has_unsaved_changes: bool = False
+
+
+@dataclass
+class ClientRevenueState:
+    """Holds client revenue parameters organized by sector-product combinations.
+    
+    This state manages the 19 parameters for client revenue across three groups:
+    - Market Activation (9 parameters)
+    - Orders (9 parameters) 
+    - Seeds (3 parameters)
+    
+    Parameters are organized by sector-product combinations that are dynamically
+    populated based on the primary mapping selections.
+    """
+    
+    # Market Activation Parameters (9 total)
+    market_activation_params: Dict[str, Dict[str, float]] = field(default_factory=dict)
+    
+    # Orders Parameters (9 total)  
+    orders_params: Dict[str, Dict[str, float]] = field(default_factory=dict)
+    
+    # Seeds Parameters (3 total)
+    seeds_params: Dict[str, Dict[str, float]] = field(default_factory=dict)
+    
+    # Track unsaved changes for save button functionality
+    has_unsaved_changes: bool = False
+
+
+@dataclass
+class DirectMarketRevenueState:
+    """Holds direct market revenue parameters organized by sector-product combinations.
+    
+    This state manages the 9 parameters for direct market revenue:
+    - lead_start_year, inbound_lead_generation_rate, outbound_lead_generation_rate
+    - lead_to_c_conversion_rate, lead_to_requirement_delay, requirement_to_fulfilment_delay
+    - avg_order_quantity_initial, client_requirement_growth, TAM
+    
+    Parameters are organized by sector-product combinations that are dynamically
+    populated based on the primary mapping selections.
+    """
+    
+    # Direct Market Revenue Parameters (9 total)
+    direct_market_params: Dict[str, Dict[str, float]] = field(default_factory=dict)
+    
+    # Track unsaved changes for save button functionality
+    has_unsaved_changes: bool = False
+
+
+@dataclass
+class LookupPointsState:
+    """Holds time-series lookup points for production capacity and pricing.
+    
+    This state manages:
+    - Production capacity lookup tables (max_capacity_<product>)
+    - Price lookup tables (price_<product>)
+    
+    Tables are organized with years as columns and products as rows.
+    """
+    
+    # Production capacity lookup tables per product per year
+    production_capacity: Dict[str, Dict[float, float]] = field(default_factory=dict)
+    
+    # Price lookup tables per product per year
+    pricing: Dict[str, Dict[float, float]] = field(default_factory=dict)
+    
+    # Track unsaved changes for save button functionality
+    has_unsaved_changes: bool = False
+
+
+@dataclass
+class RunnerState:
+    """Holds runner execution state and configuration.
+    
+    This state manages scenario execution controls, monitoring, and status.
+    """
+    
+    # Execution status
+    is_running: bool = False
+    current_scenario: Optional[str] = None
+    
+    # Execution settings
+    debug_mode: bool = False
+    generate_plots: bool = False
+    kpi_sm_revenue_rows: bool = False
+    kpi_sm_client_rows: bool = False
+    
+    # Track unsaved changes for save button functionality
+    has_unsaved_changes: bool = False
+
+
+@dataclass
+class LogsState:
+    """Holds logs configuration and display state.
+    
+    This state manages simulation logs display, filtering, and export.
+    """
+    
+    # Log display settings
+    log_level: str = "INFO"
+    max_log_lines: int = 1000
+    auto_refresh: bool = True
+    
+    # Track unsaved changes for save button functionality
+    has_unsaved_changes: bool = False
+
+
+@dataclass
 class ScenarioOverridesState:
     """Holds override maps for constants and points (lookups).
 
@@ -90,9 +211,15 @@ class UIState:
 
     name: str = "working_scenario"
     runspecs: RunspecsState = field(default_factory=RunspecsState)
+    simulation_definitions: SimulationDefinitionsState = field(default_factory=SimulationDefinitionsState)
     overrides: ScenarioOverridesState = field(default_factory=ScenarioOverridesState)
     primary_map: PrimaryMapState = field(default_factory=PrimaryMapState)
+    client_revenue: ClientRevenueState = field(default_factory=ClientRevenueState)
+    direct_market_revenue: DirectMarketRevenueState = field(default_factory=DirectMarketRevenueState)
+    lookup_points: LookupPointsState = field(default_factory=LookupPointsState)
     seeds: SeedsState = field(default_factory=SeedsState)
+    runner: RunnerState = field(default_factory=RunnerState)
+    logs: LogsState = field(default_factory=LogsState)
 
     def to_scenario_dict(self) -> dict:
         """Translate to a plain dict expected by scenario validation.
@@ -261,6 +388,12 @@ class UIState:
 
 __all__ = [
     "RunspecsState",
+    "SimulationDefinitionsState",
+    "ClientRevenueState", 
+    "DirectMarketRevenueState",
+    "LookupPointsState",
+    "RunnerState",
+    "LogsState",
     "ScenarioOverridesState",
     "PrimaryMapEntry",
     "PrimaryMapState",
