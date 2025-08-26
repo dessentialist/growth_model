@@ -27,9 +27,6 @@ class RunspecsState:
     stoptime: float = 2032.0
     dt: float = 0.25
     anchor_mode: str = "sector"
-    
-    # Track which scenario is currently loaded
-    loaded_scenario_name: str = "working_scenario"
 
 
 @dataclass

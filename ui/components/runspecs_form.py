@@ -37,6 +37,10 @@ def render_runspecs_form(
     """
     st.subheader("Runtime Controls")
     
+    # Initialize session state for scenario tracking (persistent across reruns)
+    if "loaded_scenario_name" not in st.session_state:
+        st.session_state.loaded_scenario_name = "working_scenario"
+    
     # Create a copy of the current state for editing
     editing_state = RunspecsState(
         starttime=state.starttime,
@@ -110,29 +114,17 @@ def render_runspecs_form(
     # Scenario Management Section
     st.markdown("**Scenario Management**")
     
-    # Track the currently loaded scenario (separate from input field)
-    if not hasattr(editing_state, 'loaded_scenario_name'):
-        editing_state.loaded_scenario_name = "working_scenario"
-    
-    # Scenario Name Input
+    # Scenario Name Input - use session state for persistence
     scenario_name = st.text_input(
         "Scenario Name",
-        value=editing_state.loaded_scenario_name,
+        value=st.session_state.loaded_scenario_name,
         placeholder="Enter scenario name",
-        help="Name for the current scenario configuration"
+        help="Name for the current scenario configuration",
+        key="scenario_name_input"
     )
     
     # Check if user entered a different scenario name
-    scenario_name_changed = scenario_name != editing_state.loaded_scenario_name
-    
-    # Current Scenario Status Display
-    st.markdown("**📋 Current Scenario Status**")
-    if editing_state.loaded_scenario_name != "working_scenario":
-        st.success(f"📁 **Loaded Scenario**: {editing_state.loaded_scenario_name}")
-        st.caption("This scenario is currently loaded and active. Changes will be applied to this scenario.")
-    else:
-        st.info("📝 **Default Scenario**: working_scenario")
-        st.caption("Using the default scenario name. You can change this to create a new scenario.")
+    scenario_name_changed = scenario_name != st.session_state.loaded_scenario_name
     
     # Save New Scenario Button (only shown when scenario name changes)
     if scenario_name_changed:
@@ -169,8 +161,8 @@ def render_runspecs_form(
                     st.success(f"✅ New scenario '{scenario_name}' created successfully!")
                     st.info(f"📁 Saved to: {saved_path.name}")
                     
-                    # Update the loaded scenario name to reflect the new scenario
-                    editing_state.loaded_scenario_name = scenario_name
+                    # Update the session state to reflect the new scenario
+                    st.session_state.loaded_scenario_name = scenario_name
                     
                     # Refresh the page to show the new scenario in the list
                     st.rerun()
@@ -191,11 +183,12 @@ def render_runspecs_form(
             "Choose scenario to load",
             options=scenario_options,
             index=0,
-            help="Load an existing scenario configuration"
+            help="Load an existing scenario configuration",
+            key="scenario_selector"
         )
         
         if selected_scenario != "Select a scenario...":
-            if st.button(f"Load {selected_scenario}"):
+            if st.button(f"Load {selected_scenario}", key=f"load_{selected_scenario}"):
                 try:
                     scenario_path = SCENARIOS_DIR / f"{selected_scenario}.yaml"
                     scenario_data = read_scenario_yaml(scenario_path)
@@ -210,8 +203,8 @@ def render_runspecs_form(
                         if mode in {"sector", "sm"}:
                             editing_state.anchor_mode = mode
                     
-                    # Update the loaded scenario name to reflect what's loaded
-                    editing_state.loaded_scenario_name = selected_scenario
+                    # Update the session state to reflect what's loaded
+                    st.session_state.loaded_scenario_name = selected_scenario
                     
                     st.success(f"✅ Scenario '{selected_scenario}' loaded successfully!")
                     changes_made = True
@@ -225,7 +218,7 @@ def render_runspecs_form(
     st.markdown("**Reset to Baseline**")
     st.caption("Baseline is a 'special' scenario that represents the default model configuration.")
     
-    if st.button("Reset to Baseline", type="secondary"):
+    if st.button("Reset to Baseline", type="secondary", key="reset_baseline"):
         try:
             # Load baseline scenario if it exists
             baseline_path = SCENARIOS_DIR / "baseline.yaml"
@@ -239,7 +232,7 @@ def render_runspecs_form(
                     editing_state.anchor_mode = str(rs.get("anchor_mode", "sector"))
                 
                 st.success("✅ Reset to baseline configuration!")
-                editing_state.loaded_scenario_name = "baseline"
+                st.session_state.loaded_scenario_name = "baseline"
                 changes_made = True
             else:
                 # Use default values if no baseline exists
@@ -248,8 +241,8 @@ def render_runspecs_form(
                 editing_state.dt = 0.25
                 editing_state.anchor_mode = "sector"
                 
-                # Update scenario name to reflect default
-                editing_state.loaded_scenario_name = "default"
+                # Update session state to reflect default
+                st.session_state.loaded_scenario_name = "default"
                 
                 st.success("✅ Reset to default configuration!")
                 changes_made = True
@@ -306,20 +299,29 @@ def render_runspecs_form(
             state.stoptime = editing_state.stoptime
             state.dt = editing_state.dt
             state.anchor_mode = editing_state.anchor_mode
-            state.loaded_scenario_name = editing_state.loaded_scenario_name
             
             # Call save callback if provided
             if on_save_callback:
                 on_save_callback(state)
             
             st.success("✅ Configuration saved successfully!")
-            editing_state.changes_made = False
+            changes_made = False
             
         except Exception as e:
             st.error(f"❌ Error saving configuration: {e}")
     
     # Summary Section
     st.markdown("**Current Configuration Summary**")
+    
+    # Current Scenario Status Display - shows actual loaded scenario
+    st.markdown("**📋 Current Scenario Status**")
+    if st.session_state.loaded_scenario_name != "working_scenario":
+        st.success(f"📁 **Loaded Scenario**: {st.session_state.loaded_scenario_name}")
+        st.caption("This scenario is currently loaded and active. Changes will be applied to this scenario.")
+    else:
+        st.info("📝 **Default Scenario**: working_scenario")
+        st.caption("Using the default scenario name. You can change this to create a new scenario.")
+    
     summary_data = {
         "Parameter": ["Start Time", "Stop Time", "dt", "Anchor Mode"],
         "Value": [

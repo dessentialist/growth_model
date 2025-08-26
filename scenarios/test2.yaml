@@ -1,0 +1,10 @@
+name: test2
+runspecs:
+  starttime: 2025.0
+  stoptime: 2032.0
+  dt: 0.25
+  anchor_mode: sm
+overrides:
+  constants: {}
+  points: {}
+  primary_map: {}
