@@ -5,7 +5,7 @@ This component provides a user interface for simulation logs display,
 filtering, and export functionality. It reads real logs from the
 simulation engine and provides comprehensive log management.
 
-Author: AI Assistant
+Author: Darpan Shah
 Date: 2024
 """
 

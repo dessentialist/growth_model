@@ -5,7 +5,7 @@ This is the main Streamlit application for the Growth Model UI.
 It provides a comprehensive interface for managing simulation scenarios,
 running simulations, and viewing results.
 
-Author: AI Assistant
+Author: Darpan Shah
 Date: 2024
 """
 

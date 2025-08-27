@@ -5,7 +5,7 @@ This component provides a user interface for managing time-series lookup points
 for production capacity and pricing. It includes table-based input with years
 as columns and products as rows, with save button protection.
 
-Author: AI Assistant
+Author: Darpan Shah
 Date: 2024
 """
 

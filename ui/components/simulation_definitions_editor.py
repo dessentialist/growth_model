@@ -4,7 +4,7 @@ Simulation Definitions Editor Component
 This component provides a user interface for managing the market, sector, and product lists
 that define the simulation universe. It includes add/delete functionality with save button protection.
 
-Author: AI Assistant
+Author: Darpan Shah
 Date: 2024
 """
 

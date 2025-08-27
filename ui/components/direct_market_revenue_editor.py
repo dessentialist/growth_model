@@ -4,7 +4,7 @@ Direct Market Revenue Editor Component
 This component provides a user interface for managing direct market revenue parameters
 for each product. It includes table-based input with save button protection for all 9 parameters.
 
-Author: AI Assistant
+Author: Darpan Shah
 Date: 2024
 """
 

@@ -5,7 +5,7 @@ This component provides a user interface for managing client revenue parameters
 organized in three groups: Market Activation, Orders, and Seeds. It includes
 table-based input with save button protection for all 19 parameters.
 
-Author: AI Assistant
+Author: Darpan Shah
 Date: 2024
 """
 

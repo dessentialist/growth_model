@@ -4,7 +4,7 @@ Tests for Phase 7-8 Components: Lookup Points, Runner, and Logs Tabs
 This test file validates the functionality of the newly implemented components
 for Phases 7-8 of the Growth Model UI restructuring.
 
-Author: AI Assistant
+Author: Darpan Shah
 Date: 2024
 """
 

@@ -6,7 +6,7 @@ monitoring, and progress tracking. It includes save button protection
 for execution settings and integrates with the backend runner service
 to display actual simulation results.
 
-Author: AI Assistant
+Author: Darpan Shah
 Date: 2024
 """
 
