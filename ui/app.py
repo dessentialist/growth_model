@@ -11,15 +11,9 @@ Date: 2024
 
 import streamlit as st
 from pathlib import Path
-import sys
-
-# Add the src directory to the Python path
-sys.path.append(str(Path(__file__).parent.parent / "src"))
-# Add the ui directory to the Python path for absolute imports
-sys.path.append(str(Path(__file__).parent.parent))
 
 # Import the bundle and UI components
-from phase1_data import load_phase1_inputs
+from src.phase1_data import load_phase1_inputs
 
 # Import UI components
 from ui.components.simulation_definitions_editor import render_simulation_definitions_editor
