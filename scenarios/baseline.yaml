@@ -1,0 +1,384 @@
+name: "baseline"
+runspecs:
+  starttime: 2025.0
+  stoptime: 2032.0
+  dt: 0.25
+  anchor_mode: "sm"  # Enable sector-material mode
+
+# Seed data for initial conditions using generic sector-product combinations
+seeds:
+  active_anchor_clients_sm:
+    Sector_1:
+      Product_1: 1
+      Product_4: 1
+    Sector_2:
+      Product_1: 1
+    Sector_3:
+      Product_2: 1
+    
+  elapsed_quarters_sm:
+    Sector_1:
+      Product_1: 8
+      Product_4: 4
+    Sector_2:
+      Product_1: 6
+    Sector_3:
+      Product_2: 2
+    
+  direct_clients:
+    Product_1: 0
+    Product_2: 0
+    Product_3: 0
+
+overrides:
+  constants:
+    # Direct market constants for products that have data
+    lead_start_year_Product_1: 2026.0
+    lead_start_year_Product_2: 2025.0
+    lead_start_year_Product_3: 2028.0
+    inbound_lead_generation_rate_Product_1: 1.0
+    inbound_lead_generation_rate_Product_2: 2.0
+    inbound_lead_generation_rate_Product_3: 1.0
+    outbound_lead_generation_rate_Product_1: 2.0
+    outbound_lead_generation_rate_Product_2: 4.0
+    outbound_lead_generation_rate_Product_3: 2.0
+    lead_to_c_conversion_rate_Product_1: 0.75
+    lead_to_c_conversion_rate_Product_2: 0.5
+    lead_to_c_conversion_rate_Product_3: 0.25
+    lead_to_requirement_delay_Product_1: 1.0
+    lead_to_requirement_delay_Product_2: 1.0
+    lead_to_requirement_delay_Product_3: 1.0
+    requirement_to_fulfilment_delay_Product_1: 1.0
+    requirement_to_fulfilment_delay_Product_2: 1.0
+    requirement_to_fulfilment_delay_Product_3: 1.0
+    avg_order_quantity_initial_Product_1: 10.0
+    avg_order_quantity_initial_Product_2: 100.0
+    avg_order_quantity_initial_Product_3: 5.0
+    client_requirement_growth_Product_1: 0.2
+    client_requirement_growth_Product_2: 0.33
+    client_requirement_growth_Product_3: 0.5
+    TAM_Product_1: 20.0
+    TAM_Product_2: 30.0
+    TAM_Product_3: 50.0
+    
+    # Sector-Product mode constants for generic sector-product combinations
+    anchor_start_year_Sector_1_Product_1: 2025.0
+    anchor_start_year_Sector_1_Product_3: 2027.0
+    anchor_start_year_Sector_1_Product_4: 2025.0
+    anchor_start_year_Sector_2_Product_1: 2025.0
+    anchor_start_year_Sector_2_Product_8: 2028.0
+    anchor_start_year_Sector_3_Product_2: 2025.0
+    anchor_start_year_Sector_4_Product_1: 2026.0
+    anchor_start_year_Sector_4_Product_3: 2027.0
+    anchor_start_year_Sector_4_Product_6: 2030.0
+    
+    # Use the values from the generic data for other parameters
+    anchor_client_activation_delay_Sector_1_Product_1: 4.0
+    anchor_client_activation_delay_Sector_1_Product_3: 4.0
+    anchor_client_activation_delay_Sector_1_Product_4: 4.0
+    anchor_client_activation_delay_Sector_2_Product_1: 4.0
+    anchor_client_activation_delay_Sector_2_Product_8: 4.0
+    anchor_client_activation_delay_Sector_3_Product_2: 2.0
+    anchor_client_activation_delay_Sector_4_Product_1: 4.0
+    anchor_client_activation_delay_Sector_4_Product_3: 4.0
+    anchor_client_activation_delay_Sector_4_Product_6: 4.0
+    
+    anchor_lead_generation_rate_Sector_1_Product_1: 0.5
+    anchor_lead_generation_rate_Sector_1_Product_3: 0.25
+    anchor_lead_generation_rate_Sector_1_Product_4: 0.5
+    anchor_lead_generation_rate_Sector_2_Product_1: 0.5
+    anchor_lead_generation_rate_Sector_2_Product_8: 0.25
+    anchor_lead_generation_rate_Sector_3_Product_2: 0.75
+    anchor_lead_generation_rate_Sector_4_Product_1: 0.5
+    anchor_lead_generation_rate_Sector_4_Product_3: 0.25
+    anchor_lead_generation_rate_Sector_4_Product_6: 0.25
+    
+    # Continue with other parameters from generic data...
+    lead_to_pc_conversion_rate_Sector_1_Product_1: 0.6666666666666666
+    lead_to_pc_conversion_rate_Sector_1_Product_3: 0.6666666666666666
+    lead_to_pc_conversion_rate_Sector_1_Product_4: 0.75
+    lead_to_pc_conversion_rate_Sector_2_Product_1: 0.6666666666666666
+    lead_to_pc_conversion_rate_Sector_2_Product_8: 0.5
+    lead_to_pc_conversion_rate_Sector_3_Product_2: 0.8
+    lead_to_pc_conversion_rate_Sector_4_Product_1: 0.6666666666666666
+    lead_to_pc_conversion_rate_Sector_4_Product_3: 0.3333333333333333
+    lead_to_pc_conversion_rate_Sector_4_Product_6: 0.3333333333333333
+    
+    project_generation_rate_Sector_1_Product_1: 0.5
+    project_generation_rate_Sector_1_Product_3: 0.5
+    project_generation_rate_Sector_1_Product_4: 0.5
+    project_generation_rate_Sector_2_Product_1: 0.5
+    project_generation_rate_Sector_2_Product_8: 0.5
+    project_generation_rate_Sector_3_Product_2: 0.5
+    project_generation_rate_Sector_4_Product_1: 0.5
+    project_generation_rate_Sector_4_Product_3: 0.5
+    project_generation_rate_Sector_4_Product_6: 0.5
+    
+    max_projects_per_pc_Sector_1_Product_1: 5.0
+    max_projects_per_pc_Sector_1_Product_3: 5.0
+    max_projects_per_pc_Sector_1_Product_4: 5.0
+    max_projects_per_pc_Sector_2_Product_1: 5.0
+    max_projects_per_pc_Sector_2_Product_8: 5.0
+    max_projects_per_pc_Sector_3_Product_2: 5.0
+    max_projects_per_pc_Sector_4_Product_1: 5.0
+    max_projects_per_pc_Sector_4_Product_3: 5.0
+    max_projects_per_pc_Sector_4_Product_6: 5.0
+    
+    project_duration_Sector_1_Product_1: 4.0
+    project_duration_Sector_1_Product_3: 8.0
+    project_duration_Sector_1_Product_4: 4.0
+    project_duration_Sector_2_Product_1: 6.0
+    project_duration_Sector_2_Product_8: 10.0
+    project_duration_Sector_3_Product_2: 2.0
+    project_duration_Sector_4_Product_1: 4.0
+    project_duration_Sector_4_Product_3: 8.0
+    project_duration_Sector_4_Product_6: 12.0
+    
+    projects_to_client_conversion_Sector_1_Product_1: 4.0
+    projects_to_client_conversion_Sector_1_Product_3: 4.0
+    projects_to_client_conversion_Sector_1_Product_4: 4.0
+    projects_to_client_conversion_Sector_2_Product_1: 4.0
+    projects_to_client_conversion_Sector_2_Product_8: 4.0
+    projects_to_client_conversion_Sector_3_Product_2: 2.0
+    projects_to_client_conversion_Sector_4_Product_1: 3.0
+    projects_to_client_conversion_Sector_4_Product_3: 4.0
+    projects_to_client_conversion_Sector_4_Product_6: 4.0
+    
+    initial_phase_duration_Sector_1_Product_1: 3.0
+    initial_phase_duration_Sector_1_Product_3: 3.0
+    initial_phase_duration_Sector_1_Product_4: 4.0
+    initial_phase_duration_Sector_2_Product_1: 6.0
+    initial_phase_duration_Sector_2_Product_8: 8.0
+    initial_phase_duration_Sector_3_Product_2: 2.0
+    initial_phase_duration_Sector_4_Product_1: 3.0
+    initial_phase_duration_Sector_4_Product_3: 4.0
+    initial_phase_duration_Sector_4_Product_6: 6.0
+    
+    initial_requirement_rate_Sector_1_Product_1: 20.0
+    initial_requirement_rate_Sector_1_Product_3: 10.0
+    initial_requirement_rate_Sector_1_Product_4: 5.0
+    initial_requirement_rate_Sector_2_Product_1: 25.0
+    initial_requirement_rate_Sector_2_Product_8: 25.0
+    initial_requirement_rate_Sector_3_Product_2: 50.0
+    initial_requirement_rate_Sector_4_Product_1: 10.0
+    initial_requirement_rate_Sector_4_Product_3: 5.0
+    initial_requirement_rate_Sector_4_Product_6: 2.0
+    
+    initial_req_growth_Sector_1_Product_1: 10.0
+    initial_req_growth_Sector_1_Product_3: 10.0
+    initial_req_growth_Sector_1_Product_4: 10.0
+    initial_req_growth_Sector_2_Product_1: 20.0
+    initial_req_growth_Sector_2_Product_8: 5.0
+    initial_req_growth_Sector_3_Product_2: 25.0
+    initial_req_growth_Sector_4_Product_1: 10.0
+    initial_req_growth_Sector_4_Product_3: 10.0
+    initial_req_growth_Sector_4_Product_6: 5.0
+    
+    ramp_phase_duration_Sector_1_Product_1: 6.0
+    ramp_phase_duration_Sector_1_Product_3: 4.0
+    ramp_phase_duration_Sector_1_Product_4: 4.0
+    ramp_phase_duration_Sector_2_Product_1: 4.0
+    ramp_phase_duration_Sector_2_Product_8: 8.0
+    ramp_phase_duration_Sector_3_Product_2: 3.0
+    ramp_phase_duration_Sector_4_Product_1: 4.0
+    ramp_phase_duration_Sector_4_Product_3: 4.0
+    ramp_phase_duration_Sector_4_Product_6: 6.0
+    
+    ramp_req_growth_Sector_1_Product_1: 33.0
+    ramp_req_growth_Sector_1_Product_3: 33.0
+    ramp_req_growth_Sector_1_Product_4: 40.0
+    ramp_req_growth_Sector_2_Product_1: 50.0
+    ramp_req_growth_Sector_2_Product_8: 30.0
+    ramp_req_growth_Sector_3_Product_2: 50.0
+    ramp_req_growth_Sector_4_Product_1: 33.0
+    ramp_req_growth_Sector_4_Product_3: 33.0
+    ramp_req_growth_Sector_4_Product_6: 10.0
+  
+    steady_req_growth_Sector_1_Product_1: 33.0
+    steady_req_growth_Sector_1_Product_3: 25.0
+    steady_req_growth_Sector_1_Product_4: 25.0
+    steady_req_growth_Sector_2_Product_1: 33.0
+    steady_req_growth_Sector_2_Product_8: 20.0
+    steady_req_growth_Sector_3_Product_2: 50.0
+    steady_req_growth_Sector_4_Product_1: 25.0
+    steady_req_growth_Sector_4_Product_3: 25.0
+    steady_req_growth_Sector_4_Product_6: 10.0
+    
+    requirement_to_order_lag_Sector_1_Product_1: 1.0
+    requirement_to_order_lag_Sector_1_Product_3: 1.0
+    requirement_to_order_lag_Sector_1_Product_4: 1.0
+    requirement_to_order_lag_Sector_2_Product_1: 1.0
+    requirement_to_order_lag_Sector_2_Product_8: 1.0
+    requirement_to_order_lag_Sector_3_Product_2: 1.0
+    requirement_to_order_lag_Sector_4_Product_1: 1.0
+    requirement_to_order_lag_Sector_4_Product_3: 1.0
+    requirement_to_order_lag_Sector_4_Product_6: 1.0
+    
+    ATAM_Sector_1_Product_1: 6.0
+    ATAM_Sector_1_Product_3: 3.0
+    ATAM_Sector_1_Product_4: 4.0
+    ATAM_Sector_2_Product_1: 6.0
+    ATAM_Sector_2_Product_8: 4.0
+    ATAM_Sector_3_Product_2: 5.0
+    ATAM_Sector_4_Product_1: 3.0
+    ATAM_Sector_4_Product_3: 3.0
+    ATAM_Sector_4_Product_6: 2.0
+    
+    # Requirement limit multipliers for SM mode
+    requirement_limit_multiplier_Sector_1_Product_1: 100.0
+    requirement_limit_multiplier_Sector_1_Product_3: 100.0
+    requirement_limit_multiplier_Sector_1_Product_4: 100.0
+    requirement_limit_multiplier_Sector_2_Product_1: 100.0
+    requirement_limit_multiplier_Sector_2_Product_8: 100.0
+    requirement_limit_multiplier_Sector_3_Product_2: 100.0
+    requirement_limit_multiplier_Sector_4_Product_1: 100.0
+    requirement_limit_multiplier_Sector_4_Product_3: 100.0
+    requirement_limit_multiplier_Sector_4_Product_6: 100.0
+    
+  points:
+    # Production capacity lookup points for products with data
+    max_capacity_Product_1: [
+      [2025.0, 5.0],
+      [2026.0, 3.68],
+      [2027.0, 5.53],
+      [2028.0, 7.37],
+      [2029.0, 7.37],
+      [2030.0, 9.21],
+      [2031.0, 9.21]
+    ]
+    max_capacity_Product_2: [
+      [2025.0, 5.0],
+      [2026.0, 203.3],
+      [2027.0, 254.12],
+      [2028.0, 304.95],
+      [2029.0, 355.77],
+      [2030.0, 406.6],
+      [2031.0, 457.42]
+    ]
+    max_capacity_Product_3: [
+      [2025.0, 5.0],
+      [2026.0, 16.78],
+      [2027.0, 16.78],
+      [2028.0, 22.38],
+      [2029.0, 22.38],
+      [2030.0, 27.97],
+      [2031.0, 27.97]
+    ]
+    max_capacity_Product_4: [
+      [2025.0, 5.0],
+      [2026.0, 20.52],
+      [2027.0, 20.52],
+      [2028.0, 20.52],
+      [2029.0, 34.2],
+      [2030.0, 34.2],
+      [2031.0, 34.2]
+    ]
+    max_capacity_Product_5: [
+      [2025.0, 0.0],
+      [2026.0, 0.0],
+      [2027.0, 0.0],
+      [2028.0, 4.46],
+      [2029.0, 4.46],
+      [2030.0, 5.95],
+      [2031.0, 8.92]
+    ]
+    max_capacity_Product_6: [
+      [2025.0, 0.0],
+      [2026.0, 0.0],
+      [2027.0, 0.0],
+      [2028.0, 0.0],
+      [2029.0, 7.68],
+      [2030.0, 7.68],
+      [2031.0, 10.25]
+    ]
+    max_capacity_Product_7: [
+      [2025.0, 0.0],
+      [2026.0, 0.0],
+      [2027.0, 0.0],
+      [2028.0, 0.0],
+      [2029.0, 47.66],
+      [2030.0, 47.66],
+      [2031.0, 63.55]
+    ]
+    max_capacity_Product_8: [
+      [2025.0, 0.0],
+      [2026.0, 0.0],
+      [2027.0, 0.0],
+      [2028.0, 0.0],
+      [2029.0, 0.0],
+      [2030.0, 0.0],
+      [2031.0, 0.0]
+    ]
+    
+    # Price lookup points for products with data
+    price_Product_1: [
+      [2025.0, 8000.0],
+      [2026.0, 8000.0],
+      [2027.0, 7500.0],
+      [2028.0, 7500.0],
+      [2029.0, 7000.0],
+      [2030.0, 7000.0],
+      [2031.0, 6500.0]
+    ]
+    price_Product_2: [
+      [2025.0, 500.0],
+      [2026.0, 500.0],
+      [2027.0, 500.0],
+      [2028.0, 450.0],
+      [2029.0, 450.0],
+      [2030.0, 400.0],
+      [2031.0, 350.0]
+    ]
+    price_Product_3: [
+      [2025.0, 18000.0],
+      [2026.0, 18000.0],
+      [2027.0, 18000.0],
+      [2028.0, 17000.0],
+      [2029.0, 16000.0],
+      [2030.0, 15000.0],
+      [2031.0, 15000.0]
+    ]
+    price_Product_4: [
+      [2025.0, 20000.0],
+      [2026.0, 20000.0],
+      [2027.0, 20000.0],
+      [2028.0, 18500.0],
+      [2029.0, 18000.0],
+      [2030.0, 17000.0],
+      [2031.0, 16000.0]
+    ]
+    price_Product_5: [
+      [2025.0, 10000.0],
+      [2026.0, 10000.0],
+      [2027.0, 10000.0],
+      [2028.0, 10000.0],
+      [2029.0, 10000.0],
+      [2030.0, 10000.0],
+      [2031.0, 10000.0]
+    ]
+    price_Product_6: [
+      [2025.0, 10000.0],
+      [2026.0, 10000.0],
+      [2027.0, 10000.0],
+      [2028.0, 10000.0],
+      [2029.0, 10000.0],
+      [2030.0, 10000.0],
+      [2031.0, 10000.0]
+    ]
+    price_Product_7: [
+      [2025.0, 10000.0],
+      [2026.0, 10000.0],
+      [2027.0, 10000.0],
+      [2028.0, 10000.0],
+      [2029.0, 10000.0],
+      [2030.0, 10000.0],
+      [2031.0, 10000.0]
+    ]
+    price_Product_8: [
+      [2027.0, 15000.0],
+      [2028.0, 15000.0],
+      [2029.0, 15000.0],
+      [2030.0, 15000.0],
+      [2031.0, 15000.0]
+    ]
+

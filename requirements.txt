@@ -1,0 +1,33 @@
+# Core data science packages (Python 3.12+ compatible)
+pandas>=2.3.0
+numpy>=2.3.1
+matplotlib>=3.10.3
+scipy>=1.15.3
+
+# BPTK framework - IMPORTANT: This is the correct package name
+# The code imports BPTK_Py (with underscores), which is provided by this package
+bptk-py>=2.1.1
+
+# Configuration and data handling
+PyYAML>=6.0.2
+
+# Visualization and UI
+streamlit>=1.48.1
+pillow>=11.3.0
+
+# Testing and development
+pytest>=8.4.1
+
+# Additional dependencies automatically installed via bptk-py
+# These are included when bptk-py is installed and provide the BPTK_Py module
+# ipywidgets>=8.1.7
+# xlsxwriter>=3.2.5
+# parsimonious>=0.10.0
+# xmltodict>=0.12.0
+# jinja2>=3.1.6
+# sympy>=1.14.0
+# distlib>=0.3.9
+# cachetools>=6.1.0
+# requests>=2.32.4
+# flask>=3.1.1
+# jsonpickle>=4.1.1

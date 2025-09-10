@@ -1,0 +1,1277 @@
+{
+  "lists": [
+    {
+      "Market": [
+        "Market_1",
+        "Market_2"
+      ]
+    },
+    {
+      "Sector": [
+        "Sector_1",
+        "Sector_2",
+        "Sector_3",
+        "Sector_4"
+      ]
+    },
+    {
+      "Product": [
+        "Product_1",
+        "Product_2",
+        "Product_3",
+        "Product_4",
+        "Product_5",
+        "Product_6",
+        "Product_7",
+        "Product_8"
+      ]
+    }
+  ],
+  "defaults": {
+    "runspecs": {
+      "starttime": 2025.0,
+      "stoptime": 2032.0,
+      "dt": 0.25,
+      "anchor_mode": "sector"
+    },
+    "default_market": "Market_1",
+    "client_revenue": {
+      "market_activation": {
+        "ATAM": 50.0,
+        "anchor_start_year": 2025.0,
+        "anchor_lead_generation_rate": 10.0,
+        "lead_to_pc_conversion_rate": 0.3,
+        "project_generation_rate": 2.0,
+        "project_duration": 4.0,
+        "projects_to_client_conversion": 0.4,
+        "max_projects_per_pc": 3.0,
+        "anchor_client_activation_delay": 2.0
+      },
+      "orders": {
+        "initial_phase_duration": 2.0,
+        "initial_requirement_rate": 100.0,
+        "initial_req_growth": 0.2,
+        "ramp_phase_duration": 3.0,
+        "ramp_requirement_rate": 0.0,
+        "ramp_req_growth": 0.15,
+        "steady_requirement_rate": 0.0,
+        "steady_req_growth": 0.1,
+        "requirement_to_order_lag": 1.0,
+        "ramp_requirement_rate_override": 0.0,
+        "steady_requirement_rate_override": 0.0,
+        "requirement_limit_multiplier": 100.0
+      },
+      "seeds": {
+        "completed_projects_sm": 0.0,
+        "active_anchor_clients_sm": 0.0,
+        "elapsed_quarters": 0.0
+      }
+    },
+    "direct_market_revenue": {
+      "lead_start_year": 2025.0,
+      "inbound_lead_generation_rate": 1.0,
+      "outbound_lead_generation_rate": 2.0,
+      "lead_to_c_conversion_rate": 0.5,
+      "lead_to_requirement_delay": 1.0,
+      "requirement_to_fulfilment_delay": 1.0,
+      "avg_order_quantity_initial": 10.0,
+      "client_requirement_growth": 0.2,
+      "requirement_limit_multiplier": 100.0,
+      "TAM": 50.0
+    }
+  },
+  "anchor_params": {
+    "ATAM": {
+      "Sector_1": 13.0,
+      "Sector_2": 10.0,
+      "Sector_3": 5.0,
+      "Sector_4": 8.0
+    },
+    "anchor_start_year": {
+      "Sector_1": 2025.0,
+      "Sector_2": 2025.0,
+      "Sector_3": 2025.0,
+      "Sector_4": 2026.0
+    },
+    "anchor_lead_generation_rate": {
+      "Sector_1": 0.5,
+      "Sector_2": 0.5,
+      "Sector_3": 0.75,
+      "Sector_4": 0.5
+    },
+    "lead_to_pc_conversion_rate": {
+      "Sector_1": 0.6666666666666666,
+      "Sector_2": 0.6666666666666666,
+      "Sector_3": 0.8,
+      "Sector_4": 0.6666666666666666
+    },
+    "project_generation_rate": {
+      "Sector_1": 0.5,
+      "Sector_2": 0.5,
+      "Sector_3": 0.5,
+      "Sector_4": 0.5
+    },
+    "project_duration": {
+      "Sector_1": 4.0,
+      "Sector_2": 6.0,
+      "Sector_3": 2.0,
+      "Sector_4": 4.0
+    },
+    "projects_to_client_conversion": {
+      "Sector_1": 4.0,
+      "Sector_2": 4.0,
+      "Sector_3": 2.0,
+      "Sector_4": 3.0
+    },
+    "max_projects_per_pc": {
+      "Sector_1": 5.0,
+      "Sector_2": 5.0,
+      "Sector_3": 5.0,
+      "Sector_4": 5.0
+    },
+    "anchor_client_activation_delay": {
+      "Sector_1": 4.0,
+      "Sector_2": 4.0,
+      "Sector_3": 2.0,
+      "Sector_4": 4.0
+    },
+    "initial_phase_duration": {
+      "Sector_1": 3.0,
+      "Sector_2": 6.0,
+      "Sector_3": 2.0,
+      "Sector_4": 3.0
+    },
+    "initial_requirement_rate": {
+      "Sector_1": 20.0,
+      "Sector_2": 25.0,
+      "Sector_3": 50.0,
+      "Sector_4": 10.0
+    },
+    "initial_req_growth": {
+      "Sector_1": 10.0,
+      "Sector_2": 20.0,
+      "Sector_3": 25.0,
+      "Sector_4": 10.0
+    },
+    "ramp_phase_duration": {
+      "Sector_1": 6.0,
+      "Sector_2": 4.0,
+      "Sector_3": 3.0,
+      "Sector_4": 4.0
+    },
+    "ramp_req_growth": {
+      "Sector_1": 33.0,
+      "Sector_2": 50.0,
+      "Sector_3": 50.0,
+      "Sector_4": 33.0
+    },
+    "steady_req_growth": {
+      "Sector_1": 33.0,
+      "Sector_2": 33.0,
+      "Sector_3": 50.0,
+      "Sector_4": 25.0
+    },
+    "requirement_to_order_lag": {
+      "Sector_1": 1.0,
+      "Sector_2": 1.0,
+      "Sector_3": 1.0,
+      "Sector_4": 1.0
+    },
+    "completed_projects_sm": {
+      "Sector_1": 4.0,
+      "Sector_2": 2.0,
+      "Sector_3": 0.0,
+      "Sector_4": 0.0
+    },
+    "active_anchor_clients_sm": {
+      "Sector_1": 0.0,
+      "Sector_2": 0.0,
+      "Sector_3": 0.0,
+      "Sector_4": 0.0
+    },
+    "elapsed_quarters": {
+      "Sector_1": 0.0,
+      "Sector_2": 0.0,
+      "Sector_3": 0.0,
+      "Sector_4": 0.0
+    },
+    "requirement_limit_multiplier": {
+      "Sector_1": 100.0,
+      "Sector_2": 100.0,
+      "Sector_3": 100.0,
+      "Sector_4": 100.0
+    }
+  },
+  "other_params": {
+    "lead_start_year": {
+      "Product_1": 2026.0,
+      "Product_2": 2025.0,
+      "Product_3": 2028.0,
+      "Product_4": 2025.0,
+      "Product_5": 2025.0,
+      "Product_6": 2025.0,
+      "Product_7": 2025.0,
+      "Product_8": 2025.0
+    },
+    "inbound_lead_generation_rate": {
+      "Product_1": 1.0,
+      "Product_2": 2.0,
+      "Product_3": 1.0,
+      "Product_4": 0,
+      "Product_5": 0,
+      "Product_6": 0,
+      "Product_7": 0,
+      "Product_8": 0
+    },
+    "outbound_lead_generation_rate": {
+      "Product_1": 2.0,
+      "Product_2": 4.0,
+      "Product_3": 2.0,
+      "Product_4": 0,
+      "Product_5": 0,
+      "Product_6": 0,
+      "Product_7": 0,
+      "Product_8": 0
+    },
+    "lead_to_c_conversion_rate": {
+      "Product_1": 0.75,
+      "Product_2": 0.5,
+      "Product_3": 0.25,
+      "Product_4": 1.0,
+      "Product_5": 1.0,
+      "Product_6": 1.0,
+      "Product_7": 1.0,
+      "Product_8": 1.0
+    },
+    "lead_to_requirement_delay": {
+      "Product_1": 1.0,
+      "Product_2": 1.0,
+      "Product_3": 1.0,
+      "Product_4": 1.0,
+      "Product_5": 1.0,
+      "Product_6": 1.0,
+      "Product_7": 1.0,
+      "Product_8": 1.0
+    },
+    "requirement_to_fulfilment_delay": {
+      "Product_1": 1.0,
+      "Product_2": 1.0,
+      "Product_3": 1.0,
+      "Product_4": 1.0,
+      "Product_5": 1.0,
+      "Product_6": 1.0,
+      "Product_7": 1.0,
+      "Product_8": 1.0
+    },
+    "avg_order_quantity_initial": {
+      "Product_1": 10.0,
+      "Product_2": 100.0,
+      "Product_3": 5.0,
+      "Product_4": 10.0,
+      "Product_5": 10.0,
+      "Product_6": 10.0,
+      "Product_7": 10.0,
+      "Product_8": 10.0
+    },
+    "client_requirement_growth": {
+      "Product_1": 20.0,
+      "Product_2": 33.0,
+      "Product_3": 50.0,
+      "Product_4": 0.1,
+      "Product_5": 0.1,
+      "Product_6": 0.1,
+      "Product_7": 0.1,
+      "Product_8": 0.1
+    },
+    "TAM": {
+      "Product_1": 20.0,
+      "Product_2": 30.0,
+      "Product_3": 50.0,
+      "Product_4": 50,
+      "Product_5": 50,
+      "Product_6": 50,
+      "Product_7": 50,
+      "Product_8": 50
+    }
+  },
+  "production": {
+    "Product_1": [
+      {
+        "year": 2025.0,
+        "capacity": 5.0
+      },
+      {
+        "year": 2026.0,
+        "capacity": 3.68
+      },
+      {
+        "year": 2027.0,
+        "capacity": 5.53
+      },
+      {
+        "year": 2028.0,
+        "capacity": 7.37
+      },
+      {
+        "year": 2029.0,
+        "capacity": 7.37
+      },
+      {
+        "year": 2030.0,
+        "capacity": 9.21
+      },
+      {
+        "year": 2031.0,
+        "capacity": 9.21
+      }
+    ],
+    "Product_2": [
+      {
+        "year": 2025.0,
+        "capacity": 5.0
+      },
+      {
+        "year": 2026.0,
+        "capacity": 203.3
+      },
+      {
+        "year": 2027.0,
+        "capacity": 254.12
+      },
+      {
+        "year": 2028.0,
+        "capacity": 304.95
+      },
+      {
+        "year": 2029.0,
+        "capacity": 355.77
+      },
+      {
+        "year": 2030.0,
+        "capacity": 406.6
+      },
+      {
+        "year": 2031.0,
+        "capacity": 457.42
+      }
+    ],
+    "Product_3": [
+      {
+        "year": 2025.0,
+        "capacity": 5.0
+      },
+      {
+        "year": 2026.0,
+        "capacity": 16.78
+      },
+      {
+        "year": 2027.0,
+        "capacity": 16.78
+      },
+      {
+        "year": 2028.0,
+        "capacity": 22.38
+      },
+      {
+        "year": 2029.0,
+        "capacity": 22.38
+      },
+      {
+        "year": 2030.0,
+        "capacity": 27.97
+      },
+      {
+        "year": 2031.0,
+        "capacity": 27.97
+      }
+    ],
+    "Product_4": [
+      {
+        "year": 2025.0,
+        "capacity": 5.0
+      },
+      {
+        "year": 2026.0,
+        "capacity": 20.52
+      },
+      {
+        "year": 2027.0,
+        "capacity": 20.52
+      },
+      {
+        "year": 2028.0,
+        "capacity": 20.52
+      },
+      {
+        "year": 2029.0,
+        "capacity": 34.2
+      },
+      {
+        "year": 2030.0,
+        "capacity": 34.2
+      },
+      {
+        "year": 2031.0,
+        "capacity": 34.2
+      }
+    ],
+    "Product_5": [
+      {
+        "year": 2025.0,
+        "capacity": 0.0
+      },
+      {
+        "year": 2026.0,
+        "capacity": 0.0
+      },
+      {
+        "year": 2027.0,
+        "capacity": 0.0
+      },
+      {
+        "year": 2028.0,
+        "capacity": 4.46
+      },
+      {
+        "year": 2029.0,
+        "capacity": 4.46
+      },
+      {
+        "year": 2030.0,
+        "capacity": 5.95
+      },
+      {
+        "year": 2031.0,
+        "capacity": 8.92
+      }
+    ],
+    "Product_6": [
+      {
+        "year": 2025.0,
+        "capacity": 0.0
+      },
+      {
+        "year": 2026.0,
+        "capacity": 0.0
+      },
+      {
+        "year": 2027.0,
+        "capacity": 0.0
+      },
+      {
+        "year": 2028.0,
+        "capacity": 0.0
+      },
+      {
+        "year": 2029.0,
+        "capacity": 7.68
+      },
+      {
+        "year": 2030.0,
+        "capacity": 7.68
+      },
+      {
+        "year": 2031.0,
+        "capacity": 10.25
+      }
+    ],
+    "Product_7": [
+      {
+        "year": 2025.0,
+        "capacity": 0.0
+      },
+      {
+        "year": 2026.0,
+        "capacity": 0.0
+      },
+      {
+        "year": 2027.0,
+        "capacity": 0.0
+      },
+      {
+        "year": 2028.0,
+        "capacity": 0.0
+      },
+      {
+        "year": 2029.0,
+        "capacity": 47.66
+      },
+      {
+        "year": 2030.0,
+        "capacity": 47.66
+      },
+      {
+        "year": 2031.0,
+        "capacity": 63.55
+      }
+    ],
+    "Product_8": [
+      {
+        "year": 2025.0,
+        "capacity": 0.0
+      },
+      {
+        "year": 2026.0,
+        "capacity": 0.0
+      },
+      {
+        "year": 2027.0,
+        "capacity": 0.0
+      },
+      {
+        "year": 2028.0,
+        "capacity": 0.0
+      },
+      {
+        "year": 2029.0,
+        "capacity": 0.0
+      },
+      {
+        "year": 2030.0,
+        "capacity": 0.0
+      },
+      {
+        "year": 2031.0,
+        "capacity": 0.0
+      }
+    ]
+  },
+  "pricing": {
+    "Product_1": [
+      {
+        "year": 2025.0,
+        "price": 8000.0
+      },
+      {
+        "year": 2026.0,
+        "price": 8000.0
+      },
+      {
+        "year": 2027.0,
+        "price": 7500.0
+      },
+      {
+        "year": 2028.0,
+        "price": 7500.0
+      },
+      {
+        "year": 2029.0,
+        "price": 7000.0
+      },
+      {
+        "year": 2030.0,
+        "price": 7000.0
+      },
+      {
+        "year": 2031.0,
+        "price": 6500.0
+      }
+    ],
+    "Product_2": [
+      {
+        "year": 2025.0,
+        "price": 500.0
+      },
+      {
+        "year": 2026.0,
+        "price": 500.0
+      },
+      {
+        "year": 2027.0,
+        "price": 500.0
+      },
+      {
+        "year": 2028.0,
+        "price": 450.0
+      },
+      {
+        "year": 2029.0,
+        "price": 450.0
+      },
+      {
+        "year": 2030.0,
+        "price": 400.0
+      },
+      {
+        "year": 2031.0,
+        "price": 350.0
+      }
+    ],
+    "Product_3": [
+      {
+        "year": 2025.0,
+        "price": 18000.0
+      },
+      {
+        "year": 2026.0,
+        "price": 18000.0
+      },
+      {
+        "year": 2027.0,
+        "price": 18000.0
+      },
+      {
+        "year": 2028.0,
+        "price": 17000.0
+      },
+      {
+        "year": 2029.0,
+        "price": 16000.0
+      },
+      {
+        "year": 2030.0,
+        "price": 15000.0
+      },
+      {
+        "year": 2031.0,
+        "price": 15000.0
+      }
+    ],
+    "Product_4": [
+      {
+        "year": 2025.0,
+        "price": 20000.0
+      },
+      {
+        "year": 2026.0,
+        "price": 20000.0
+      },
+      {
+        "year": 2027.0,
+        "price": 20000.0
+      },
+      {
+        "year": 2028.0,
+        "price": 18500.0
+      },
+      {
+        "year": 2029.0,
+        "price": 18000.0
+      },
+      {
+        "year": 2030.0,
+        "price": 17000.0
+      },
+      {
+        "year": 2031.0,
+        "price": 16000.0
+      }
+    ],
+    "Product_5": [
+      {
+        "year": 2025.0,
+        "price": 10000.0
+      },
+      {
+        "year": 2026.0,
+        "price": 10000.0
+      },
+      {
+        "year": 2027.0,
+        "price": 10000.0
+      },
+      {
+        "year": 2028.0,
+        "price": 10000.0
+      },
+      {
+        "year": 2029.0,
+        "price": 10000.0
+      },
+      {
+        "year": 2030.0,
+        "price": 10000.0
+      },
+      {
+        "year": 2031.0,
+        "price": 10000.0
+      }
+    ],
+    "Product_6": [
+      {
+        "year": 2025.0,
+        "price": 10000.0
+      },
+      {
+        "year": 2026.0,
+        "price": 10000.0
+      },
+      {
+        "year": 2027.0,
+        "price": 10000.0
+      },
+      {
+        "year": 2028.0,
+        "price": 10000.0
+      },
+      {
+        "year": 2029.0,
+        "price": 10000.0
+      },
+      {
+        "year": 2030.0,
+        "price": 10000.0
+      },
+      {
+        "year": 2031.0,
+        "price": 10000.0
+      }
+    ],
+    "Product_7": [
+      {
+        "year": 2025.0,
+        "price": 10000.0
+      },
+      {
+        "year": 2026.0,
+        "price": 10000.0
+      },
+      {
+        "year": 2027.0,
+        "price": 10000.0
+      },
+      {
+        "year": 2028.0,
+        "price": 10000.0
+      },
+      {
+        "year": 2029.0,
+        "price": 10000.0
+      },
+      {
+        "year": 2030.0,
+        "price": 10000.0
+      },
+      {
+        "year": 2031.0,
+        "price": 10000.0
+      }
+    ],
+    "Product_8": [
+      {
+        "year": 2027.0,
+        "price": 15000.0
+      },
+      {
+        "year": 2028.0,
+        "price": 15000.0
+      },
+      {
+        "year": 2029.0,
+        "price": 15000.0
+      },
+      {
+        "year": 2030.0,
+        "price": 15000.0
+      },
+      {
+        "year": 2031.0,
+        "price": 15000.0
+      }
+    ]
+  },
+  "primary_map": {
+    "Sector_1": [
+      {
+        "product": "Product_1",
+        "start_year": 2025.0
+      },
+      {
+        "product": "Product_3",
+        "start_year": 2027.0
+      },
+      {
+        "product": "Product_4",
+        "start_year": 2025.0
+      }
+    ],
+    "Sector_2": [
+      {
+        "product": "Product_1",
+        "start_year": 2025.0
+      },
+      {
+        "product": "Product_8",
+        "start_year": 2028.0
+      }
+    ],
+    "Sector_3": [
+      {
+        "product": "Product_2",
+        "start_year": 2025.0
+      }
+    ],
+    "Sector_4": [
+      {
+        "product": "Product_1",
+        "start_year": 2026.0
+      },
+      {
+        "product": "Product_3",
+        "start_year": 2027.0
+      },
+      {
+        "product": "Product_6",
+        "start_year": 2030.0
+      }
+    ]
+  },
+  "lists_sm": [
+    {
+      "Sector": "Sector_1",
+      "Material": "Product_1"
+    },
+    {
+      "Sector": "Sector_1",
+      "Material": "Product_3"
+    },
+    {
+      "Sector": "Sector_1",
+      "Material": "Product_4"
+    },
+    {
+      "Sector": "Sector_2",
+      "Material": "Product_1"
+    },
+    {
+      "Sector": "Sector_2",
+      "Material": "Product_8"
+    },
+    {
+      "Sector": "Sector_3",
+      "Material": "Product_2"
+    },
+    {
+      "Sector": "Sector_4",
+      "Material": "Product_1"
+    },
+    {
+      "Sector": "Sector_4",
+      "Material": "Product_3"
+    },
+    {
+      "Sector": "Sector_4",
+      "Material": "Product_6"
+    }
+  ],
+  "anchor_params_sm": {
+    "ATAM": {
+      "Sector_1": {
+        "Product_1": 6.0,
+        "Product_3": 3.0,
+        "Product_4": 4.0
+      },
+      "Sector_2": {
+        "Product_1": 6.0,
+        "Product_8": 4.0
+      },
+      "Sector_3": {
+        "Product_2": 5.0
+      },
+      "Sector_4": {
+        "Product_1": 3.0,
+        "Product_3": 3.0,
+        "Product_6": 2.0
+      }
+    },
+    "anchor_start_year": {
+      "Sector_1": {
+        "Product_1": 2025.0,
+        "Product_3": 2027.0,
+        "Product_4": 2025.0
+      },
+      "Sector_2": {
+        "Product_1": 2025.0,
+        "Product_8": 2028.0
+      },
+      "Sector_3": {
+        "Product_2": 2025.0
+      },
+      "Sector_4": {
+        "Product_1": 2026.0,
+        "Product_3": 2027.0,
+        "Product_6": 2030.0
+      }
+    },
+    "anchor_lead_generation_rate": {
+      "Sector_1": {
+        "Product_1": 0.5,
+        "Product_3": 0.25,
+        "Product_4": 0.5
+      },
+      "Sector_2": {
+        "Product_1": 0.5,
+        "Product_8": 0.25
+      },
+      "Sector_3": {
+        "Product_2": 0.75
+      },
+      "Sector_4": {
+        "Product_1": 0.5,
+        "Product_3": 0.25,
+        "Product_6": 0.25
+      }
+    },
+    "lead_to_pc_conversion_rate": {
+      "Sector_1": {
+        "Product_1": 0.6666666666666666,
+        "Product_3": 0.6666666666666666,
+        "Product_4": 0.75
+      },
+      "Sector_2": {
+        "Product_1": 0.6666666666666666,
+        "Product_8": 0.5
+      },
+      "Sector_3": {
+        "Product_2": 0.8
+      },
+      "Sector_4": {
+        "Product_1": 0.6666666666666666,
+        "Product_3": 0.3333333333333333,
+        "Product_6": 0.3333333333333333
+      }
+    },
+    "project_generation_rate": {
+      "Sector_1": {
+        "Product_1": 0.5,
+        "Product_3": 0.5,
+        "Product_4": 0.5
+      },
+      "Sector_2": {
+        "Product_1": 0.5,
+        "Product_8": 0.5
+      },
+      "Sector_3": {
+        "Product_2": 0.5
+      },
+      "Sector_4": {
+        "Product_1": 0.5,
+        "Product_3": 0.5,
+        "Product_6": 0.5
+      }
+    },
+    "project_duration": {
+      "Sector_1": {
+        "Product_1": 4.0,
+        "Product_3": 8.0,
+        "Product_4": 4.0
+      },
+      "Sector_2": {
+        "Product_1": 6.0,
+        "Product_8": 10.0
+      },
+      "Sector_3": {
+        "Product_2": 2.0
+      },
+      "Sector_4": {
+        "Product_1": 4.0,
+        "Product_3": 8.0,
+        "Product_6": 12.0
+      }
+    },
+    "projects_to_client_conversion": {
+      "Sector_1": {
+        "Product_1": 4.0,
+        "Product_3": 4.0,
+        "Product_4": 4.0
+      },
+      "Sector_2": {
+        "Product_1": 4.0,
+        "Product_8": 4.0
+      },
+      "Sector_3": {
+        "Product_2": 2.0
+      },
+      "Sector_4": {
+        "Product_1": 3.0,
+        "Product_3": 4.0,
+        "Product_6": 4.0
+      }
+    },
+    "max_projects_per_pc": {
+      "Sector_1": {
+        "Product_1": 5.0,
+        "Product_3": 5.0,
+        "Product_4": 5.0
+      },
+      "Sector_2": {
+        "Product_1": 5.0,
+        "Product_8": 5.0
+      },
+      "Sector_3": {
+        "Product_2": 5.0
+      },
+      "Sector_4": {
+        "Product_1": 5.0,
+        "Product_3": 5.0,
+        "Product_6": 5.0
+      }
+    },
+    "anchor_client_activation_delay": {
+      "Sector_1": {
+        "Product_1": 4.0,
+        "Product_3": 4.0,
+        "Product_4": 4.0
+      },
+      "Sector_2": {
+        "Product_1": 4.0,
+        "Product_8": 4.0
+      },
+      "Sector_3": {
+        "Product_2": 2.0
+      },
+      "Sector_4": {
+        "Product_1": 4.0,
+        "Product_3": 4.0,
+        "Product_6": 4.0
+      }
+    },
+    "initial_phase_duration": {
+      "Sector_1": {
+        "Product_1": 3.0,
+        "Product_3": 3.0,
+        "Product_4": 4.0
+      },
+      "Sector_2": {
+        "Product_1": 6.0,
+        "Product_8": 8.0
+      },
+      "Sector_3": {
+        "Product_2": 2.0
+      },
+      "Sector_4": {
+        "Product_1": 3.0,
+        "Product_3": 4.0,
+        "Product_6": 6.0
+      }
+    },
+    "initial_requirement_rate": {
+      "Sector_1": {
+        "Product_1": 20.0,
+        "Product_3": 10.0,
+        "Product_4": 5.0
+      },
+      "Sector_2": {
+        "Product_1": 25.0,
+        "Product_8": 25.0
+      },
+      "Sector_3": {
+        "Product_2": 50.0
+      },
+      "Sector_4": {
+        "Product_1": 10.0,
+        "Product_3": 5.0,
+        "Product_6": 2.0
+      }
+    },
+    "initial_req_growth": {
+      "Sector_1": {
+        "Product_1": 10.0,
+        "Product_3": 10.0,
+        "Product_4": 10.0
+      },
+      "Sector_2": {
+        "Product_1": 20.0,
+        "Product_8": 5.0
+      },
+      "Sector_3": {
+        "Product_2": 25.0
+      },
+      "Sector_4": {
+        "Product_1": 10.0,
+        "Product_3": 10.0,
+        "Product_6": 5.0
+      }
+    },
+    "ramp_phase_duration": {
+      "Sector_1": {
+        "Product_1": 6.0,
+        "Product_3": 4.0,
+        "Product_4": 4.0
+      },
+      "Sector_2": {
+        "Product_1": 4.0,
+        "Product_8": 8.0
+      },
+      "Sector_3": {
+        "Product_2": 3.0
+      },
+      "Sector_4": {
+        "Product_1": 4.0,
+        "Product_3": 4.0,
+        "Product_6": 6.0
+      }
+    },
+    "ramp_requirement_rate": {
+      "Sector_1": {
+        "Product_1": 40.0,
+        "Product_3": 25.0,
+        "Product_4": 10.0
+      },
+      "Sector_2": {
+        "Product_1": 75.0,
+        "Product_8": 50.0
+      },
+      "Sector_3": {
+        "Product_2": 150.0
+      },
+      "Sector_4": {
+        "Product_1": 25.0,
+        "Product_3": 15.0,
+        "Product_6": 10.0
+      }
+    },
+    "ramp_req_growth": {
+      "Sector_1": {
+        "Product_1": 33.0,
+        "Product_3": 33.0,
+        "Product_4": 40.0
+      },
+      "Sector_2": {
+        "Product_1": 50.0,
+        "Product_8": 30.0
+      },
+      "Sector_3": {
+        "Product_2": 50.0
+      },
+      "Sector_4": {
+        "Product_1": 33.0,
+        "Product_3": 33.0,
+        "Product_6": 10.0
+      }
+    },
+    "steady_requirement_rate": {
+      "Sector_1": {
+        "Product_1": 60.0,
+        "Product_3": 35.0,
+        "Product_4": 20.0
+      },
+      "Sector_2": {
+        "Product_1": 125.0,
+        "Product_8": 75.0
+      },
+      "Sector_3": {
+        "Product_2": 250.0
+      },
+      "Sector_4": {
+        "Product_1": 50.0,
+        "Product_3": 25.0,
+        "Product_6": 15.0
+      }
+    },
+    "steady_req_growth": {
+      "Sector_1": {
+        "Product_1": 33.0,
+        "Product_3": 25.0,
+        "Product_4": 25.0
+      },
+      "Sector_2": {
+        "Product_1": 33.0,
+        "Product_8": 20.0
+      },
+      "Sector_3": {
+        "Product_2": 50.0
+      },
+      "Sector_4": {
+        "Product_1": 25.0,
+        "Product_3": 25.0,
+        "Product_6": 10.0
+      }
+    },
+    "requirement_to_order_lag": {
+      "Sector_1": {
+        "Product_1": 1.0,
+        "Product_3": 1.0,
+        "Product_4": 1.0
+      },
+      "Sector_2": {
+        "Product_1": 1.0,
+        "Product_8": 1.0
+      },
+      "Sector_3": {
+        "Product_2": 1.0
+      },
+      "Sector_4": {
+        "Product_1": 1.0,
+        "Product_3": 1.0,
+        "Product_6": 1.0
+      }
+    },
+    "completed_projects_sm": {
+      "Sector_1": {
+        "Product_1": 4.0,
+        "Product_3": 0.0,
+        "Product_4": 1.0
+      },
+      "Sector_2": {
+        "Product_1": 2.0,
+        "Product_8": 0.0
+      },
+      "Sector_3": {
+        "Product_2": 0.0
+      },
+      "Sector_4": {
+        "Product_1": 0.0,
+        "Product_3": 0.0,
+        "Product_6": 0.0
+      }
+    },
+    "active_anchor_clients_sm": {
+      "Sector_1": {
+        "Product_1": 0.0,
+        "Product_3": 0.0,
+        "Product_4": 0.0
+      },
+      "Sector_2": {
+        "Product_1": 0.0,
+        "Product_8": 0.0
+      },
+      "Sector_3": {
+        "Product_2": 0.0
+      },
+      "Sector_4": {
+        "Product_1": 0.0,
+        "Product_3": 0.0,
+        "Product_6": 0.0
+      }
+    },
+    "elapsed_quarters": {
+      "Sector_1": {
+        "Product_1": 0.0,
+        "Product_3": 0.0,
+        "Product_4": 0.0
+      },
+      "Sector_2": {
+        "Product_1": 0.0,
+        "Product_8": 0.0
+      },
+      "Sector_3": {
+        "Product_2": 0.0
+      },
+      "Sector_4": {
+        "Product_1": 0.0,
+        "Product_3": 0.0,
+        "Product_6": 0.0
+      }
+    },
+    "requirement_limit_multiplier": {
+      "Sector_1": {
+        "Product_1": 100.0,
+        "Product_3": 100.0,
+        "Product_4": 100.0
+      },
+      "Sector_2": {
+        "Product_1": 100.0,
+        "Product_8": 100.0
+      },
+      "Sector_3": {
+        "Product_2": 100.0
+      },
+      "Sector_4": {
+        "Product_1": 100.0,
+        "Product_3": 100.0,
+        "Product_6": 100.0
+      }
+    }
+  }
+}
